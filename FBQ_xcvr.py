@@ -22,6 +22,7 @@ if __name__ == '__main__':
         except:
             print("Warning: failed to XInitThreads()")
 
+def struct(data): return type('Struct', (object,), data)()
 from PyQt5 import Qt
 from PyQt5.QtCore import QObject, pyqtSlot
 from gnuradio import eng_notation
@@ -31,6 +32,7 @@ import sip
 from gnuradio import analog
 from gnuradio import audio
 from gnuradio import blocks
+import pmt
 from gnuradio import filter
 from gnuradio import gr
 from gnuradio.fft import window
@@ -93,13 +95,13 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.band_chooser = band_chooser = 9
-        self.band_center = band_center = (50.2e6, 50.45e6, 144.200e6,144.450e6, 432.2e6,432.45e6, 1296.4e6, 1296.850e6, preset_fq,144.174e6)
+        self.freq = freq = 0
+        self.band_chooser = band_chooser = 8
+        self.band_center = band_center = (50.2e6, 50.45e6, 144.200e6,144.450e6, 432.2e6,432.45e6, 1296.4e6, 1296.850e6, preset_fq)
         self.tune = tune = 0
         self.rit = rit = 0
         self.fine_tune = fine_tune = 0
-        self.f0 = f0 = band_center[band_chooser]
-        self.variable_function_probe_0 = variable_function_probe_0 = 0
+        self.f0 = f0 = band_center[band_chooser] + freq
         self.tx_center_fq = tx_center_fq = (f0 + tune + fine_tune)
         self.ssb_txing = ssb_txing = 0
         self.rx_center_freq = rx_center_freq = f0-100e3
@@ -108,10 +110,35 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.wf_gain = wf_gain = 1
         self.vox_gain = vox_gain = 50
         self.vga_gain = vga_gain = 53
+        self.variable_struct_0 = variable_struct_0 = struct({
+
+            'bandmin': 0,
+
+            'bandmax': 0,
+
+            'midearbeat': 0,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        })
         self.variable_static_text_1_0 = variable_static_text_1_0 = '{:.0f}'.format(rx_center_freq+filter_freq)
         self.variable_static_text_1 = variable_static_text_1 = '{:.0f}'.format(tx_center_fq)
-        self.variable_static_text_0 = variable_static_text_0 = ('{:.1f}'.format(variable_function_probe_0))
         self.variable_qtgui_entry_0 = variable_qtgui_entry_0 = '{:.0f}'.format(filter_freq)
+        self.variable_function_probe_0 = variable_function_probe_0 = 0
         self.var_bw = var_bw = 0
         self.usb_chain_gain = usb_chain_gain = 1,0,1,1
         self.txing = txing = cw_txing or ssb_txing
@@ -128,7 +155,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.rx_samp_rate = rx_samp_rate = 1000000
         self.rx_preamp = rx_preamp = 0
         self.rx_corr = rx_corr = 0,0,580,0
-        self.pwr = pwr = 1
+
         self.morse_speed = morse_speed = 100
         self.monitor = monitor = 1
         self.mic_gain = mic_gain = 1.4
@@ -136,8 +163,9 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.lna_gain = lna_gain = 39
         self.fft_corr = fft_corr = 0,0,880,0
         self.cw_samp_rate = cw_samp_rate = 50e3
-        self.cw_midear_beat = cw_midear_beat = 0,0,880,880
+        self.cw_midear_beat = cw_midear_beat = 0,0,880,880,0,0
         self.cw_level = cw_level = 0.8
+        self.channel_delay = channel_delay = 0
         self.bpf_low = bpf_low = 100,100,380,480
         self.bpf_high = bpf_high = 3900,2700,880,680
         self.band_width = band_width = (400e3, 100e3, 400e3,100e3, 400e3,100e3, 800e3, 200e3, 1000e3, 200e3)
@@ -149,6 +177,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         ##################################################
         # Blocks
         ##################################################
+        self.blocks_probe_signal_x_0 = blocks.probe_signal_f()
         self._wf_gain_range = Range(0, 100, 1, 1, 200)
         self._wf_gain_win = RangeWidget(self._wf_gain_range, self.set_wf_gain, 'Waterfall gain', "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._wf_gain_win)
@@ -157,11 +186,26 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.top_layout.addWidget(self._vox_gain_win)
         self._vga_gain_range = Range(0, 61, 1, 53, 200)
         self._vga_gain_win = RangeWidget(self._vga_gain_range, self.set_vga_gain, 'RX VGA Gain', "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_grid_layout.addWidget(self._vga_gain_win, 3, 0, 1, 1)
-        for r in range(3, 4):
+        self.top_grid_layout.addWidget(self._vga_gain_win, 4, 1, 1, 1)
+        for r in range(4, 5):
             self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(0, 1):
+        for c in range(1, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
+        def _variable_function_probe_0_probe():
+          while True:
+
+            val = self.blocks_probe_signal_x_0.level()
+            try:
+              try:
+                self.doc.add_next_tick_callback(functools.partial(self.set_variable_function_probe_0,val))
+              except AttributeError:
+                self.set_variable_function_probe_0(val)
+            except AttributeError:
+              pass
+            time.sleep(1.0 / (35))
+        _variable_function_probe_0_thread = threading.Thread(target=_variable_function_probe_0_probe)
+        _variable_function_probe_0_thread.daemon = True
+        _variable_function_probe_0_thread.start()
         # Create the options list
         self._var_bw_options = [0, 1, 2, 3]
         # Create the labels list
@@ -184,8 +228,8 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setColumnStretch(c, 1)
         self._tx_gain_range = Range(0, 47, 1, 47, 200)
         self._tx_gain_win = RangeWidget(self._tx_gain_range, self.set_tx_gain, 'TX GAIN', "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_grid_layout.addWidget(self._tx_gain_win, 5, 3, 1, 1)
-        for r in range(5, 6):
+        self.top_grid_layout.addWidget(self._tx_gain_win, 6, 3, 1, 1)
+        for r in range(6, 7):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(3, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
@@ -203,9 +247,9 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         for c in range(0, 1):
             self.top_grid_layout.setColumnStretch(c, 1)
         # Create the options list
-        self._side_band_options = [0, 1, 2, 3]
+        self._side_band_options = [0, 1, 2, 3, 4, 5]
         # Create the labels list
-        self._side_band_labels = ['USB', 'LSB', 'CW', 'CW Stereo']
+        self._side_band_labels = ['USB', 'LSB', 'CW', 'CW Stereo', 'FT8', 'MSK144']
         # Create the combo box
         self._side_band_tool_bar = Qt.QToolBar(self)
         self._side_band_tool_bar.addWidget(Qt.QLabel('MODE' + ": "))
@@ -246,10 +290,10 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self._rx_preamp_callback(self.rx_preamp)
         self._rx_preamp_button_group.buttonClicked[int].connect(
             lambda i: self.set_rx_preamp(self._rx_preamp_options[i]))
-        self.top_grid_layout.addWidget(self._rx_preamp_group_box, 4, 0, 1, 1)
-        for r in range(4, 5):
+        self.top_grid_layout.addWidget(self._rx_preamp_group_box, 2, 1, 1, 1)
+        for r in range(2, 3):
             self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(0, 1):
+        for c in range(1, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
         self._morse_speed_range = Range(40, 200, 1, 100, 200)
         self._morse_speed_win = RangeWidget(self._morse_speed_range, self.set_morse_speed, 'morse_speed', "counter_slider", float, QtCore.Qt.Horizontal)
@@ -295,9 +339,9 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         for c in range(3, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
         self._lna_gain_range = Range(0, 39, 1, 39, 200)
-        self._lna_gain_win = RangeWidget(self._lna_gain_range, self.set_lna_gain, 'LNA GAIN', "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_grid_layout.addWidget(self._lna_gain_win, 4, 1, 1, 1)
-        for r in range(4, 5):
+        self._lna_gain_win = RangeWidget(self._lna_gain_range, self.set_lna_gain, 'LNA GAIN', "dial", float, QtCore.Qt.Horizontal)
+        self.top_grid_layout.addWidget(self._lna_gain_win, 3, 1, 1, 1)
+        for r in range(3, 4):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(1, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
@@ -308,11 +352,13 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(3, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self.blocks_probe_signal_x_0 = blocks.probe_signal_f()
+        self._channel_delay_range = Range(-48000, 48000, 1, 0, 200)
+        self._channel_delay_win = RangeWidget(self._channel_delay_range, self.set_channel_delay, 'channel_delay', "counter_slider", int, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._channel_delay_win)
         # Create the options list
-        self._band_chooser_options = [0, 1, 2, 3, 9, 4, 5, 6, 7, 8]
+        self._band_chooser_options = [0, 1, 2, 3, 4, 5, 6, 7, 8]
         # Create the labels list
-        self._band_chooser_labels = ['50', '50 Fyr', '144', '144 Fyr', '144 FT8', '432', '432 Fyr', '1296', '1296 fyr', 'preset']
+        self._band_chooser_labels = ['50', '50 Fyr', '144', '144 Fyr', '432', '432 Fyr', '1296', '1296 fyr', 'preset']
         # Create the combo box
         # Create the radio buttons
         self._band_chooser_group_box = Qt.QGroupBox('FREQUENCY BAND' + ": ")
@@ -340,15 +386,15 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setColumnStretch(c, 1)
         self._af_right_range = Range(0, 1, 0.01, 0.5, 200)
         self._af_right_win = RangeWidget(self._af_right_range, self.set_af_right, 'AF BAL', "slider", float, QtCore.Qt.Horizontal)
-        self.top_grid_layout.addWidget(self._af_right_win, 7, 1, 1, 1)
-        for r in range(7, 8):
+        self.top_grid_layout.addWidget(self._af_right_win, 8, 1, 1, 1)
+        for r in range(8, 9):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(1, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
         self._af_gain_range = Range(0, 2000, 1, 6, 200)
-        self._af_gain_win = RangeWidget(self._af_gain_range, self.set_af_gain, '  AF VOL', "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_grid_layout.addWidget(self._af_gain_win, 3, 1, 1, 1)
-        for r in range(3, 4):
+        self._af_gain_win = RangeWidget(self._af_gain_range, self.set_af_gain, '  AF VOL', "dial", float, QtCore.Qt.Horizontal)
+        self.top_grid_layout.addWidget(self._af_gain_win, 6, 1, 1, 1)
+        for r in range(6, 7):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(1, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
@@ -374,17 +420,6 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(3, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self._variable_static_text_0_tool_bar = Qt.QToolBar(self)
-        self._variable_static_text_0_tool_bar.addWidget(Qt.QLabel("                                         S-METER (dBm)" + ": "))
-        self._variable_static_text_0_line_edit = Qt.QLineEdit(str(self.variable_static_text_0))
-        self._variable_static_text_0_tool_bar.addWidget(self._variable_static_text_0_line_edit)
-        self._variable_static_text_0_line_edit.returnPressed.connect(
-            lambda: self.set_variable_static_text_0(str(str(self._variable_static_text_0_line_edit.text()))))
-        self.top_grid_layout.addWidget(self._variable_static_text_0_tool_bar, 2, 1, 1, 1)
-        for r in range(2, 3):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(1, 2):
-            self.top_grid_layout.setColumnStretch(c, 1)
         self._variable_qtgui_entry_0_tool_bar = Qt.QToolBar(self)
         self._variable_qtgui_entry_0_tool_bar.addWidget(Qt.QLabel('RX filter offset' + ": "))
         self._variable_qtgui_entry_0_line_edit = Qt.QLineEdit(str(self.variable_qtgui_entry_0))
@@ -396,21 +431,6 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(1, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
-        def _variable_function_probe_0_probe():
-          while True:
-
-            val = self.blocks_probe_signal_x_0.level()
-            try:
-              try:
-                self.doc.add_next_tick_callback(functools.partial(self.set_variable_function_probe_0,val))
-              except AttributeError:
-                self.set_variable_function_probe_0(val)
-            except AttributeError:
-              pass
-            time.sleep(1.0 / (35))
-        _variable_function_probe_0_thread = threading.Thread(target=_variable_function_probe_0_probe)
-        _variable_function_probe_0_thread.daemon = True
-        _variable_function_probe_0_thread.start()
         self._tune_range = Range(-band_width[band_chooser]/2, band_width[band_chooser]/2, band_width[band_chooser]/200, 0, 200)
         self._tune_win = RangeWidget(self._tune_range, self.set_tune, '  TUNE', "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_grid_layout.addWidget(self._tune_win, 1, 2, 1, 2)
@@ -516,51 +536,57 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.qtgui_waterfall_sink_x_0.set_intensity_range(-100, 10)
 
         self._qtgui_waterfall_sink_x_0_win = sip.wrapinstance(self.qtgui_waterfall_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_waterfall_sink_x_0_win, 5, 1, 1, 2)
+        self.top_grid_layout.addWidget(self._qtgui_waterfall_sink_x_0_win, 5, 0, 1, 2)
         for r in range(5, 6):
             self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(1, 3):
+        for c in range(0, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self.qtgui_ledindicator_0_0 = self._qtgui_ledindicator_0_0_win = qtgui.GrLEDIndicator('ON AIR SSB', "red", "black", ssb_txing, 40, 1, 1, 1, self)
-        self.qtgui_ledindicator_0_0 = self._qtgui_ledindicator_0_0_win
-        self.top_grid_layout.addWidget(self._qtgui_ledindicator_0_0_win, 8, 1, 1, 1)
-        for r in range(8, 9):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(1, 2):
-            self.top_grid_layout.setColumnStretch(c, 1)
-        self.qtgui_ledindicator_0 = self._qtgui_ledindicator_0_win = qtgui.GrLEDIndicator('ON AIR CW', "red", "black", cw_txing, 40, 1, 1, 1, self)
-        self.qtgui_ledindicator_0 = self._qtgui_ledindicator_0_win
-        self.top_grid_layout.addWidget(self._qtgui_ledindicator_0_win, 8, 0, 1, 1)
-        for r in range(8, 9):
+        self.qtgui_tab_widget_0 = Qt.QTabWidget()
+        self.qtgui_tab_widget_0_widget_0 = Qt.QWidget()
+        self.qtgui_tab_widget_0_layout_0 = Qt.QBoxLayout(Qt.QBoxLayout.TopToBottom, self.qtgui_tab_widget_0_widget_0)
+        self.qtgui_tab_widget_0_grid_layout_0 = Qt.QGridLayout()
+        self.qtgui_tab_widget_0_layout_0.addLayout(self.qtgui_tab_widget_0_grid_layout_0)
+        self.qtgui_tab_widget_0.addTab(self.qtgui_tab_widget_0_widget_0, 'Tab 0')
+        self.top_layout.addWidget(self.qtgui_tab_widget_0)
+        if "real" == "int":
+        	isFloat = False
+        	scaleFactor = 1
+        else:
+        	isFloat = True
+        	scaleFactor = 1
+
+        _qtgui_levelgauge_0_lg_win = qtgui.GrLevelGauge('S-meter [dBm]',"orange","silver","yellow",-140,30, 100, False,1,isFloat,scaleFactor,True,self)
+        _qtgui_levelgauge_0_lg_win.setValue(variable_function_probe_0)
+        self.qtgui_levelgauge_0 = _qtgui_levelgauge_0_lg_win
+
+        self.top_grid_layout.addWidget(_qtgui_levelgauge_0_lg_win, 3, 0, 1, 1)
+        for r in range(3, 4):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(0, 1):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self.qtgui_edit_box_msg_0 = qtgui.edit_box_msg(qtgui.STRING, '', '', False, True, '', None)
+        self.qtgui_ledindicator_0_0 = self._qtgui_ledindicator_0_0_win = qtgui.GrLEDIndicator('ON AIR SSB', "red", "black", ssb_txing, 40, 1, 1, 1, self)
+        self.qtgui_ledindicator_0_0 = self._qtgui_ledindicator_0_0_win
+        self.top_grid_layout.addWidget(self._qtgui_ledindicator_0_0_win, 4, 3, 1, 1)
+        for r in range(4, 5):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(3, 4):
+            self.top_grid_layout.setColumnStretch(c, 1)
+        self.qtgui_ledindicator_0 = self._qtgui_ledindicator_0_win = qtgui.GrLEDIndicator('ON AIR CW', "red", "black", cw_txing, 40, 1, 1, 1, self)
+        self.qtgui_ledindicator_0 = self._qtgui_ledindicator_0_win
+        self.top_grid_layout.addWidget(self._qtgui_ledindicator_0_win, 4, 2, 1, 1)
+        for r in range(4, 5):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(2, 3):
+            self.top_grid_layout.setColumnStretch(c, 1)
+        self.qtgui_edit_box_msg_1 = qtgui.edit_box_msg(qtgui.FLOAT, '', 'WF Frequency', True, False, '', None)
+        self._qtgui_edit_box_msg_1_win = sip.wrapinstance(self.qtgui_edit_box_msg_1.pyqwidget(), Qt.QWidget)
+        self.top_layout.addWidget(self._qtgui_edit_box_msg_1_win)
+        self.qtgui_edit_box_msg_0 = qtgui.edit_box_msg(qtgui.STRING, '', 'CW message to send:', False, True, '', None)
         self._qtgui_edit_box_msg_0_win = sip.wrapinstance(self.qtgui_edit_box_msg_0.pyqwidget(), Qt.QWidget)
         self.top_grid_layout.addWidget(self._qtgui_edit_box_msg_0_win, 8, 2, 1, 2)
         for r in range(8, 9):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(2, 4):
-            self.top_grid_layout.setColumnStretch(c, 1)
-        # Create the options list
-        self._pwr_options = [0, 1, 2]
-        # Create the labels list
-        self._pwr_labels = ['0', '1', '2']
-        # Create the combo box
-        self._pwr_tool_bar = Qt.QToolBar(self)
-        self._pwr_tool_bar.addWidget(Qt.QLabel('Transmit Power' + ": "))
-        self._pwr_combo_box = Qt.QComboBox()
-        self._pwr_tool_bar.addWidget(self._pwr_combo_box)
-        for _label in self._pwr_labels: self._pwr_combo_box.addItem(_label)
-        self._pwr_callback = lambda i: Qt.QMetaObject.invokeMethod(self._pwr_combo_box, "setCurrentIndex", Qt.Q_ARG("int", self._pwr_options.index(i)))
-        self._pwr_callback(self.pwr)
-        self._pwr_combo_box.currentIndexChanged.connect(
-            lambda i: self.set_pwr(self._pwr_options[i]))
-        # Create the radio buttons
-        self.top_grid_layout.addWidget(self._pwr_tool_bar, 4, 3, 1, 1)
-        for r in range(4, 5):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(3, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
         self.pfb_decimator_ccf_0_1 = pfb.decimator_ccf(
              3*int(rx_samp_rate/1000000),
@@ -625,6 +651,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.epy_block_1_0 = epy_block_1_0.blk(threshold=2, attack=10, delay=0.5)
         self.epy_block_1 = epy_block_1.blk(threshold=0.8, attack=10, delay=6/morse_speed * 25)
         self.epy_block_0_0 = epy_block_0_0.mc_sync_block()
+        self.blocks_var_to_msg_0 = blocks.var_to_msg_pair('tune')
         self.blocks_uchar_to_float_0 = blocks.uchar_to_float()
         self.blocks_selector_3 = blocks.selector(gr.sizeof_float*1,int(cw_txing),0)
         self.blocks_selector_3.set_enabled(True)
@@ -642,6 +669,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.blocks_selector_0.set_enabled(True)
         self.blocks_repeat_0_0 = blocks.repeat(gr.sizeof_gr_complex*1, int(tx_samp_rate/cw_samp_rate))
         self.blocks_repeat_0 = blocks.repeat(gr.sizeof_char*1, 3000)
+        self.blocks_pdu_filter_0 = blocks.pdu_filter(pmt.intern("key"), pmt.intern("value"), False)
         self.blocks_null_sink_3 = blocks.null_sink(gr.sizeof_gr_complex*1)
         self.blocks_null_sink_2 = blocks.null_sink(gr.sizeof_gr_complex*1)
         self.blocks_nlog10_ff_0 = blocks.nlog10_ff(10.6, 1, RX_power_offset_dB)
@@ -658,6 +686,8 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.blocks_multiply_const_vxx_1_0_0_0 = blocks.multiply_const_ff(mic_gain)
         self.blocks_multiply_const_vxx_1 = blocks.multiply_const_ff(1)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(monitor)
+        self.blocks_msgpair_to_var_2 = blocks.msg_pair_to_var(self.set_freq)
+        self.blocks_msgpair_to_var_1 = blocks.msg_pair_to_var(self.set_tune)
         self.blocks_msgpair_to_var_0_0 = blocks.msg_pair_to_var(self.set_ssb_txing)
         self.blocks_msgpair_to_var_0 = blocks.msg_pair_to_var(self.set_cw_txing)
         self.blocks_moving_average_xx_0 = blocks.moving_average_ff(1000, 1/10, 480, 1)
@@ -671,6 +701,8 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.blocks_float_to_complex_0_0_1 = blocks.float_to_complex(1)
         self.blocks_float_to_complex_0_0_0 = blocks.float_to_complex(1)
         self.blocks_float_to_char_0 = blocks.float_to_char(1, 1)
+        self.blocks_delay_1_0 = blocks.delay(gr.sizeof_float*1, -min(channel_delay, 0))
+        self.blocks_delay_1 = blocks.delay(gr.sizeof_float*1, max(channel_delay,0))
         self.blocks_delay_0 = blocks.delay(gr.sizeof_float*1, 20)
         self.blocks_complex_to_real_0_0_0 = blocks.complex_to_real(1)
         self.blocks_complex_to_real_0 = blocks.complex_to_real(1)
@@ -727,12 +759,18 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         ##################################################
         # Connections
         ##################################################
+        self.msg_connect((self.blocks_var_to_msg_0, 'msgout'), (self.blocks_message_debug_0, 'print'))
+        self.msg_connect((self.blocks_var_to_msg_0, 'msgout'), (self.blocks_msgpair_to_var_1, 'inpair'))
         self.msg_connect((self.epy_block_0_0, 'clear_input'), (self.qtgui_edit_box_msg_0, 'val'))
         self.msg_connect((self.epy_block_1, 'onair'), (self.blocks_message_debug_0, 'print'))
         self.msg_connect((self.epy_block_1, 'onair'), (self.blocks_msgpair_to_var_0, 'inpair'))
         self.msg_connect((self.epy_block_1_0, 'onair'), (self.blocks_message_debug_0, 'print'))
         self.msg_connect((self.epy_block_1_0, 'onair'), (self.blocks_msgpair_to_var_0_0, 'inpair'))
         self.msg_connect((self.qtgui_edit_box_msg_0, 'msg'), (self.epy_block_0_0, 'msg_in'))
+        self.msg_connect((self.qtgui_edit_box_msg_1, 'msg'), (self.qtgui_waterfall_sink_x_0, 'freq'))
+        self.msg_connect((self.qtgui_waterfall_sink_x_0, 'freq'), (self.blocks_message_debug_0, 'print'))
+        self.msg_connect((self.qtgui_waterfall_sink_x_0, 'freq'), (self.blocks_msgpair_to_var_2, 'inpair'))
+        self.msg_connect((self.qtgui_waterfall_sink_x_0, 'freq'), (self.qtgui_edit_box_msg_1, 'val'))
         self.connect((self.analog_agc3_xx_0, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.analog_agc3_xx_0_0, 0), (self.rational_resampler_xxx_0_0_0, 0))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_multiply_xx_0, 0))
@@ -756,10 +794,12 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_complex_to_float_0_2_0_0, 0), (self.blocks_float_to_complex_0_1_0_0, 1))
         self.connect((self.blocks_complex_to_float_0_2_0_0, 1), (self.mulc_usb1, 0))
         self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.blocks_integrate_xx_0, 0))
-        self.connect((self.blocks_complex_to_real_0, 0), (self.blocks_multiply_const_vxx_1, 0))
-        self.connect((self.blocks_complex_to_real_0_0_0, 0), (self.blocks_multiply_const_vxx_1_0_1, 0))
+        self.connect((self.blocks_complex_to_real_0, 0), (self.blocks_delay_1, 0))
+        self.connect((self.blocks_complex_to_real_0_0_0, 0), (self.blocks_delay_1_0, 0))
         self.connect((self.blocks_delay_0, 0), (self.blocks_float_to_complex_0_3, 0))
         self.connect((self.blocks_delay_0, 0), (self.mmse_resampler_xx_0, 0))
+        self.connect((self.blocks_delay_1, 0), (self.blocks_multiply_const_vxx_1, 0))
+        self.connect((self.blocks_delay_1_0, 0), (self.blocks_multiply_const_vxx_1_0_1, 0))
         self.connect((self.blocks_float_to_char_0, 0), (self.epy_block_1, 0))
         self.connect((self.blocks_float_to_complex_0_0_0, 0), (self.analog_simple_squelch_cc_0, 0))
         self.connect((self.blocks_float_to_complex_0_0_0, 0), (self.blocks_add_xx_0, 1))
@@ -774,13 +814,13 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_moving_average_xx_0, 0), (self.epy_block_1_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_selector_2, 1))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_selector_3, 1))
-        self.connect((self.blocks_multiply_const_vxx_1, 0), (self.blocks_selector_0_x, 1))
         self.connect((self.blocks_multiply_const_vxx_1, 0), (self.blocks_selector_0_x, 3))
+        self.connect((self.blocks_multiply_const_vxx_1, 0), (self.blocks_selector_0_x, 1))
         self.connect((self.blocks_multiply_const_vxx_1, 0), (self.blocks_selector_0_y, 1))
         self.connect((self.blocks_multiply_const_vxx_1_0_0_0, 0), (self.band_pass_filter_0, 0))
         self.connect((self.blocks_multiply_const_vxx_1_0_0_1, 0), (self.blocks_moving_average_xx_0, 0))
-        self.connect((self.blocks_multiply_const_vxx_1_0_1, 0), (self.blocks_selector_0_x, 0))
         self.connect((self.blocks_multiply_const_vxx_1_0_1, 0), (self.blocks_selector_0_x, 2))
+        self.connect((self.blocks_multiply_const_vxx_1_0_1, 0), (self.blocks_selector_0_x, 0))
         self.connect((self.blocks_multiply_const_vxx_1_0_1, 0), (self.blocks_selector_0_y, 2))
         self.connect((self.blocks_multiply_const_vxx_1_0_1, 0), (self.blocks_selector_0_y, 0))
         self.connect((self.blocks_multiply_const_vxx_1_0_1, 0), (self.blocks_selector_0_y, 3))
@@ -795,8 +835,8 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_multiply_xx_0_0_0, 0), (self.low_pass_filter_0_0, 0))
         self.connect((self.blocks_nlog10_ff_0, 0), (self.blocks_probe_signal_x_0, 0))
         self.connect((self.blocks_repeat_0, 0), (self.blocks_uchar_to_float_0, 0))
-        self.connect((self.blocks_repeat_0_0, 0), (self.blocks_selector_1, 2))
         self.connect((self.blocks_repeat_0_0, 0), (self.blocks_selector_1, 3))
+        self.connect((self.blocks_repeat_0_0, 0), (self.blocks_selector_1, 2))
         self.connect((self.blocks_selector_0, 0), (self.blocks_null_sink_2, 0))
         self.connect((self.blocks_selector_0, 1), (self.rational_resampler_xxx_4_0, 0))
         self.connect((self.blocks_selector_0_x, 0), (self.blocks_selector_2, 0))
@@ -843,7 +883,14 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
 
     def set_preset_fq(self, preset_fq):
         self.preset_fq = preset_fq
-        self.set_band_center((50.2e6, 50.45e6, 144.200e6,144.450e6, 432.2e6,432.45e6, 1296.4e6, 1296.850e6, self.preset_fq,144.174e6))
+        self.set_band_center((50.2e6, 50.45e6, 144.200e6,144.450e6, 432.2e6,432.45e6, 1296.4e6, 1296.850e6, self.preset_fq))
+
+    def get_freq(self):
+        return self.freq
+
+    def set_freq(self, freq):
+        self.freq = freq
+        self.set_f0(self.band_center[self.band_chooser] + self.freq)
 
     def get_band_chooser(self):
         return self.band_chooser
@@ -851,7 +898,8 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_band_chooser(self, band_chooser):
         self.band_chooser = band_chooser
         self._band_chooser_callback(self.band_chooser)
-        self.set_f0(self.band_center[self.band_chooser])
+        self.set_f0(self.band_center[self.band_chooser] + self.freq)
+        self.blocks_var_to_msg_0.variable_changed(self.band_chooser)
         self.qtgui_waterfall_sink_x_0.set_frequency_range(self.fft_corr[self.side_band], self.band_width[self.band_chooser])
 
     def get_band_center(self):
@@ -859,7 +907,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
 
     def set_band_center(self, band_center):
         self.band_center = band_center
-        self.set_f0(self.band_center[self.band_chooser])
+        self.set_f0(self.band_center[self.band_chooser] + self.freq)
 
     def get_tune(self):
         return self.tune
@@ -891,13 +939,6 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.f0 = f0
         self.set_rx_center_freq(self.f0-100e3)
         self.set_tx_center_fq((self.f0 + self.tune + self.fine_tune))
-
-    def get_variable_function_probe_0(self):
-        return self.variable_function_probe_0
-
-    def set_variable_function_probe_0(self, variable_function_probe_0):
-        self.variable_function_probe_0 = variable_function_probe_0
-        self.set_variable_static_text_0(('{:.1f}'.format(self.variable_function_probe_0)))
 
     def get_tx_center_fq(self):
         return self.tx_center_fq
@@ -965,6 +1006,12 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.vga_gain = vga_gain
         self.soapy_hackrf_source_0.set_gain(0, 'VGA', min(max(self.vga_gain, 0.0), 62.0))
 
+    def get_variable_struct_0(self):
+        return self.variable_struct_0
+
+    def set_variable_struct_0(self, variable_struct_0):
+        self.variable_struct_0 = variable_struct_0
+
     def get_variable_static_text_1_0(self):
         return self.variable_static_text_1_0
 
@@ -979,19 +1026,19 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.variable_static_text_1 = variable_static_text_1
         Qt.QMetaObject.invokeMethod(self._variable_static_text_1_line_edit, "setText", Qt.Q_ARG("QString", str(self.variable_static_text_1)))
 
-    def get_variable_static_text_0(self):
-        return self.variable_static_text_0
-
-    def set_variable_static_text_0(self, variable_static_text_0):
-        self.variable_static_text_0 = variable_static_text_0
-        Qt.QMetaObject.invokeMethod(self._variable_static_text_0_line_edit, "setText", Qt.Q_ARG("QString", str(self.variable_static_text_0)))
-
     def get_variable_qtgui_entry_0(self):
         return self.variable_qtgui_entry_0
 
     def set_variable_qtgui_entry_0(self, variable_qtgui_entry_0):
         self.variable_qtgui_entry_0 = variable_qtgui_entry_0
         Qt.QMetaObject.invokeMethod(self._variable_qtgui_entry_0_line_edit, "setText", Qt.Q_ARG("QString", str(self.variable_qtgui_entry_0)))
+
+    def get_variable_function_probe_0(self):
+        return self.variable_function_probe_0
+
+    def set_variable_function_probe_0(self, variable_function_probe_0):
+        self.variable_function_probe_0 = variable_function_probe_0
+        self.qtgui_levelgauge_0.setValue(self.variable_function_probe_0)
 
     def get_var_bw(self):
         return self.var_bw
@@ -1123,12 +1170,12 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_rx_corr(self, rx_corr):
         self.rx_corr = rx_corr
 
-    def get_pwr(self):
-        return self.pwr
+    def get_qtgui_levelgauge_0(self):
+        return self.qtgui_levelgauge_0
 
-    def set_pwr(self, pwr):
-        self.pwr = pwr
-        self._pwr_callback(self.pwr)
+    def set_qtgui_levelgauge_0(self, qtgui_levelgauge_0):
+        self.qtgui_levelgauge_0 = qtgui_levelgauge_0
+        self.qtgui_levelgauge_0.setValue(self.variable_function_probe_0)
 
     def get_morse_speed(self):
         return self.morse_speed
@@ -1198,6 +1245,14 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_cw_level(self, cw_level):
         self.cw_level = cw_level
         self.root_raised_cosine_filter_0_0.set_taps(firdes.root_raised_cosine(self.cw_level, self.cw_samp_rate, self.symbol_rate, 0.35, 200))
+
+    def get_channel_delay(self):
+        return self.channel_delay
+
+    def set_channel_delay(self, channel_delay):
+        self.channel_delay = channel_delay
+        self.blocks_delay_1.set_dly(max(self.channel_delay,0))
+        self.blocks_delay_1_0.set_dly(-min(self.channel_delay, 0))
 
     def get_bpf_low(self):
         return self.bpf_low
