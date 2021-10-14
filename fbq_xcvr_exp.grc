@@ -27,7 +27,7 @@ options:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [9, 8]
+    coordinate: [24, 372.0]
     rotation: 0
     state: enabled
 
@@ -41,14 +41,14 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [576, 140.0]
+    coordinate: [520, 364.0]
     rotation: 0
     state: enabled
 - name: af_gain
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: 6, 2, 1, 1
+    gui_hint: 1, 0, 1, 1
     label: '  AF VOL'
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -62,14 +62,14 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1640, 828.0]
+    coordinate: [1656, 1100.0]
     rotation: 0
     state: enabled
 - name: af_right
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: 10, 1, 1, 2
+    gui_hint: settings_tab@0:10, 1, 1, 2
     label: AF BAL
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -83,7 +83,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1520, 876.0]
+    coordinate: [1536, 1228.0]
     rotation: 0
     state: enabled
 - name: audio_samp_rate
@@ -95,7 +95,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [72, 116.0]
+    coordinate: [88, 468.0]
     rotation: 0
     state: enabled
 - name: band_center
@@ -108,50 +108,49 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 9]
+    coordinate: [208, 244.0]
     rotation: 0
     state: enabled
-- name: band_chooser
+- name: band_selector
   id: variable_qtgui_chooser
   parameters:
-    comment: ''
-    gui_hint: 0,0,1,7
-    label: FREQUENCY BAND
+    comment: Selects the frequency band to use
+    gui_hint: 1,3,1,1
+    label: FQ BAND
     label0: ''
     label1: ''
     label2: ''
     label3: ''
     label4: ''
-    labels: '[''50'',''50 Fyr'', ''144'',''144 Fyr'',''432'',''432 Fyr'',''1296'',''1296
-      fyr'',''preset'']'
+    labels: ham_bands_keys
     num_opts: '0'
     option0: '0'
     option1: '1'
     option2: '2'
     option3: '3'
     option4: '4'
-    options: '[0,1,2,3,4,5,6,7,8]'
+    options: ham_bands_keys
     orient: Qt.QHBoxLayout
-    type: int
-    value: '8'
-    widget: radio_buttons
+    type: string
+    value: '''                  '''
+    widget: combo_box
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1624, 4.0]
+    coordinate: [1744, 372.0]
     rotation: 0
     state: true
 - name: band_width
   id: variable
   parameters:
     comment: ''
-    value: (400e3, 100e3, 400e3,200e3, 400e3,100e3, 800e3, 200e3, 1000e3)
+    value: (400e3, 100e3, 400e3,200e3, 400e3,100e3, 800e3, 200e3, 10e3)
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [336, 9]
+    coordinate: [360, 244.0]
     rotation: 0
     state: enabled
 - name: bpf_high
@@ -163,7 +162,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [494, 9]
+    coordinate: [520, 244.0]
     rotation: 0
     state: enabled
 - name: bpf_low
@@ -175,28 +174,28 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [644, 8]
+    coordinate: [664, 244.0]
     rotation: 0
     state: enabled
 - name: channel_delay
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: 11,1,1,2
-    label: AF SYNC
+    gui_hint: op_tab@2:11,1,1,2
+    label: AF STEREO SYNC
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: int
     start: '-48000'
     step: '1'
     stop: '48000'
-    value: '-17285'
+    value: '-31408'
     widget: counter_slider
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1520, 972.0]
+    coordinate: [1536, 1324.0]
     rotation: 0
     state: true
 - name: channel_separation
@@ -208,28 +207,131 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [768, 4.0]
+    coordinate: [792, 228.0]
     rotation: 0
     state: true
-- name: cw_level
-  id: variable_qtgui_range
+- name: cqmsg
+  id: variable
   parameters:
     comment: ''
-    gui_hint: 7,6,1,1
-    label: CW level
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0'
-    step: '0.01'
-    stop: '0.95'
-    value: '0.8'
-    widget: dial
+    value: '"CQ DE SM6FBQ"'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2216, 580.0]
+    coordinate: [1744, 812.0]
+    rotation: 0
+    state: true
+- name: current_allowed_modes
+  id: variable_qtgui_entry
+  parameters:
+    comment: Displays a list od the allowed transmission modes in the selected band
+    gui_hint: settings_tab@2:0,5,1,1
+    label: Modes
+    type: raw
+    value: ham_bands[band_selector][4]
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 972.0]
+    rotation: 0
+    state: true
+- name: current_allowed_tx_bandwidth
+  id: variable_qtgui_entry
+  parameters:
+    comment: Displays the allowed transmitter bandwidth of the selected band
+    gui_hint: settings_tab@2:0,4,1,1
+    label: Bw
+    type: real
+    value: ham_bands[band_selector][3]
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 892.0]
+    rotation: 0
+    state: true
+- name: current_default_fq
+  id: variable_qtgui_entry
+  parameters:
+    comment: Displays the default frequency of the selected band
+    gui_hint: settings_tab@2:0,2,1,1
+    label: Def-fq
+    type: real
+    value: ham_bands[band_selector][2]
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 812.0]
+    rotation: 0
+    state: true
+- name: current_max_fq
+  id: variable_qtgui_entry
+  parameters:
+    comment: Displays the highest frequency of the selected band
+    gui_hint: settings_tab@2:0,1,1,1
+    label: Max-fq
+    type: real
+    value: ham_bands[band_selector][1]
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 732.0]
+    rotation: 0
+    state: true
+- name: current_min_fq
+  id: variable_qtgui_entry
+  parameters:
+    comment: Displays the lowest frequency of the selected band
+    gui_hint: settings_tab@2:0,0,1,1
+    label: Min-fq
+    type: real
+    value: ham_bands[band_selector][0]
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 652.0]
+    rotation: 0
+    state: true
+- name: cw_level
+  id: variable_qtgui_dial_control
+  parameters:
+    comment: ''
+    gui_hint: op_tab@2:4,5,1,1
+    label: CW TX LEVEL
+    maximum: '95'
+    minimum: '0'
+    minsize: '100'
+    outputmsgname: value
+    relBackgroundColor: lime
+    scaleFactor: '0.01'
+    showvalue: 'True'
+    type: real
+    value: '0.8'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2128, 748.0]
+    rotation: 0
+    state: true
+- name: cw_message
+  id: variable_qtgui_entry
+  parameters:
+    comment: ''
+    gui_hint: op_tab@1:8,3,1,3
+    label: DX call
+    type: string
+    value: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1944, 980.0]
     rotation: 0
     state: true
 - name: cw_midear_beat
@@ -241,7 +343,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [904, 4.0]
+    coordinate: [928, 228.0]
     rotation: 0
     state: true
 - name: cw_samp_rate
@@ -253,7 +355,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 2892.0]
+    coordinate: [24, 3252.0]
     rotation: 0
     state: enabled
 - name: cw_txing
@@ -265,19 +367,46 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1016, 4.0]
+    coordinate: [1040, 228.0]
     rotation: 0
     state: enabled
-- name: f0
-  id: variable
+- name: dx_call
+  id: variable_qtgui_entry
   parameters:
     comment: ''
-    value: band_center[band_chooser] + freq
+    gui_hint: op_tab@2:9,3,1,1
+    label: DX call
+    type: string
+    value: ''
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1080, 4.0]
+    coordinate: [1944, 1052.0]
+    rotation: 0
+    state: true
+- name: f0
+  id: variable
+  parameters:
+    comment: ''
+    value: current_min_fq + (current_max_fq - current_min_fq)/2.0
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [208, 300.0]
+    rotation: 0
+    state: true
+- name: f0_min
+  id: variable
+  parameters:
+    comment: ''
+    value: ham_bands[band_selector][0]
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [432, 300.0]
     rotation: 0
     state: true
 - name: fft_corr
@@ -289,42 +418,21 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1152, 4.0]
+    coordinate: [288, 300.0]
     rotation: 0
     state: enabled
-- name: filter_freq
+- name: filter_fq
   id: variable
   parameters:
-    comment: ''
-    value: 100e3+rit + tune + fine_tune
+    comment: Demodulator offset of hardware receiver.
+    value: '0'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 72.0]
+    coordinate: [1160, 348.0]
     rotation: 0
     state: true
-- name: fine_tune
-  id: variable_qtgui_range
-  parameters:
-    comment: ''
-    gui_hint: 2, 0, 1, 5
-    label: '  FINE TUNE'
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '-3000'
-    step: '1'
-    stop: '3000'
-    value: '0'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1632, 204.0]
-    rotation: 0
-    state: enabled
 - name: freq
   id: variable
   parameters:
@@ -334,14 +442,40 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1232, 4.0]
+    coordinate: [1056, 660.0]
+    rotation: 0
+    state: true
+- name: ham_bands
+  id: variable
+  parameters:
+    comment: "Dummy variable to satisfy GRC checks. The band_plan code snippet will\
+      \ \nreplace its value on startup."
+    value: '{''                  '':(30e6,6e9,0,0,0)}'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1048, 836.0]
+    rotation: 0
+    state: true
+- name: ham_bands_keys
+  id: variable
+  parameters:
+    comment: "Dummy variable to satisfy GRC checks. The band_plan code snippet will\
+      \ \nreplace its value on startup."
+    value: '[''                  '']'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1048, 756.0]
     rotation: 0
     state: true
 - name: lna_gain
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: 5, 1, 1, 1
+    gui_hint: settings_tab@0:5, 1, 1, 1
     label: RX LNA GAIN
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -355,7 +489,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1520, 572.0]
+    coordinate: [1536, 924.0]
     rotation: 0
     state: enabled
 - name: lsb_chain_gain
@@ -367,35 +501,36 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [264, 72.0]
+    coordinate: [592, 300.0]
     rotation: 0
     state: enabled
 - name: mic_gain
-  id: variable_qtgui_range
+  id: variable_qtgui_dial_control
   parameters:
     comment: ''
-    gui_hint: 7,4,1,1
+    gui_hint: op_tab@0:3,6,1,1
     label: MIC GAIN
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0'
-    step: '0.1'
-    stop: '1.5'
+    maximum: '150'
+    minimum: '0'
+    minsize: '100'
+    outputmsgname: value
+    relBackgroundColor: silver
+    scaleFactor: '0.01'
+    showvalue: 'True'
+    type: real
     value: '1.4'
-    widget: dial
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1976, 580.0]
+    coordinate: [2256, 620.0]
     rotation: 0
-    state: enabled
+    state: true
 - name: mode
   id: variable_qtgui_chooser
   parameters:
     comment: ''
-    gui_hint: 5, 3, 2, 1
+    gui_hint: 3, 3, 1, 1
     label: MODE
     label0: USB
     label1: LSB
@@ -418,7 +553,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1776, 468.0]
+    coordinate: [1728, 708.0]
     rotation: 0
     state: enabled
 - name: mode_to_sb
@@ -430,82 +565,51 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [368, 68.0]
+    coordinate: [696, 300.0]
     rotation: 0
     state: true
 - name: monitor
-  id: variable_qtgui_chooser
+  id: variable_qtgui_dial_control
   parameters:
     comment: ''
-    gui_hint: 5, 4, 1, 1
-    label: TRANSMIT SOUND
-    label0: Monitor
-    label1: RX/TX
-    label2: ''
-    label3: ''
-    label4: ''
-    labels: '["MONITOR","RX / TX"]'
-    num_opts: '2'
-    option0: '0'
-    option1: '1'
-    option2: '2'
-    option3: '3'
-    option4: '4'
-    options: '[0, 1, 2]'
-    orient: Qt.QHBoxLayout
-    type: int
-    value: '1'
-    widget: radio_buttons
+    gui_hint: op_tab@2:5,6,1,1
+    label: CW feedback
+    maximum: '100'
+    minimum: '0'
+    minsize: '100'
+    outputmsgname: value
+    relBackgroundColor: teal
+    scaleFactor: '1'
+    showvalue: 'True'
+    type: real
+    value: '25'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1976, 460.0]
+    coordinate: [2264, 868.0]
     rotation: 0
-    state: enabled
+    state: true
 - name: morse_speed
-  id: variable_qtgui_range
+  id: variable_qtgui_dial_control
   parameters:
     comment: Morse speed in characters per minute, not WPM
-    gui_hint: 8,6,1,1
+    gui_hint: op_tab@2:5,5,1,1
     label: MORSE SPEED [CPM]
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '40'
-    step: '1'
-    stop: '200'
-    value: '100'
-    widget: counter_slider
+    maximum: '200'
+    minimum: '40'
+    minsize: '120'
+    outputmsgname: value
+    relBackgroundColor: navy
+    scaleFactor: '1'
+    showvalue: 'True'
+    type: real
+    value: '120'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1824, 796.0]
-    rotation: 0
-    state: true
-- name: new_freq
-  id: variable
-  parameters:
-    comment: ''
-    value: rx_in_freq
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1160, 152.0]
-    rotation: 0
-    state: true
-- name: new_tune
-  id: variable
-  parameters:
-    comment: ''
-    value: new_freq - rx_center_freq - 100e3 - rit - fine_tune
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [912, 180.0]
+    coordinate: [2112, 868.0]
     rotation: 0
     state: true
 - name: qtgui_levelgauge_0
@@ -517,7 +621,7 @@ blocks:
     barColor: teal
     comment: ''
     fontColor: teal
-    gui_hint: 6,0,1,2
+    gui_hint: 3,0,1,2
     isVertical: 'False'
     label: S-meter [dBm]
     maximum: '30'
@@ -532,74 +636,14 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1320, 588.0]
-    rotation: 0
-    state: true
-- name: qtgui_levelgauge_1
-  id: qtgui_levelgauge
-  parameters:
-    affinity: ''
-    alias: ''
-    backgroundColor: default
-    barColor: default
-    comment: ''
-    fontColor: default
-    gui_hint: ''
-    isVertical: 'True'
-    label: ''
-    maximum: '100'
-    minimum: '0'
-    msize: '100'
-    position: '1'
-    scaleFactor: '1'
-    showValue: 'False'
-    type: int
-    value: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [728, 468.0]
-    rotation: 0
-    state: true
-- name: rit
-  id: variable_qtgui_range
-  parameters:
-    comment: ''
-    gui_hint: 4,0,1,1
-    label: RIT
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: -rit_range[mode]
-    step: channel_separation[mode]
-    stop: rit_range[mode]
-    value: '0'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1312, 364.0]
-    rotation: 0
-    state: enabled
-- name: rit_range
-  id: variable
-  parameters:
-    comment: ''
-    value: '[5000,5000,1000,1000,48000,48000]'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [640, 68.0]
+    coordinate: [1328, 940.0]
     rotation: 0
     state: true
 - name: rx_bw
   id: variable_qtgui_chooser
   parameters:
     comment: ''
-    gui_hint: 3, 2, 2, 1
+    gui_hint: 3, 2, 1, 1
     label: RECEIVER BANDWIDTH - kHz
     label0: '3.9'
     label1: '3.2'
@@ -622,10 +666,10 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1472, 288.0]
+    coordinate: [1488, 628.0]
     rotation: 0
     state: enabled
-- name: rx_center_freq
+- name: rx_center_fq
   id: variable
   parameters:
     comment: ''
@@ -634,7 +678,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [263, 138]
+    coordinate: [208, 364.0]
     rotation: 0
     state: true
 - name: rx_corr
@@ -646,9 +690,39 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [366, 138]
+    coordinate: [312, 364.0]
     rotation: 0
     state: enabled
+- name: rx_ctr_fq
+  id: variable_qtgui_entry
+  parameters:
+    comment: Displays the rx frequency of the hackrf
+    gui_hint: settings_tab@2:0,6,1,1
+    label: Rx center fq
+    type: int
+    value: int(rx_hw_fq)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 1052.0]
+    rotation: 0
+    state: true
+- name: rx_ctr_fq_0
+  id: variable_qtgui_entry
+  parameters:
+    comment: Displays the rx filter frequency
+    gui_hint: settings_tab@2:0,7,1,1
+    label: Rx filter fq
+    type: int
+    value: int(filter_fq + rx_fq - current_default_fq)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1024, 1052.0]
+    rotation: 0
+    state: true
 - name: rx_fq
   id: qtgui_msgdigitalnumbercontrol
   parameters:
@@ -671,41 +745,63 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [832, 340.0]
+    coordinate: [952, 332.0]
     rotation: 0
-    state: true
-- name: rx_fq_1
-  id: variable_qtgui_entry
-  parameters:
-    comment: ''
-    gui_hint: 13,0,1,2
-    label: '                                          RECEIVE FQ'
-    type: string
-    value: '''{:.0f}''.format(new_tune)'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1312, 300.0]
-    rotation: 0
-    state: true
-- name: rx_in_freq
+    state: disabled
+- name: rx_fq
   id: variable
   parameters:
     comment: ''
-    value: rx_center_freq+filter_freq
+    value: '0'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [784, 236.0]
+    coordinate: [1456, 484.0]
+    rotation: 0
+    state: true
+- name: rx_fq_win
+  id: qtgui_msgdigitalnumbercontrol
+  parameters:
+    ThousandsSeparator: .
+    affinity: ''
+    alias: ''
+    comment: ''
+    gui_hint: 2,2,1,1
+    lbl: RX FREQUENCY
+    maxFreqHz: current_max_fq
+    maxoutbuf: '0'
+    minFreqHz: current_min_fq
+    minoutbuf: '0'
+    outputmsgname: freq
+    readOnly: 'False'
+    relBackgroundColor: black
+    relFontColor: green
+    value: current_default_fq
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1496, 532.0]
+    rotation: 0
+    state: true
+- name: rx_hw_fq
+  id: variable
+  parameters:
+    comment: Center frequency of hardware receiver
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1160, 428.0]
     rotation: 0
     state: true
 - name: rx_preamp
   id: variable_qtgui_chooser
   parameters:
     comment: ''
-    gui_hint: 4,1,1,1
+    gui_hint: settings_tab@0:4,1,1,1
     label: RX Preamp
     label0: 'OFF'
     label1: 'ON'
@@ -728,19 +824,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1520, 452.0]
+    coordinate: [1536, 804.0]
     rotation: 0
     state: enabled
 - name: rx_samp_rate
   id: variable
   parameters:
     comment: ''
-    value: '2000000'
+    value: '1000000'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 140.0]
+    coordinate: [416, 364.0]
     rotation: 0
     state: enabled
 - name: sb_r
@@ -752,7 +848,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [182, 199]
+    coordinate: [208, 428.0]
     rotation: 0
     state: enabled
 - name: sb_t
@@ -764,7 +860,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [286, 198]
+    coordinate: [312, 428.0]
     rotation: 0
     state: enabled
 - name: side_band
@@ -776,14 +872,31 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [368, 204.0]
+    coordinate: [392, 428.0]
+    rotation: 0
+    state: true
+- name: split_fq
+  id: variable_qtgui_check_box
+  parameters:
+    comment: Checkbox to enable split frequencies
+    'false': 'True'
+    gui_hint: 2,3,1,1
+    label: Split freq
+    'true': 'False'
+    type: bool
+    value: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1760, 596.0]
     rotation: 0
     state: true
 - name: sq
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: 5,0,1,1
+    gui_hint: 2,0,1,1
     label: SQUELCH
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -792,12 +905,12 @@ blocks:
     step: '1'
     stop: '0'
     value: '-110'
-    widget: slider
+    widget: dial
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1312, 460.0]
+    coordinate: [1312, 804.0]
     rotation: 0
     state: enabled
 - name: ssb_drive
@@ -830,7 +943,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [432, 196.0]
+    coordinate: [456, 428.0]
     rotation: 0
     state: true
 - name: ssb_tx_mode
@@ -842,7 +955,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [544, 196.0]
+    coordinate: [568, 428.0]
     rotation: 0
     state: enabled
 - name: ssb_txing
@@ -854,14 +967,14 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 2084.0]
+    coordinate: [1032, 2372.0]
     rotation: 0
     state: true
 - name: ssb_txing_btn
   id: variable_qtgui_push_button
   parameters:
     comment: ''
-    gui_hint: 2,5,1,2
+    gui_hint: 2,6,1,1
     label: PTT
     pressed: '1'
     released: '0'
@@ -871,7 +984,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2056, 164.0]
+    coordinate: [2184, 532.0]
     rotation: 0
     state: true
 - name: symbol_rate
@@ -883,49 +996,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [576, 2556.0]
-    rotation: 0
-    state: enabled
-- name: tit
-  id: variable_qtgui_range
-  parameters:
-    comment: ''
-    gui_hint: 4,4,1,2
-    label: TIT
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '-1000'
-    step: '1'
-    stop: '1000'
-    value: '0'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [2000, 356.0]
-    rotation: 0
-    state: enabled
-- name: tune
-  id: variable_qtgui_range
-  parameters:
-    comment: ''
-    gui_hint: 1,0, 1, 5
-    label: '  TUNE'
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: -band_width[band_chooser]/2
-    step: band_width[band_chooser]/200
-    stop: band_width[band_chooser]/2
-    value: '0'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1632, 100.0]
+    coordinate: [592, 2916.0]
     rotation: 0
     state: enabled
 - name: tx_bw
@@ -937,14 +1008,14 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [56, 260.0]
+    coordinate: [72, 612.0]
     rotation: 0
     state: true
 - name: tx_bw_opts
   id: variable_qtgui_chooser
   parameters:
     comment: ''
-    gui_hint: 3, 3, 2, 1
+    gui_hint: 3, 4, 1, 1
     label: TRANSMITTER BANDWIDTH - kHz
     label0: '5'
     label1: '3.5'
@@ -967,57 +1038,68 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1792, 296.0]
+    coordinate: [1944, 624.0]
     rotation: 0
     state: enabled
 - name: tx_center_fq
   id: variable
   parameters:
     comment: ''
-    value: (f0 + tune + fine_tune)
+    value: current_default_fq
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 256.0]
+    coordinate: [208, 492.0]
     rotation: 0
     state: true
 - name: tx_fq
-  id: variable_qtgui_entry
+  id: qtgui_msgdigitalnumbercontrol
   parameters:
+    ThousandsSeparator: .
+    affinity: ''
+    alias: ''
     comment: ''
-    gui_hint: 3,4,1,2
-    label: '                                          TRANSMIT FQ'
-    type: string
-    value: '''{:.0f}''.format(tx_center_fq)'
+    gui_hint: 2,4,1,1
+    lbl: TX FREQUENCY
+    maxFreqHz: current_max_fq - current_allowed_tx_bandwidth
+    maxoutbuf: '0'
+    minFreqHz: current_min_fq + current_allowed_tx_bandwidth
+    minoutbuf: '0'
+    outputmsgname: freq
+    readOnly: (not split_fq)
+    relBackgroundColor: black
+    relFontColor: red
+    value: tx_center_fq
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1960, 292.0]
+    coordinate: [1944, 532.0]
     rotation: 0
     state: true
 - name: tx_gain
-  id: variable_qtgui_range
+  id: variable_qtgui_dial_control
   parameters:
-    comment: Determines the transmit gain setting for the HackRF.
-    gui_hint: 7,3,1,1
+    comment: HackRF transmit gain [dB]
+    gui_hint: settings_tab@1:3,5,1,1
     label: TX GAIN
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0'
-    step: '1'
-    stop: '47'
+    maximum: '47'
+    minimum: '1'
+    minsize: '100'
+    outputmsgname: value
+    relBackgroundColor: orange
+    scaleFactor: '1'
+    showvalue: 'True'
+    type: int
     value: '47'
-    widget: dial
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1744, 572.0]
+    coordinate: [2128, 620.0]
     rotation: 0
-    state: enabled
+    state: true
 - name: tx_mode_offset
   id: variable
   parameters:
@@ -1027,7 +1109,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [440, 268.0]
+    coordinate: [384, 492.0]
     rotation: 0
     state: true
 - name: tx_pwr
@@ -1051,6 +1133,21 @@ blocks:
     coordinate: [1872, 652.0]
     rotation: 0
     state: disabled
+- name: tx_rprt
+  id: variable_qtgui_entry
+  parameters:
+    comment: ''
+    gui_hint: op_tab@2:9,4,1,1
+    label: TX report
+    type: string
+    value: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2032, 1052.0]
+    rotation: 0
+    state: true
 - name: tx_samp_rate
   id: variable
   parameters:
@@ -1060,7 +1157,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [552, 268.0]
+    coordinate: [496, 492.0]
     rotation: 0
     state: enabled
 - name: txing
@@ -1072,7 +1169,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [360, 268.0]
+    coordinate: [312, 492.0]
     rotation: 0
     state: enabled
 - name: usb_chain_gain
@@ -1084,7 +1181,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 308.0]
+    coordinate: [208, 548.0]
     rotation: 0
     state: enabled
 - name: variable_function_probe_0
@@ -1100,49 +1197,63 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1296, 208.0]
+    coordinate: [1128, 496.0]
     rotation: 0
     state: enabled
 - name: vga_gain
-  id: variable_qtgui_range
+  id: variable_qtgui_dial_control
   parameters:
     comment: ''
-    gui_hint: 5, 2, 1, 1
+    gui_hint: settings_tab@0:5,2,1,1
     label: RX VGA Gain
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0'
-    step: '1'
-    stop: '61'
+    maximum: '61'
+    minimum: '0'
+    minsize: '100'
+    outputmsgname: value
+    relBackgroundColor: teal
+    scaleFactor: '1'
+    showvalue: 'True'
+    type: int
     value: '53'
-    widget: dial
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1520, 668.0]
+    coordinate: [1536, 1028.0]
     rotation: 0
-    state: enabled
+    state: true
 - name: vox_gain
-  id: variable_qtgui_range
+  id: variable_qtgui_dial_control
   parameters:
     comment: ''
-    gui_hint: 7,5,1,1
+    gui_hint: op_tab@0:4,6,1,1
     label: VOX SENS
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0'
-    step: '1'
-    stop: '200'
-    value: '50'
-    widget: dial
+    maximum: '200'
+    minimum: '0'
+    minsize: '100'
+    outputmsgname: value
+    relBackgroundColor: teal
+    scaleFactor: '1'
+    showvalue: 'True'
+    type: int
+    value: '150'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2104, 580.0]
+    coordinate: [2256, 748.0]
+    rotation: 0
+    state: true
+- name: wf_fq
+  id: variable
+  parameters:
+    comment: ''
+    value: freq+rx_hw_fq
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1176, 660.0]
     rotation: 0
     state: true
 - name: wf_gain
@@ -1163,22 +1274,26 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1528, 772.0]
+    coordinate: [1656, 1228.0]
     rotation: 0
     state: true
-- name: Source_freq
-  id: note
+- name: after_start
+  id: snippet
   parameters:
     alias: ''
+    code: 'self._band_selector_combo_box.setCurrentIndex(13)
+
+      self.rx_distancer.desired_fq=self.ham_bands[''144-FT8''][2]'
     comment: ''
-    note: lo_freq_Hz[freq_chooser]-10e3-100
+    priority: '1'
+    section: main_after_start
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [599, 403]
+    coordinate: [848, 468.0]
     rotation: 0
-    state: enabled
+    state: true
 - name: analog_agc3_xx_0
   id: analog_agc3_xx
   parameters:
@@ -1198,7 +1313,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2048, 1396.0]
+    coordinate: [2096, 1736.0]
     rotation: 0
     state: enabled
 - name: analog_agc3_xx_0_0
@@ -1220,7 +1335,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2040, 1084.0]
+    coordinate: [2096, 1432.0]
     rotation: 0
     state: enabled
 - name: analog_sig_source_x_0
@@ -1242,7 +1357,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [752, 2836.0]
+    coordinate: [896, 3192.0]
     rotation: 0
     state: enabled
 - name: analog_sig_source_x_0_0
@@ -1264,7 +1379,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [672, 1764.0]
+    coordinate: [568, 2120.0]
     rotation: 180
     state: enabled
 - name: analog_sig_source_x_1_0
@@ -1286,7 +1401,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [672, 1652.0]
+    coordinate: [568, 2008.0]
     rotation: 180
     state: enabled
 - name: analog_sig_source_x_3_0
@@ -1325,7 +1440,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1896, 1420.0]
+    coordinate: [1944, 1772.0]
     rotation: 0
     state: enabled
 - name: analog_simple_squelch_cc_0_0
@@ -1342,7 +1457,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1896, 1108.0]
+    coordinate: [1952, 1452.0]
     rotation: 0
     state: enabled
 - name: audio_sink_0
@@ -1359,7 +1474,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1280, 2284.0]
+    coordinate: [992, 2612.0]
     rotation: 0
     state: enabled
 - name: audio_source_0
@@ -1378,8 +1493,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [24, 1820.0]
-    rotation: 0
+    coordinate: [36.0, 1912]
+    rotation: 270
     state: true
 - name: audio_source_0_0
   id: audio_source
@@ -1422,7 +1537,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [288, 1684.0]
+    coordinate: [280, 2044.0]
     rotation: 0
     state: enabled
 - name: band_pass_filter_0_0
@@ -1447,7 +1562,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1264, 1420.0]
+    coordinate: [1280, 1772.0]
     rotation: 0
     state: enabled
 - name: band_pass_filter_0_1
@@ -1472,9 +1587,59 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1264, 1108.0]
+    coordinate: [1312, 1436.0]
     rotation: 0
     state: enabled
+- name: band_plan
+  id: snippet
+  parameters:
+    alias: ''
+    code: "self.ham_bands = {\n    '50-CW':    (50000000,   50100000,   50090000,\
+      \    500, ['CW']),\n    '50-SSB':   (50100000,   50300000,   50150000,   2700,\
+      \ ['CW', 'SSB']),\n    '50-FT8':   (50300000,   50400000,   50313000,   2700,\
+      \ ['FT8']),\n    '50-PSK':   (50300000,   50400000,   50305000,   2700, ['PSK']),\n\
+      \    '50-MSK':   (50300000,   50400000,   50350000,   2700, ['MSK']),\n    '50-B':\
+      \     (50400000,   50500000,   50450000,   1000, []),  # Beacons only\n    '50-FM':\
+      \    (50500000,   52000000,   51510000,  12000, ['FM', 'CW', 'SSB']),\n    '87-FM':\
+      \    (87500000,  108000000,   89300000, 200000, []),  # FM broadcast\n    '144-SAT':\
+      \  (144000000, 144025000,  144010000,   2700, []),  # Sat downlink,\n    '144-CW':\
+      \   (144025000, 144100000,  144050000,    500, ['CW']),\n    '144-MGM':  (144100000,\
+      \ 144150000,  144116000,    500, ['CW', 'Q65', 'JT65']),\n    '144-Q65':  (144100000,\
+      \ 144150000,  144125000,    500, ['Q65']),\n    '144-JT65': (144100000, 144150000,\
+      \  144120000,    500, ['JT65']),\n    '144-FT8':  (144150000, 144400000,  144174000,\
+      \   2700, ['FT8']),\n    '144-SSB':  (144150000, 144400000,  144300000,   2700,\
+      \ ['CW', 'SSB', 'FT8', 'JT65', 'Q65']),\n    '144-MSK':  (144150000, 144400000,\
+      \  144360000,   2700, ['MSK']),\n    '144-B':    (144400000, 144490000,  144406000,\
+      \    500, []),  # Beacons\n    '144-PB':   (144491000, 144493000,  144492000,\
+      \    500, ['CW', 'FT8']),  # Personal beacons\n    '432-EME':  (432000000, 432025000,\
+      \  432010000,    500, ['CW']),\n    '432-CW':   (432025000, 432100000,  432050000,\
+      \    500, ['CW','PSK']),\n    '432-SSB':  (432100000, 432400000,  432200000,\
+      \   2700, ['CW', 'SSB']),\n    '432-FSK':  (432100000, 432400000,  432370000,\
+      \   2700, ['CW', 'SSB', 'FSK441']),\n    '432-B':    (432400000, 432490000,\
+      \  432412170,    500, []), # Beacons 70cm / SK6UHF\n    '1296-B':  (1296800000,\
+      \ 1296994000,1296811000,    500, []), # Beacons 23cm\n\n\n\n}\nself.ham_bands_keys\
+      \ = list(self.ham_bands)\nself._band_selector_options = self.ham_bands_keys\n\
+      self._band_selector_labels = self.ham_bands_keys\n\nself._band_selector_combo_box.setMinimumContentsLength(10)\n\
+      self._band_selector_combo_box.removeItem(0)\nfor _label in self._band_selector_labels:\
+      \ self._band_selector_combo_box.addItem(_label)\nself._band_selector_callback\
+      \ = lambda i: Qt.QMetaObject.invokeMethod(self._band_selector_combo_box, \"\
+      setCurrentIndex\", Qt.Q_ARG(\"int\", self._band_selector_options.index(i)))\n\
+      self._band_selector_combo_box.currentIndexChanged.connect(\n    lambda i: self.set_band_selector(self._band_selector_options[i]))"
+    comment: 'This python snippet defines which frequency bands the transceiver supports.
+
+      Each band has a designator, a min and max frequency, a default frequency and
+      a list of
+
+      allowed transmission modes.'
+    priority: '0'
+    section: main_after_init
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 556.0]
+    rotation: 0
+    state: true
 - name: blocks_add_xx_0
   id: blocks_add_xx
   parameters:
@@ -1490,7 +1655,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1896, 1252.0]
+    coordinate: [1952, 1604.0]
     rotation: 0
     state: true
 - name: blocks_complex_to_float_0_1_0
@@ -1506,7 +1671,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1416, 1436.0]
+    coordinate: [1432, 1796.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_float_0_2
@@ -1522,7 +1687,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [840, 1468.0]
+    coordinate: [856, 1828.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_float_0_2_0
@@ -1538,7 +1703,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [840, 1156.0]
+    coordinate: [872, 1476.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_float_0_2_0_0
@@ -1554,7 +1719,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1416, 1124.0]
+    coordinate: [1456, 1476.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_mag_squared_0
@@ -1570,7 +1735,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1984, 1268.0]
+    coordinate: [2040, 1620.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_real_0
@@ -1586,7 +1751,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2344, 1468.0]
+    coordinate: [2464, 1764.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_real_0_0_0
@@ -1602,7 +1767,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2360, 1100.0]
+    coordinate: [2464, 1460.0]
     rotation: 0
     state: enabled
 - name: blocks_delay_0
@@ -1611,7 +1776,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    delay: '20'
+    delay: '10'
     maxoutbuf: '0'
     minoutbuf: '0'
     num_ports: '1'
@@ -1621,7 +1786,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [608, 2956.0]
+    coordinate: [584, 3316.0]
     rotation: 0
     state: true
 - name: blocks_delay_1
@@ -1640,7 +1805,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2464, 1468.0]
+    coordinate: [2640, 1764.0]
     rotation: 0
     state: true
 - name: blocks_delay_1_0
@@ -1659,7 +1824,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2480, 1156.0]
+    coordinate: [2632, 1460.0]
     rotation: 0
     state: true
 - name: blocks_float_to_char_0
@@ -1676,7 +1841,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [656, 3228.0]
+    coordinate: [672, 3588.0]
     rotation: 0
     state: enabled
 - name: blocks_float_to_complex_0_0_0
@@ -1692,7 +1857,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1728, 1404.0]
+    coordinate: [1744, 1764.0]
     rotation: 0
     state: enabled
 - name: blocks_float_to_complex_0_0_1
@@ -1708,7 +1873,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1312, 1732.0]
+    coordinate: [976, 2084.0]
     rotation: 0
     state: enabled
 - name: blocks_float_to_complex_0_1
@@ -1724,7 +1889,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1128, 1436.0]
+    coordinate: [1144, 1796.0]
     rotation: 0
     state: enabled
 - name: blocks_float_to_complex_0_1_0
@@ -1740,7 +1905,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1128, 1124.0]
+    coordinate: [1144, 1428.0]
     rotation: 0
     state: enabled
 - name: blocks_float_to_complex_0_1_0_0
@@ -1756,7 +1921,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1736, 1092.0]
+    coordinate: [1752, 1444.0]
     rotation: 0
     state: enabled
 - name: blocks_float_to_complex_0_3
@@ -1772,7 +1937,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [744, 2732.0]
+    coordinate: [864, 3092.0]
     rotation: 0
     state: enabled
 - name: blocks_integrate_xx_0
@@ -1790,7 +1955,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2120, 1268.0]
+    coordinate: [2176, 1620.0]
     rotation: 0
     state: enabled
 - name: blocks_integrate_xx_1
@@ -1799,7 +1964,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    decim: '50'
+    decim: '10'
     maxoutbuf: '0'
     minoutbuf: '0'
     type: float
@@ -1808,7 +1973,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [528, 3228.0]
+    coordinate: [544, 3588.0]
     rotation: 0
     state: enabled
 - name: blocks_message_debug_0
@@ -1822,21 +1987,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [992, 3284.0]
-    rotation: 0
-    state: true
-- name: blocks_message_debug_1
-  id: blocks_message_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    en_uvec: 'True'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1056, 544.0]
+    coordinate: [1872, 2692.0]
     rotation: 0
     state: true
 - name: blocks_moving_average_xx_0
@@ -1856,7 +2007,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [624, 2056.0]
+    coordinate: [552, 2356.0]
     rotation: 0
     state: true
 - name: blocks_msgpair_to_var_0
@@ -1870,7 +2021,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1032, 3220.0]
+    coordinate: [1040, 3588.0]
     rotation: 0
     state: enabled
 - name: blocks_msgpair_to_var_0_0
@@ -1884,22 +2035,50 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [960, 2084.0]
+    coordinate: [888, 2372.0]
     rotation: 0
     state: enabled
-- name: blocks_msgpair_to_var_2
+- name: blocks_msgpair_to_var_1
   id: blocks_msgpair_to_var
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    target: freq
+    target: rx_fq
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1624, 1292.0]
-    rotation: 0
+    coordinate: [1504, 484.0]
+    rotation: 180
+    state: true
+- name: blocks_msgpair_to_var_1_0
+  id: blocks_msgpair_to_var
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    target: rx_hw_fq
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1224, 428.0]
+    rotation: 180
+    state: true
+- name: blocks_msgpair_to_var_1_0_0
+  id: blocks_msgpair_to_var
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    target: filter_fq
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1216, 348.0]
+    rotation: 180
     state: true
 - name: blocks_msgpair_to_var_3
   id: blocks_msgpair_to_var
@@ -1935,7 +2114,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    const: monitor
+    const: monitor*0.0001
     maxoutbuf: '0'
     minoutbuf: '0'
     type: float
@@ -1944,8 +2123,26 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1096, 2956.0]
+    coordinate: [1216, 3316.0]
     rotation: 0
+    state: enabled
+- name: blocks_multiply_const_vxx_0_0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: cw_level
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [716.0, 3176]
+    rotation: 90
     state: enabled
 - name: blocks_multiply_const_vxx_1
   id: blocks_multiply_const_vxx
@@ -1962,7 +2159,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2536, 1420.0]
+    coordinate: [2816, 1780.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_1_0_0_0
@@ -1980,7 +2177,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [112, 1708.0]
+    coordinate: [112, 2084.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_1_0_0_1
@@ -1998,7 +2195,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [480, 2068.0]
+    coordinate: [408, 2356.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_1_0_1
@@ -2016,7 +2213,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2544, 1108.0]
+    coordinate: [2816, 1476.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_3
@@ -2034,7 +2231,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1032, 2252.0]
+    coordinate: [752, 2580.0]
     rotation: 0
     state: true
 - name: blocks_multiply_const_vxx_3_0
@@ -2052,7 +2249,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1032, 2332.0]
+    coordinate: [752, 2660.0]
     rotation: 0
     state: true
 - name: blocks_multiply_const_vxx_4_0
@@ -2070,7 +2267,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [712, 1468.0]
+    coordinate: [696, 1828.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_4_0_0
@@ -2088,7 +2285,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [704, 1156.0]
+    coordinate: [704, 1492.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_4_0_0_0
@@ -2106,7 +2303,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [576, 1308.0]
+    coordinate: [528, 1572.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_xx_0
@@ -2124,7 +2321,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [976, 2940.0]
+    coordinate: [1096, 3300.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_xx_0_0
@@ -2142,7 +2339,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [672, 1564.0]
+    coordinate: [568, 1924.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_xx_0_0_0
@@ -2160,7 +2357,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [672, 1884.0]
+    coordinate: [568, 2244.0]
     rotation: 0
     state: enabled
 - name: blocks_nlog10_ff_0
@@ -2178,7 +2375,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2240, 1268.0]
+    coordinate: [2296, 1620.0]
     rotation: 0
     state: enabled
 - name: blocks_null_sink_0
@@ -2229,25 +2426,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1412.0, 2032]
-    rotation: 270
-    state: true
-- name: blocks_null_sink_3
-  id: blocks_null_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    bus_structure_sink: '[[0,],]'
-    comment: ''
-    num_inputs: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1032, 1364.0]
-    rotation: 0
+    coordinate: [1080, 2308.0]
+    rotation: 180
     state: true
 - name: blocks_null_source_0
   id: blocks_null_source
@@ -2298,7 +2478,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2336, 1268.0]
+    coordinate: [2392, 1620.0]
     rotation: 0
     state: enabled
 - name: blocks_repeat_0
@@ -2307,7 +2487,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    interp: '3000'
+    interp: int(6* cw_samp_rate / morse_speed)
     maxoutbuf: '0'
     minoutbuf: '0'
     type: byte
@@ -2316,7 +2496,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [576, 2620.0]
+    coordinate: [592, 2980.0]
     rotation: 0
     state: enabled
 - name: blocks_repeat_0_0
@@ -2334,7 +2514,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1040, 2748.0]
+    coordinate: [1056, 3108.0]
     rotation: 0
     state: enabled
 - name: blocks_selector_0
@@ -2350,14 +2530,14 @@ blocks:
     num_inputs: '1'
     num_outputs: '2'
     output_index: (ssb_txing or ssb_txing_btn)
-    showports: 'True'
+    showports: 'False'
     type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1412.0, 1856]
+    coordinate: [1188.0, 2184]
     rotation: 270
     state: true
 - name: blocks_selector_0_x
@@ -2380,7 +2560,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2744, 1108.0]
+    coordinate: [3088, 1476.0]
     rotation: 0
     state: true
 - name: blocks_selector_0_y
@@ -2403,7 +2583,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2744, 1324.0]
+    coordinate: [3080, 1700.0]
     rotation: 0
     state: true
 - name: blocks_selector_1
@@ -2426,7 +2606,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1504, 2452.0]
+    coordinate: [1304, 2676.0]
     rotation: 0
     state: enabled
 - name: blocks_selector_2
@@ -2449,7 +2629,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [840, 2372.0]
+    coordinate: [560, 2700.0]
     rotation: 0
     state: enabled
 - name: blocks_selector_3
@@ -2472,7 +2652,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [840, 2180.0]
+    coordinate: [560, 2508.0]
     rotation: 0
     state: enabled
 - name: blocks_throttle_0
@@ -2525,9 +2705,48 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [736, 2620.0]
+    coordinate: [752, 2980.0]
     rotation: 0
     state: enabled
+- name: clear_cw_msg
+  id: virtual_sink
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: clear_cw_msg
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [600, 3052.0]
+    rotation: 0
+    state: true
+- name: cq_msg_in
+  id: virtual_sink
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2560, 1140.0]
+    rotation: 0
+    state: true
+- name: cw_msg_in
+  id: virtual_source
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [144, 2996.0]
+    rotation: 0
+    state: true
 - name: epy_block_0
   id: epy_block
   parameters:
@@ -2602,16 +2821,20 @@ blocks:
       \  # semicolon\n    \"_\": \"10101110111010111\",  # underscore\n    \"$\":\
       \ \"10101011101010111\"  # dollar sign\n}\n\n\nclass mc_sync_block(gr.sync_block):\n\
       \    \"\"\"\n    reads input from a message port\n    generates a vector of\
-      \ Morse code bits\n    \"\"\"\n\n    def __init__(self):\n        gr.sync_block.__init__(self,\n\
-      \                               name=\"Morse code vector source\",\n       \
-      \                        in_sig=None,\n                               out_sig=[np.byte])\n\
-      \        self.message_port_register_in(pmt.intern('msg_in'))\n        self.message_port_register_out(pmt.intern('clear_input'))\n\
-      \        self.set_msg_handler(pmt.intern('msg_in'), self.handle_msg)\n     \
-      \   self.textboxValue = None\n\n    def handle_msg(self, msg):\n        global\
-      \ textboxValue\n        self.textboxValue = pmt.symbol_to_string(msg)\n    \
-      \    # print(textboxValue)\n\n    def work(self, input_items, output_items):\n\
-      \n        nbit_stream = \"\"\n\n        if not self.textboxValue:\n        \
-      \    return 0\n\n        for ch in self.textboxValue:\n            nbit_stream\
+      \ Morse code bits\n    \"\"\"\n\n    def __init__(self, enable=True):\n    \
+      \    gr.sync_block.__init__(self,\n                               name=\"Morse\
+      \ code vector source\",\n                               in_sig=None,\n     \
+      \                          out_sig=[np.byte])\n        self.message_port_register_in(pmt.intern('msg_in'))\n\
+      \        self.message_port_register_out(pmt.intern('clear_input'))\n       \
+      \ self.set_msg_handler(pmt.intern('msg_in'), self.handle_msg)\n        self.enable=enable\n\
+      \        self.textboxValue = None\n\n    def handle_msg(self, msg):\n      \
+      \  global textboxValue\n        print(msg)\n        if pmt.is_symbol(msg):\n\
+      \            self.textboxValue = pmt.symbol_to_string(msg)\n        else:\n\
+      \            self.textboxValue = pmt.to_python(pmt.cdr(msg))\n        print(textboxValue)\n\
+      \n    def work(self, input_items, output_items):\n\n        nbit_stream = \"\
+      \"\n\n        if not self.enable:\n            self.message_port_pub(pmt.intern('clear_input'),\
+      \ pmt.intern(''))\n            return 0\n\n        if not self.textboxValue:\n\
+      \            return 0\n\n        for ch in self.textboxValue:\n            nbit_stream\
       \ += (Morse.get(ch.upper()) if ch.upper() in Morse else Morse.get('?')) + \"\
       000\"\n        nbit_stream += \"0000\"\n\n        for x in range(len(nbit_stream)):\n\
       \            output_items[0][x] = int(nbit_stream[x])\n\n        # clear input\
@@ -2620,16 +2843,18 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
+    enable: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    _io_cache: ('Morse code vector source', 'mc_sync_block', [], [('msg_in', 'message',
-      1)], [('0', 'byte', 1), ('clear_input', 'message', 1)], '\n    reads input from
-      a message port\n    generates a vector of Morse code bits\n    ', [])
+    _io_cache: ('Morse code vector source', 'mc_sync_block', [('enable', 'True')],
+      [('msg_in', 'message', 1)], [('0', 'byte', 1), ('clear_input', 'message', 1)],
+      '\n    reads input from a message port\n    generates a vector of Morse code
+      bits\n    ', ['enable'])
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [320, 2620.0]
+    coordinate: [336, 2980.0]
     rotation: 0
     state: true
 - name: epy_block_0_1
@@ -2685,7 +2910,7 @@ blocks:
       \ = None\n            #print(\"Timer timed out, at %d last_start is now %s\"\
       \ % (now, self.last_start))\n            self.timer.cancel()\n            self.callback()\n\
       \            return\n        self.timer = threading.Timer(self.to_sleep, self.countdown)\n\
-      \        self.timer.start()\n        self.last_start = now\n        print(\"\
+      \        self.timer.start()\n        self.last_start = now\n        #print(\"\
       Timer restarted at %d for %f seconds\" % (self.last_start, self.to_sleep))\n\
       \        self.to_sleep = None\n\n    def trigger(self):\n        now = time.time_ns()\n\
       \        if self.last_start is None:\n            self.to_sleep = self.delay\n\
@@ -2748,12 +2973,12 @@ blocks:
       \   self.one_shot.trigger()\n        #print(\"Oneshot triggered\")\n"
     affinity: ''
     alias: ''
-    attack: '10'
+    attack: '1'
     comment: ''
-    delay: 6/morse_speed * 25
+    delay: 6/morse_speed * 25 + 2
     maxoutbuf: '0'
     minoutbuf: '0'
-    threshold: '0.8'
+    threshold: '0.4'
   states:
     _io_cache: ('VOX detector', 'blk', [('threshold', '5'), ('attack', '10'), ('delay',
       '0.5')], [('0', 'byte', 1)], [('onair', 'message', 1)], 'VOX detector - sends
@@ -2773,7 +2998,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [784, 3220.0]
+    coordinate: [800, 3576.0]
     rotation: 0
     state: enabled
 - name: epy_block_1_0
@@ -2857,7 +3082,7 @@ blocks:
     alias: ''
     attack: '10'
     comment: ''
-    delay: '0.8'
+    delay: '0.5'
     maxoutbuf: '0'
     minoutbuf: '0'
     threshold: '2'
@@ -2880,50 +3105,49 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [768, 2060.0]
+    coordinate: [696, 2360.0]
     rotation: 0
     state: enabled
 - name: epy_block_2
   id: epy_block
   parameters:
-    _source_code: "\n\nfrom gnuradio import gr\nimport pmt\n\nclass var_to_msg_pair_ref(gr.sync_block):\n\
-      \    \"\"\"\n    This block has a callback that will emit a message pair with\
-      \ the updated variable\n    value when called. This is useful for monitoring\
-      \ a GRC variable and emitting a message\n    when it is changed.\n    \"\"\"\
-      \n    def __init__(self, pairname=None, check_var = None, ref_var=None):\n \
-      \       gr.sync_block.__init__(self, name=\"Variable to message on diff\", in_sig=None,\
-      \ out_sig=None)\n\n        self.pairname = pairname\n        self.check_var\
-      \ = check_var\n        self.ref_var = ref_var\n\n        self.message_port_register_out(pmt.intern(\"\
-      msgout\"))\n\n    def variable_changed(self, value):\n        if self.monitor_var\
-      \ == self.ref_var:\n            return\n        try:\n            if type(value)\
-      \ is float:\n                p = pmt.from_double(value)\n            elif type(value)\
-      \ is int:\n                p = pmt.from_long(value)\n            elif type(value)\
-      \ is bool:\n                p = pmt.from_bool(value)\n            elif type(value)\
-      \ is str:\n                p = pmt.intern(value)\n            else:\n      \
-      \          p = pmt.to_pmt(value)\n\n            self.message_port_pub(pmt.intern(\"\
-      msgout\"), pmt.cons(pmt.intern(self.pairname), p))\n\n        except Exception\
-      \ as e:\n            gr.log.error(\"Unable to convert \" + repr(value) + \"\
-      \ to PDU, no message will be emitted (reason: %s)\" % repr(e))\n\n\n    def\
-      \ stop(self):\n        return True"
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
+      from gnuradio import gr\nimport pmt\n\n\nclass blk(gr.sync_block):  # other\
+      \ base classes are basic_block, decim_block, interp_block\n    \"\"\"Message\
+      \ gate. This module either transfer messages reads a message from the input\
+      \ port and\n        applies a python expression on it before sending it along\
+      \ on the output port\n\n        Parameters:\n            expr: String. The expression\
+      \ to apply. May use variables.\"\"\"\n\n    def __init__(self, offset=0):  #\
+      \ only default arguments here\n        \"\"\"arguments to this function show\
+      \ up as parameters in GRC\"\"\"\n        gr.sync_block.__init__(\n         \
+      \   self,\n            name='Message mangler',  # will show up in GRC\n    \
+      \        in_sig=None,\n            out_sig=None\n        )\n\n        self.message_port_register_in(pmt.intern('msg_in'))\n\
+      \        self.message_port_register_out(pmt.intern('msg_out'))\n        self.set_msg_handler(pmt.intern('msg_in'),\
+      \ self.handle_msg)\n        self.offset=offset\n        # if an attribute with\
+      \ the same name as a parameter is found,\n        # a callback is registered\
+      \ (properties work, too).\n\n\n    def handle_msg(self, msg):\n            new_value\
+      \ = self.offset + pmt.to_python(pmt.cdr(msg))\n            p = pmt.to_pmt(new_value)\n\
+      \            self.message_port_pub(pmt.intern(\"msg_out\"), pmt.cons(pmt.intern(\"\
+      fq\"), p))\n"
     affinity: ''
     alias: ''
-    check_var: rx_fq
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    pairname: '''freq'''
-    ref_var: rx_center_freq+filter_freq
+    offset: rx_hw_fq + filter_fq
   states:
-    _io_cache: ('Variable to message on diff', 'var_to_msg_pair_ref', [('pairname',
-      'None'), ('check_var', 'None'), ('ref_var', 'None')], [], [('msgout', 'message',
-      1)], '\n    This block has a callback that will emit a message pair with the
-      updated variable\n    value when called. This is useful for monitoring a GRC
-      variable and emitting a message\n    when it is changed.\n    ', ['check_var',
-      'pairname', 'ref_var'])
+    _io_cache: '(''Message mangler'', ''blk'', [(''offset'', ''0'')], [(''msg_in'',
+      ''message'', 1)], [(''msg_out'', ''message'', 1)], ''Message gate. This module
+      either transfer messages reads a message from the input port and\n        applies
+      a python expression on it before sending it along on the output port\n\n        Parameters:\n            expr:
+      String. The expression to apply. May use variables.'', [''offset''])'
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [776, 572.0]
+    coordinate: [1184, 1660.0]
     rotation: 0
     state: true
 - name: freq_xlating_fft_filter_ccc_1
@@ -2931,7 +3155,7 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    center_freq: filter_freq+cw_midear_beat[side_band]
+    center_freq: filter_fq+cw_midear_beat[side_band]
     comment: ''
     decim: '1'
     maxoutbuf: '0'
@@ -2944,7 +3168,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [352, 1452.0]
+    coordinate: [344, 1804.0]
     rotation: 0
     state: enabled
 - name: freq_xlating_fft_filter_ccc_1_0
@@ -2952,7 +3176,7 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    center_freq: filter_freq-cw_midear_beat[side_band]
+    center_freq: filter_fq-cw_midear_beat[side_band]
     comment: ''
     decim: '1'
     maxoutbuf: '0'
@@ -2965,7 +3189,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [352, 1140.0]
+    coordinate: [344, 1468.0]
     rotation: 0
     state: enabled
 - name: frequency_counter
@@ -2978,7 +3202,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [464, 403]
+    coordinate: [480, 756.0]
     rotation: 0
     state: enabled
 - name: low_pass_filter_0
@@ -3002,7 +3226,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [888, 1548.0]
+    coordinate: [776, 1908.0]
     rotation: 0
     state: enabled
 - name: low_pass_filter_0_0
@@ -3026,7 +3250,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [880, 1868.0]
+    coordinate: [776, 2228.0]
     rotation: 0
     state: enabled
 - name: mmse_resampler_xx_0
@@ -3044,7 +3268,195 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [776, 2972.0]
+    coordinate: [896, 3332.0]
+    rotation: 0
+    state: true
+- name: msg_formatter
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
+      from gnuradio import gr\nimport pmt\n\n\nclass blk(gr.sync_block):  # other\
+      \ base classes are basic_block, decim_block, interp_block\n    \"\"\"Message\
+      \ gate. This module either transfer messages reads a message from the input\
+      \ port and\n        applies a python expression on it before sending it along\
+      \ on the output port\n\n        Parameters:\n            expr: String. The expression\
+      \ to apply. May use variables.\"\"\"\n\n    def __init__(self, variables=None):\
+      \  # only default arguments here\n        \"\"\"arguments to this function show\
+      \ up as parameters in GRC\"\"\"\n        gr.sync_block.__init__(\n         \
+      \   self,\n            name='Message formatter',  # will show up in GRC\n  \
+      \          in_sig=None,\n            out_sig=None\n        )\n\n        self.message_port_register_in(pmt.intern('msg_in'))\n\
+      \        self.message_port_register_out(pmt.intern('msg_out'))\n        self.set_msg_handler(pmt.intern('msg_in'),\
+      \ self.handle_msg)\n\n        self._variables=variables\n        # if an attribute\
+      \ with the same name as a parameter is found,\n        # a callback is registered\
+      \ (properties work, too).\n\n\n    @property\n    def variables(self):\n   \
+      \     \"\"\"The gate control parameter tells whether messages are to be transferred\
+      \ or not\"\"\"\n        return self._variables\n\n    @variables.setter\n  \
+      \  def variables(self, value):\n        self._variables = value\n        print(\"\
+      Variables set to\", self._variables)\n\n    @variables.deleter\n    def variables(self):\n\
+      \        del self._variables\n\n\n\n    def handle_msg(self, msg):\n       \
+      \     new_value = pmt.to_python(pmt.cdr(msg)) % self._variables\n          \
+      \  p = pmt.to_pmt(new_value)\n            self.message_port_pub(pmt.intern(\"\
+      msg_out\"), pmt.cons(pmt.intern(\"msg\"), p))\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    variables: (dx_call)
+  states:
+    _io_cache: '(''Message formatter'', ''blk'', [(''variables'', ''None'')], [(''msg_in'',
+      ''message'', 1)], [(''msg_out'', ''message'', 1)], ''Message gate. This module
+      either transfer messages reads a message from the input port and\n        applies
+      a python expression on it before sending it along on the output port\n\n        Parameters:\n            expr:
+      String. The expression to apply. May use variables.'', [''variables''])'
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2176, 1140.0]
+    rotation: 0
+    state: true
+- name: msg_formatter_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
+      from gnuradio import gr\nimport pmt\n\n\nclass blk(gr.sync_block):  # other\
+      \ base classes are basic_block, decim_block, interp_block\n    \"\"\"Message\
+      \ gate. This module either transfer messages reads a message from the input\
+      \ port and\n        applies a python expression on it before sending it along\
+      \ on the output port\n\n        Parameters:\n            expr: String. The expression\
+      \ to apply. May use variables.\"\"\"\n\n    def __init__(self, variables=None):\
+      \  # only default arguments here\n        \"\"\"arguments to this function show\
+      \ up as parameters in GRC\"\"\"\n        gr.sync_block.__init__(\n         \
+      \   self,\n            name='Message formatter',  # will show up in GRC\n  \
+      \          in_sig=None,\n            out_sig=None\n        )\n\n        self.message_port_register_in(pmt.intern('msg_in'))\n\
+      \        self.message_port_register_out(pmt.intern('msg_out'))\n        self.set_msg_handler(pmt.intern('msg_in'),\
+      \ self.handle_msg)\n\n        self._variables=variables\n        # if an attribute\
+      \ with the same name as a parameter is found,\n        # a callback is registered\
+      \ (properties work, too).\n\n\n    @property\n    def variables(self):\n   \
+      \     \"\"\"The gate control parameter tells whether messages are to be transferred\
+      \ or not\"\"\"\n        return self._variables\n\n    @variables.setter\n  \
+      \  def variables(self, value):\n        self._variables = value\n        print(\"\
+      Variables set to\", self._variables)\n\n    @variables.deleter\n    def variables(self):\n\
+      \        del self._variables\n\n\n\n    def handle_msg(self, msg):\n       \
+      \     new_value = pmt.to_python(pmt.cdr(msg)) % self._variables\n          \
+      \  p = pmt.to_pmt(new_value)\n            self.message_port_pub(pmt.intern(\"\
+      msg_out\"), pmt.cons(pmt.intern(\"msg\"), p))\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    variables: (dx_call, tx_rprt, tx_rprt, tx_rprt, dx_call)
+  states:
+    _io_cache: '(''Message formatter'', ''blk'', [(''variables'', ''None'')], [(''msg_in'',
+      ''message'', 1)], [(''msg_out'', ''message'', 1)], ''Message gate. This module
+      either transfer messages reads a message from the input port and\n        applies
+      a python expression on it before sending it along on the output port\n\n        Parameters:\n            expr:
+      String. The expression to apply. May use variables.'', [''variables''])'
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2176, 1212.0]
+    rotation: 0
+    state: true
+- name: msg_formatter_0_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
+      from gnuradio import gr\nimport pmt\n\n\nclass blk(gr.sync_block):  # other\
+      \ base classes are basic_block, decim_block, interp_block\n    \"\"\"Message\
+      \ gate. This module either transfer messages reads a message from the input\
+      \ port and\n        applies a python expression on it before sending it along\
+      \ on the output port\n\n        Parameters:\n            expr: String. The expression\
+      \ to apply. May use variables.\"\"\"\n\n    def __init__(self, variables=None):\
+      \  # only default arguments here\n        \"\"\"arguments to this function show\
+      \ up as parameters in GRC\"\"\"\n        gr.sync_block.__init__(\n         \
+      \   self,\n            name='Message formatter',  # will show up in GRC\n  \
+      \          in_sig=None,\n            out_sig=None\n        )\n\n        self.message_port_register_in(pmt.intern('msg_in'))\n\
+      \        self.message_port_register_out(pmt.intern('msg_out'))\n        self.set_msg_handler(pmt.intern('msg_in'),\
+      \ self.handle_msg)\n\n        self._variables=variables\n        # if an attribute\
+      \ with the same name as a parameter is found,\n        # a callback is registered\
+      \ (properties work, too).\n\n\n    @property\n    def variables(self):\n   \
+      \     \"\"\"The gate control parameter tells whether messages are to be transferred\
+      \ or not\"\"\"\n        return self._variables\n\n    @variables.setter\n  \
+      \  def variables(self, value):\n        self._variables = value\n        print(\"\
+      Variables set to\", self._variables)\n\n    @variables.deleter\n    def variables(self):\n\
+      \        del self._variables\n\n\n\n    def handle_msg(self, msg):\n       \
+      \     new_value = pmt.to_python(pmt.cdr(msg)) % self._variables\n          \
+      \  p = pmt.to_pmt(new_value)\n            self.message_port_pub(pmt.intern(\"\
+      msg_out\"), pmt.cons(pmt.intern(\"msg\"), p))\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    variables: (dx_call, tx_rprt, tx_rprt, tx_rprt, dx_call)
+  states:
+    _io_cache: '(''Message formatter'', ''blk'', [(''variables'', ''None'')], [(''msg_in'',
+      ''message'', 1)], [(''msg_out'', ''message'', 1)], ''Message gate. This module
+      either transfer messages reads a message from the input port and\n        applies
+      a python expression on it before sending it along on the output port\n\n        Parameters:\n            expr:
+      String. The expression to apply. May use variables.'', [''variables''])'
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2176, 1284.0]
+    rotation: 0
+    state: true
+- name: msg_formatter_0_0_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
+      from gnuradio import gr\nimport pmt\n\n\nclass blk(gr.sync_block):  # other\
+      \ base classes are basic_block, decim_block, interp_block\n    \"\"\"Message\
+      \ gate. This module either transfer messages reads a message from the input\
+      \ port and\n        applies a python expression on it before sending it along\
+      \ on the output port\n\n        Parameters:\n            expr: String. The expression\
+      \ to apply. May use variables.\"\"\"\n\n    def __init__(self, variables=None):\
+      \  # only default arguments here\n        \"\"\"arguments to this function show\
+      \ up as parameters in GRC\"\"\"\n        gr.sync_block.__init__(\n         \
+      \   self,\n            name='Message formatter',  # will show up in GRC\n  \
+      \          in_sig=None,\n            out_sig=None\n        )\n\n        self.message_port_register_in(pmt.intern('msg_in'))\n\
+      \        self.message_port_register_out(pmt.intern('msg_out'))\n        self.set_msg_handler(pmt.intern('msg_in'),\
+      \ self.handle_msg)\n\n        self._variables=variables\n        # if an attribute\
+      \ with the same name as a parameter is found,\n        # a callback is registered\
+      \ (properties work, too).\n\n\n    @property\n    def variables(self):\n   \
+      \     \"\"\"The gate control parameter tells whether messages are to be transferred\
+      \ or not\"\"\"\n        return self._variables\n\n    @variables.setter\n  \
+      \  def variables(self, value):\n        self._variables = value\n        print(\"\
+      Variables set to\", self._variables)\n\n    @variables.deleter\n    def variables(self):\n\
+      \        del self._variables\n\n\n\n    def handle_msg(self, msg):\n       \
+      \     new_value = pmt.to_python(pmt.cdr(msg)) % self._variables\n          \
+      \  p = pmt.to_pmt(new_value)\n            self.message_port_pub(pmt.intern(\"\
+      msg_out\"), pmt.cons(pmt.intern(\"msg\"), p))\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    variables: (dx_call, tx_rprt, tx_rprt, tx_rprt, dx_call)
+  states:
+    _io_cache: '(''Message formatter'', ''blk'', [(''variables'', ''None'')], [(''msg_in'',
+      ''message'', 1)], [(''msg_out'', ''message'', 1)], ''Message gate. This module
+      either transfer messages reads a message from the input port and\n        applies
+      a python expression on it before sending it along on the output port\n\n        Parameters:\n            expr:
+      String. The expression to apply. May use variables.'', [''variables''])'
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2176, 1356.0]
     rotation: 0
     state: true
 - name: mulc_lsb1
@@ -3062,7 +3474,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1576, 1404.0]
+    coordinate: [1592, 1764.0]
     rotation: 0
     state: enabled
 - name: mulc_lsb_0
@@ -3080,7 +3492,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1000, 1436.0]
+    coordinate: [1016, 1796.0]
     rotation: 0
     state: enabled
 - name: mulc_usb1
@@ -3098,7 +3510,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1592, 1092.0]
+    coordinate: [1608, 1444.0]
     rotation: 0
     state: enabled
 - name: mulc_usb_0
@@ -3116,7 +3528,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1000, 1124.0]
+    coordinate: [1016, 1428.0]
     rotation: 0
     state: enabled
 - name: note_0
@@ -3129,7 +3541,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [352, 1320.0]
+    coordinate: [320, 1668.0]
     rotation: 0
     state: enabled
 - name: note_0_0
@@ -3142,7 +3554,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [352, 1216.0]
+    coordinate: [368, 1572.0]
     rotation: 0
     state: enabled
 - name: note_0_1
@@ -3155,7 +3567,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [352, 1408.0]
+    coordinate: [344, 1764.0]
     rotation: 0
     state: enabled
 - name: note_1
@@ -3168,7 +3580,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [224, 1560.0]
+    coordinate: [216, 1908.0]
     rotation: 0
     state: enabled
 - name: note_2
@@ -3181,7 +3593,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [320, 2512.0]
+    coordinate: [336, 2868.0]
     rotation: 0
     state: true
 - name: note_3
@@ -3194,7 +3606,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2456, 1268.0]
+    coordinate: [2512, 1620.0]
     rotation: 0
     state: enabled
 - name: note_4
@@ -3207,7 +3619,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [179, 402]
+    coordinate: [192, 756.0]
     rotation: 0
     state: enabled
 - name: note_5
@@ -3220,9 +3632,43 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [318, 403]
+    coordinate: [336, 756.0]
     rotation: 0
     state: enabled
+- name: op_tab
+  id: qtgui_tab_widget
+  parameters:
+    alias: ''
+    comment: ''
+    gui_hint: 4,4,3,3
+    label0: SSB
+    label1: MGM
+    label10: Tab 10
+    label11: Tab 11
+    label12: Tab 12
+    label13: Tab 13
+    label14: Tab 14
+    label15: Tab 15
+    label16: Tab 16
+    label17: Tab 17
+    label18: Tab 18
+    label19: Tab 19
+    label2: CW
+    label3: CW Op
+    label4: Tab 4
+    label5: Tab 5
+    label6: Tab 6
+    label7: Tab 7
+    label8: Tab 8
+    label9: Tab 9
+    num_tabs: '3'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1736, 204.0]
+    rotation: 0
+    state: true
 - name: pfb_decimator_ccf_0_0
   id: pfb_decimator_ccf
   parameters:
@@ -3242,7 +3688,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [544, 1456.0]
+    coordinate: [528, 1812.0]
     rotation: 0
     state: enabled
 - name: pfb_decimator_ccf_0_0_0
@@ -3264,29 +3710,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [544, 1144.0]
-    rotation: 0
-    state: enabled
-- name: pfb_decimator_ccf_0_1
-  id: pfb_decimator_ccf
-  parameters:
-    affinity: ''
-    alias: ''
-    atten: '100'
-    channel: '0'
-    comment: ''
-    decim: ' 3*int(rx_samp_rate/1000000)'
-    fft_filts: 'True'
-    fft_rot: 'True'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samp_delay: '0'
-    taps: firdes.low_pass(.028,rx_samp_rate/32,5000,100)
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [848, 1368.0]
+    coordinate: [536, 1476.0]
     rotation: 0
     state: enabled
 - name: preset_fq
@@ -3303,7 +3727,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [480, 68.0]
+    coordinate: [808, 292.0]
     rotation: 0
     state: true
 - name: qtgui_edit_box_msg_0
@@ -3312,7 +3736,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    gui_hint: 8,3,1,3
+    gui_hint: op_tab@2:8,3,1,3
     is_pair: 'False'
     is_static: 'True'
     key: ''
@@ -3325,8 +3749,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [320, 2732.0]
-    rotation: 180
+    coordinate: [2160, 972.0]
+    rotation: 0
     state: true
 - name: qtgui_edit_box_msg_1
   id: qtgui_edit_box_msg
@@ -3347,7 +3771,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1360, 1324.0]
+    coordinate: [912, 1680.0]
     rotation: 180
     state: true
 - name: qtgui_freq_sink_x_0
@@ -3531,7 +3955,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2128, 92.0]
+    coordinate: [2168, 444.0]
     rotation: 0
     state: true
 - name: qtgui_ledindicator_0_0
@@ -3553,7 +3977,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1976, 92.0]
+    coordinate: [1968, 444.0]
     rotation: 0
     state: true
 - name: qtgui_sink_x_0
@@ -3561,17 +3985,17 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    bw: band_width[band_chooser]
+    bw: current_max_fq - current_min_fq
     comment: ''
     fc: fft_corr[side_band]
     fftsize: '1024'
-    gui_hint: ''
+    gui_hint: 4,0,3,4
     maxoutbuf: '0'
     minoutbuf: '0'
     name: '""'
     plotconst: 'False'
-    plotfreq: 'True'
-    plottime: 'True'
+    plotfreq: 'False'
+    plottime: 'False'
     plotwaterfall: 'True'
     rate: '10'
     showports: 'True'
@@ -3582,7 +4006,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1160, 1284.0]
+    coordinate: [912, 1588.0]
     rotation: 0
     state: true
 - name: qtgui_time_sink_x_0
@@ -3682,67 +4106,6 @@ blocks:
     coordinate: [1104, 3060.0]
     rotation: 0
     state: disabled
-- name: qtgui_waterfall_sink_x_0
-  id: qtgui_waterfall_sink_x
-  parameters:
-    affinity: ''
-    alias: ''
-    alpha1: '1.0'
-    alpha10: '1.0'
-    alpha2: '1.0'
-    alpha3: '1.0'
-    alpha4: '1.0'
-    alpha5: '1.0'
-    alpha6: '1.0'
-    alpha7: '1.0'
-    alpha8: '1.0'
-    alpha9: '1.0'
-    axislabels: 'True'
-    bw: band_width[band_chooser]
-    color1: '0'
-    color10: '0'
-    color2: '0'
-    color3: '0'
-    color4: '0'
-    color5: '0'
-    color6: '0'
-    color7: '0'
-    color8: '0'
-    color9: '0'
-    comment: ''
-    fc: fft_corr[side_band]
-    fftsize: '1024'
-    freqhalf: 'True'
-    grid: 'True'
-    gui_hint: 8,0,2,2
-    int_max: '10'
-    int_min: '-100'
-    label1: Line 1 label
-    label10: ''
-    label2: ''
-    label3: ''
-    label4: ''
-    label5: ''
-    label6: ''
-    label7: ''
-    label8: ''
-    label9: ''
-    legend: 'True'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    name: '""'
-    nconnections: '1'
-    showports: 'True'
-    type: complex
-    update_time: '0.10'
-    wintype: window.WIN_HANN
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1360, 1212.0]
-    rotation: 0
-    state: enabled
 - name: rational_resampler_xxx_0
   id: rational_resampler_xxx
   parameters:
@@ -3760,7 +4123,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2216, 1408.0]
+    coordinate: [2264, 1748.0]
     rotation: 0
     state: true
 - name: rational_resampler_xxx_0_0_0
@@ -3780,7 +4143,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2216, 1096.0]
+    coordinate: [2272, 1444.0]
     rotation: 0
     state: true
 - name: rational_resampler_xxx_1_0
@@ -3820,7 +4183,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1432.0, 2120]
+    coordinate: [1212.0, 2360]
     rotation: 270
     state: true
 - name: root_raised_cosine_filter_0
@@ -3843,7 +4206,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [152, 2932.0]
+    coordinate: [168, 3288.0]
     rotation: 0
     state: true
 - name: root_raised_cosine_filter_0_0
@@ -3854,7 +4217,7 @@ blocks:
     alpha: '0.35'
     comment: ''
     decim: '1'
-    gain: cw_level
+    gain: '1'
     interp: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -3866,7 +4229,137 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [328, 2932.0]
+    coordinate: [344, 3288.0]
+    rotation: 0
+    state: true
+- name: rx_distancer
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
+      from gnuradio import gr\nimport pmt\n\n\nclass blk(gr.sync_block):  # other\
+      \ base classes are basic_block, decim_block, interp_block\n    \"\"\"Rx distancer.\
+      \ This module aims at making sure that the hardware receive frequency is kept\
+      \ within a defined range of hz below the desired frequency,\n    and that the\
+      \ remaining difference is set into a variable. Only when the desired frequency\
+      \ would result in the hardware receive frequency\n    would go outside the limits,\
+      \ the frequencies will be changed.\n    The desired frequency is received through\
+      \ the message port.\n    New hardware and filter frequencies are sent through\
+      \ the hw_fq_out, and the filter:fq_out ports.\n    For proper operation, these\
+      \ ports should be connected to Messsage_pair_to_var blocks that\n    transfer\
+      \ the new values back to the hw_var and filter_var variables respectively. If\
+      \ not, the operation of this block is undefined.\n\n         \"\"\"\n\n    def\
+      \ __init__(self, desired_fq=0.0, min_distance=100e3, max_distance=1e6, hw_var=None,\
+      \ filter_var=None):  # only default arguments here\n        \"\"\"arguments\
+      \ to this function show up as parameters in GRC\"\"\"\n        gr.sync_block.__init__(\n\
+      \            self,\n            name='Rx distancer',  # will show up in GRC\n\
+      \            in_sig=None,\n            out_sig=None\n        )\n\n        self.message_port_register_in(pmt.intern('freq_in'))\n\
+      \        self.set_msg_handler(pmt.intern('freq_in'), self.handle_msg)\n    \
+      \    self.message_port_register_out(pmt.intern(\"hw_fq_out\"))\n        self.message_port_register_out(pmt.intern(\"\
+      filter_fq_out\"))\n\n        # if an attribute with the same name as a parameter\
+      \ is found,\n        # a callback is registered (properties work, too).\n\n\
+      \        self.min_distance=min_distance\n        self.max_distance=max_distance\n\
+      \        self._desired_fq=desired_fq\n        self.hw_var=hw_var\n        self.filter_var=filter_var\n\
+      \        # gr.log.error(\"Desired fq %f initially\" % desired_fq)\n        if\
+      \ desired_fq:\n            self.compute_and_send(desired_fq)  # Initialize desired\
+      \ fq\n\n    def compute_and_send(self, new_val):\n        hw_var = self.hw_var\n\
+      \        # gr.log.error(\"New value %f\" % new_val)\n\n        hw_chunk = (self.max_distance\
+      \ - self.min_distance) / 2.0\n        # gr.log.error(\"Chunk size= %f\" % hw_chunk)\n\
+      \n        distance = new_val - hw_var\n        # gr.log.error(\"Distance = %f\"\
+      \ % distance)\n\n        while distance > self.max_distance:\n            #\
+      \ gr.log.error(\"Distance = %f\" % distance)\n            hw_var += hw_chunk\n\
+      \            # gr.log.error(\"HW var = %f\" % hw_var)\n            distance\
+      \ = new_val - hw_var\n\n        while distance < self.min_distance:\n      \
+      \      # gr.log.error(\"Distance = %f\" % distance)\n            hw_var -= hw_chunk\n\
+      \            # gr.log.error(\"HW var = %f\" % hw_var)\n            distance\
+      \ = new_val - hw_var\n\n        # gr.log.error(\"New HW var = %f\" % hw_var)\n\
+      \n\n        if hw_var != self.hw_var:\n            gr.log.info(\"New HW fq =\
+      \ %f\" % hw_var)\n            self.message_port_pub(pmt.intern(\"hw_fq_out\"\
+      ), pmt.cons(pmt.intern(\"hw_fq\"), pmt.to_pmt(hw_var)))\n        new_filter\
+      \ = new_val - hw_var\n\n        # gr.log.error(\"New filter var = %f\" % new_filter)\n\
+      \n        if new_filter != self.filter_var:\n            gr.log.info(\"New filter\
+      \ var = %f\" % new_filter)\n            self.message_port_pub(pmt.intern(\"\
+      filter_fq_out\"), pmt.cons(pmt.intern(\"filter_fq\"), pmt.to_pmt(new_filter)))\n\
+      \        pass\n\n    @property\n    def desired_fq(self):\n        \"\"\"The\
+      \ gate control parameter tells whether messages are to be transferred or not\"\
+      \"\"\n        return self._desired_fq\n\n    @desired_fq.setter\n    def desired_fq(self,\
+      \ value):\n        self._desired_fq = value\n        self.compute_and_send(value)\n\
+      \n    @desired_fq.deleter\n    def desired_fq(self):\n        del self._desired_fq\n\
+      \n\n    def handle_msg(self, msg):\n        if not pmt.is_pair(msg) or pmt.is_dict(msg)\
+      \ or pmt.is_pdu(msg):\n            gr.log.warn(\"Input message %s is not a simple\
+      \ pair, dropping\" % repr(msg))\n            return\n        # gr.log.error(\"\
+      Input message %s received\" % repr(msg))\n        # gr.log.error(\"Max distance\
+      \ %d\" % self.max_distance)\n        # gr.log.error(\"Min distance %d\" % self.min_distance)\n\
+      \n        new_val = pmt.to_python(pmt.cdr(msg))\n\n        self.compute_and_send(new_val)\n\
+      \n\n\n    def stop(self):\n        return True"
+    affinity: ''
+    alias: ''
+    comment: 'Selects hardware receiver frequency and demodulator offset given desired
+      listening fq.
+
+      Keeps demodulator offset within the passband of hardware receiver,'
+    desired_fq: current_default_fq
+    filter_var: filter_fq
+    hw_var: rx_hw_fq
+    max_distance: rx_samp_rate/2.0
+    maxoutbuf: '0'
+    min_distance: 100e3
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Rx distancer', 'blk', [('desired_fq', '0.0'), ('min_distance', '100000.0'),
+      ('max_distance', '1000000.0'), ('hw_var', 'None'), ('filter_var', 'None')],
+      [('freq_in', 'message', 1)], [('filter_fq_out', 'message', 1), ('hw_fq_out',
+      'message', 1)], 'Rx distancer. This module aims at making sure that the hardware
+      receive frequency is kept within a defined range of hz below the desired frequency,\n    and
+      that the remaining difference is set into a variable. Only when the desired
+      frequency would result in the hardware receive frequency\n    would go outside
+      the limits, the frequencies will be changed.\n    The desired frequency is received
+      through the message port.\n    New hardware and filter frequencies are sent
+      through the hw_fq_out, and the filter:fq_out ports.\n    For proper operation,
+      these ports should be connected to Messsage_pair_to_var blocks that\n    transfer
+      the new values back to the hw_var and filter_var variables respectively. If
+      not, the operation of this block is undefined.\n\n         ', ['desired_fq',
+      'filter_var', 'hw_var', 'max_distance', 'min_distance'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1520, 364.0]
+    rotation: 180
+    state: true
+- name: settings_tab
+  id: qtgui_tab_widget
+  parameters:
+    alias: ''
+    comment: ''
+    gui_hint: ''
+    label0: RX_settings
+    label1: TX_settings
+    label10: Tab 10
+    label11: Tab 11
+    label12: Tab 12
+    label13: Tab 13
+    label14: Tab 14
+    label15: Tab 15
+    label16: Tab 16
+    label17: Tab 17
+    label18: Tab 18
+    label19: Tab 19
+    label2: Debug
+    label3: CW Op
+    label4: Tab 4
+    label5: Tab 5
+    label6: Tab 6
+    label7: Tab 7
+    label8: Tab 8
+    label9: Tab 9
+    num_tabs: '4'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1520, 208.0]
     rotation: 0
     state: true
 - name: soapy_hackrf_sink_0
@@ -3876,7 +4369,7 @@ blocks:
     alias: ''
     amp: 'True'
     bandwidth: tx_bw[tx_bw_opts]
-    center_freq: tx_center_fq+tx_mode_offset[side_band]
+    center_freq: tx_fq+tx_mode_offset[side_band]
     comment: ''
     dev_args: driver=remote,remote=tcp://192.168.1.125:1234,remote:type=hackrf
     samp_rate: tx_samp_rate
@@ -3886,7 +4379,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1696, 2500.0]
+    coordinate: [1504, 2724.0]
     rotation: 0
     state: enabled
 - name: soapy_hackrf_source_0
@@ -3896,7 +4389,7 @@ blocks:
     alias: ''
     amp: rx_preamp
     bandwidth: '0'
-    center_freq: rx_center_freq
+    center_freq: rx_hw_fq
     comment: ''
     dev_args: driver=remote,remote=tcp://192.168.1.125:1234,remote:type=hackrf
     gain: lna_gain
@@ -3909,9 +4402,152 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [112, 1308.0]
+    coordinate: [128, 1672.0]
     rotation: 0
     state: enabled
+- name: tx_fq_sync
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
+      from gnuradio import gr\nimport pmt\n\n\nclass blk(gr.sync_block):  # other\
+      \ base classes are basic_block, decim_block, interp_block\n    \"\"\"Message\
+      \ gate. This module either transfer messages from the input port to the output\
+      \ port, or not.\n        Parameters:\n            gate_control(R): Boolean,\
+      \ true transfers messages, false swallows them\n            resync(R): If true,\
+      \ the last swallowed message will be sent when the message gate opens\"\"\"\n\
+      \n    def __init__(self, gate_control=True, resync=True):  # only default arguments\
+      \ here\n        \"\"\"arguments to this function show up as parameters in GRC\"\
+      \"\"\n        gr.sync_block.__init__(\n            self,\n            name='Message\
+      \ Gate',  # will show up in GRC\n            in_sig=None,\n            out_sig=None\n\
+      \        )\n\n        self.message_port_register_in(pmt.intern('msg_in'))\n\
+      \        self.message_port_register_out(pmt.intern('msg_out'))\n        self.set_msg_handler(pmt.intern('msg_in'),\
+      \ self.handle_msg)\n        # if an attribute with the same name as a parameter\
+      \ is found,\n        # a callback is registered (properties work, too).\n  \
+      \      self.last_msg = None\n        self.resync = resync\n\n\n        self._gate_control\
+      \ = gate_control\n\n    @property\n    def gate_control(self):\n        \"\"\
+      \"The gate control parameter tells whether messages are to be transferred or\
+      \ not\"\"\"\n        return self._gate_control\n\n    @gate_control.setter\n\
+      \    def gate_control(self, value):\n        if self.resync and value and value\
+      \ != self._gate_control and self.last_msg is not None:\n            self.message_port_pub(pmt.intern('msg_out'),\
+      \ self.last_msg)\n            self.last_msg = None\n        self._gate_control\
+      \ = value\n\n    @gate_control.deleter\n    def gate_control(self):\n      \
+      \  del self._gate_control\n\n    def handle_msg(self, msg):\n        if self.gate_control:\n\
+      \            self.message_port_pub(pmt.intern('msg_out'), msg)\n        else:\n\
+      \            self.last_msg = msg\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    gate_control: split_fq
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    resync: 'True'
+  states:
+    _io_cache: '(''Message Gate'', ''blk'', [(''gate_control'', ''True''), (''resync'',
+      ''True'')], [(''msg_in'', ''message'', 1)], [(''msg_out'', ''message'', 1)],
+      ''Message gate. This module either transfer messages from the input port to
+      the output port, or not.\n        Parameters:\n            gate_control(R):
+      Boolean, true transfers messages, false swallows them\n            resync(R):
+      If true, the last swallowed message will be sent when the message gate opens'',
+      [''gate_control'', ''resync''])'
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1760, 524.0]
+    rotation: 0
+    state: true
+- name: variable_qtgui_msg_push_button_0_0
+  id: variable_qtgui_msg_push_button
+  parameters:
+    comment: ''
+    gui_hint: op_tab@2:5,4,2,1
+    label: cqmsg
+    msgName: ''
+    relBackgroundColor: white
+    relFontColor: black
+    type: string
+    value: cqmsg
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1936, 864.0]
+    rotation: 0
+    state: true
+- name: variable_qtgui_msg_push_button_0_0_0
+  id: variable_qtgui_msg_push_button
+  parameters:
+    comment: ''
+    gui_hint: op_tab@2:10,3,1,1
+    label: Call DX
+    msgName: ''
+    relBackgroundColor: white
+    relFontColor: black
+    type: string
+    value: '%s de SM6FBQ'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1944, 1128.0]
+    rotation: 0
+    state: true
+- name: variable_qtgui_msg_push_button_0_0_0_0
+  id: variable_qtgui_msg_push_button
+  parameters:
+    comment: ''
+    gui_hint: op_tab@2:11,3,1,1
+    label: Send report
+    msgName: ''
+    relBackgroundColor: white
+    relFontColor: black
+    type: string
+    value: '%s de SM6FBQ UR %s %s %s/ JO67BQ JO67BQ HW? %s de SM6FBQ k'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1944, 1200.0]
+    rotation: 0
+    state: true
+- name: variable_qtgui_msg_push_button_0_0_0_0_0
+  id: variable_qtgui_msg_push_button
+  parameters:
+    comment: ''
+    gui_hint: op_tab@2:12,3,1,1
+    label: Send  R & report
+    msgName: ''
+    relBackgroundColor: white
+    relFontColor: black
+    type: string
+    value: '%s de SM6FBQ R FB  %s %s %s/ JO67BQ JO67BQ HW? bk'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1952, 1272.0]
+    rotation: 0
+    state: true
+- name: variable_qtgui_msg_push_button_0_0_0_0_0_0
+  id: variable_qtgui_msg_push_button
+  parameters:
+    comment: ''
+    gui_hint: op_tab@2:13,3,1,1
+    label: Send  RR 773
+    msgName: ''
+    relBackgroundColor: white
+    relFontColor: black
+    type: string
+    value: '%s de SM6FBQ RR FB  73 Hej e e'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1952, 1344.0]
+    rotation: 0
+    state: true
 - name: virtual_sink_0
   id: virtual_sink
   parameters:
@@ -3922,7 +4558,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1232, 2956.0]
+    coordinate: [1352, 3316.0]
     rotation: 0
     state: enabled
 - name: virtual_sink_0_1
@@ -3935,7 +4571,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [912, 2620.0]
+    coordinate: [928, 2980.0]
     rotation: 0
     state: true
 - name: virtual_sink_1
@@ -3948,7 +4584,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2896, 1372.0]
+    coordinate: [3224, 1748.0]
     rotation: 0
     state: true
 - name: virtual_sink_4
@@ -3961,7 +4597,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2896, 1156.0]
+    coordinate: [3232, 1524.0]
     rotation: 0
     state: true
 - name: virtual_source_0
@@ -3974,7 +4610,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [504, 2404.0]
+    coordinate: [112, 2740.0]
     rotation: 0
     state: enabled
 - name: virtual_source_0_1
@@ -3987,7 +4623,20 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 2956.0]
+    coordinate: [24, 3316.0]
+    rotation: 0
+    state: true
+- name: virtual_source_1
+  id: virtual_source
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: clear_cw_msg
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1768, 972.0]
     rotation: 0
     state: true
 - name: virtual_source_4
@@ -4000,7 +4649,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [656, 2188.0]
+    coordinate: [368, 2516.0]
     rotation: 0
     state: true
 - name: virtual_source_5
@@ -4013,7 +4662,21 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [712, 2372.0]
+    coordinate: [368, 2708.0]
+    rotation: 0
+    state: true
+- name: xmlrpc_server_0
+  id: xmlrpc_server
+  parameters:
+    addr: localhost
+    alias: ''
+    comment: ''
+    port: '8080'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1232, 168.0]
     rotation: 0
     state: true
 - name: zeromq_pull_msg_source_0
@@ -4063,7 +4726,7 @@ connections:
 - [blocks_complex_to_mag_squared_0, '0', blocks_integrate_xx_0, '0']
 - [blocks_complex_to_real_0, '0', blocks_delay_1, '0']
 - [blocks_complex_to_real_0_0_0, '0', blocks_delay_1_0, '0']
-- [blocks_delay_0, '0', blocks_float_to_complex_0_3, '0']
+- [blocks_delay_0, '0', blocks_multiply_const_vxx_0_0, '0']
 - [blocks_delay_0, '0', mmse_resampler_xx_0, '0']
 - [blocks_delay_1, '0', blocks_multiply_const_vxx_1, '0']
 - [blocks_delay_1_0, '0', blocks_multiply_const_vxx_1_0_1, '0']
@@ -4081,6 +4744,7 @@ connections:
 - [blocks_integrate_xx_1, '0', blocks_float_to_char_0, '0']
 - [blocks_moving_average_xx_0, '0', epy_block_1_0, '0']
 - [blocks_multiply_const_vxx_0, '0', virtual_sink_0, '0']
+- [blocks_multiply_const_vxx_0_0, '0', blocks_float_to_complex_0_3, '0']
 - [blocks_multiply_const_vxx_1, '0', blocks_selector_0_x, '1']
 - [blocks_multiply_const_vxx_1, '0', blocks_selector_0_x, '3']
 - [blocks_multiply_const_vxx_1, '0', blocks_selector_0_y, '1']
@@ -4095,9 +4759,7 @@ connections:
 - [blocks_multiply_const_vxx_3_0, '0', audio_sink_0, '1']
 - [blocks_multiply_const_vxx_4_0, '0', blocks_complex_to_float_0_2, '0']
 - [blocks_multiply_const_vxx_4_0_0, '0', blocks_complex_to_float_0_2_0, '0']
-- [blocks_multiply_const_vxx_4_0_0_0, '0', pfb_decimator_ccf_0_1, '0']
 - [blocks_multiply_const_vxx_4_0_0_0, '0', qtgui_sink_x_0, '0']
-- [blocks_multiply_const_vxx_4_0_0_0, '0', qtgui_waterfall_sink_x_0, '0']
 - [blocks_multiply_xx_0, '0', blocks_multiply_const_vxx_0, '0']
 - [blocks_multiply_xx_0, '0', qtgui_time_sink_x_0, '0']
 - [blocks_multiply_xx_0_0, '0', low_pass_filter_0, '0']
@@ -4118,35 +4780,37 @@ connections:
 - [blocks_throttle_0, '0', blocks_multiply_xx_0_0, '0']
 - [blocks_throttle_0, '0', blocks_multiply_xx_0_0_0, '1']
 - [blocks_uchar_to_float_0, '0', virtual_sink_0_1, '0']
+- [cw_msg_in, '0', epy_block_0_0, msg_in]
 - [epy_block_0_0, '0', blocks_repeat_0, '0']
-- [epy_block_0_0, clear_input, qtgui_edit_box_msg_0, val]
+- [epy_block_0_0, clear_input, clear_cw_msg, '0']
 - [epy_block_0_1, '0', blocks_repeat_0_0, '0']
 - [epy_block_1, onair, blocks_message_debug_0, print]
 - [epy_block_1, onair, blocks_msgpair_to_var_0, inpair]
 - [epy_block_1_0, onair, blocks_message_debug_0, print]
 - [epy_block_1_0, onair, blocks_msgpair_to_var_0_0, inpair]
-- [epy_block_2, msgout, blocks_message_debug_1, print]
+- [epy_block_2, msg_out, blocks_message_debug_0, print]
+- [epy_block_2, msg_out, rx_fq_win, valuein]
 - [freq_xlating_fft_filter_ccc_1, '0', pfb_decimator_ccf_0_0, '0']
 - [freq_xlating_fft_filter_ccc_1_0, '0', blocks_multiply_const_vxx_4_0_0_0, '0']
 - [freq_xlating_fft_filter_ccc_1_0, '0', pfb_decimator_ccf_0_0_0, '0']
 - [low_pass_filter_0, '0', blocks_float_to_complex_0_0_1, '1']
 - [low_pass_filter_0_0, '0', blocks_float_to_complex_0_0_1, '0']
 - [mmse_resampler_xx_0, '0', blocks_multiply_xx_0, '1']
+- [msg_formatter, msg_out, cq_msg_in, '0']
+- [msg_formatter_0, msg_out, cq_msg_in, '0']
+- [msg_formatter_0_0, msg_out, cq_msg_in, '0']
+- [msg_formatter_0_0_0, msg_out, cq_msg_in, '0']
 - [mulc_lsb1, '0', blocks_float_to_complex_0_0_0, '0']
 - [mulc_lsb_0, '0', blocks_float_to_complex_0_1, '0']
 - [mulc_usb1, '0', blocks_float_to_complex_0_1_0_0, '0']
 - [mulc_usb_0, '0', blocks_float_to_complex_0_1_0, '0']
 - [pfb_decimator_ccf_0_0, '0', blocks_multiply_const_vxx_4_0, '0']
 - [pfb_decimator_ccf_0_0_0, '0', blocks_multiply_const_vxx_4_0_0, '0']
-- [pfb_decimator_ccf_0_1, '0', blocks_null_sink_3, '0']
-- [pfb_decimator_ccf_0_1, '0', qtgui_freq_sink_x_0, '0']
-- [qtgui_edit_box_msg_0, msg, epy_block_0_0, msg_in]
+- [qtgui_edit_box_msg_0, msg, cq_msg_in, '0']
 - [qtgui_edit_box_msg_1, msg, qtgui_sink_x_0, freq]
-- [qtgui_edit_box_msg_1, msg, qtgui_waterfall_sink_x_0, freq]
+- [qtgui_sink_x_0, freq, blocks_message_debug_0, print]
+- [qtgui_sink_x_0, freq, epy_block_2, msg_in]
 - [qtgui_sink_x_0, freq, qtgui_edit_box_msg_1, val]
-- [qtgui_waterfall_sink_x_0, freq, blocks_message_debug_0, print]
-- [qtgui_waterfall_sink_x_0, freq, blocks_msgpair_to_var_2, inpair]
-- [qtgui_waterfall_sink_x_0, freq, qtgui_edit_box_msg_1, val]
 - [rational_resampler_xxx_0, '0', blocks_complex_to_real_0, '0']
 - [rational_resampler_xxx_0_0_0, '0', blocks_complex_to_real_0_0_0, '0']
 - [rational_resampler_xxx_1_0, '0', qtgui_time_sink_x_0, '1']
@@ -4156,12 +4820,24 @@ connections:
 - [root_raised_cosine_filter_0_0, '0', blocks_delay_0, '0']
 - [root_raised_cosine_filter_0_0, '0', blocks_integrate_xx_1, '0']
 - [root_raised_cosine_filter_0_0, '0', rational_resampler_xxx_1_0, '0']
-- [rx_fq, valueout, blocks_msgpair_to_var_3, inpair]
+- [rx_distancer, filter_fq_out, blocks_msgpair_to_var_1_0_0, inpair]
+- [rx_distancer, hw_fq_out, blocks_msgpair_to_var_1_0, inpair]
+- [rx_fq_win, valueout, blocks_message_debug_0, print]
+- [rx_fq_win, valueout, blocks_msgpair_to_var_1, inpair]
+- [rx_fq_win, valueout, rx_distancer, freq_in]
+- [rx_fq_win, valueout, tx_fq_sync, msg_in]
 - [soapy_hackrf_source_0, '0', freq_xlating_fft_filter_ccc_1, '0']
 - [soapy_hackrf_source_0, '0', freq_xlating_fft_filter_ccc_1_0, '0']
+- [tx_fq_sync, msg_out, tx_fq, valuein]
+- [variable_qtgui_msg_push_button_0_0, pressed, cq_msg_in, '0']
+- [variable_qtgui_msg_push_button_0_0_0, pressed, msg_formatter, msg_in]
+- [variable_qtgui_msg_push_button_0_0_0_0, pressed, msg_formatter_0, msg_in]
+- [variable_qtgui_msg_push_button_0_0_0_0_0, pressed, msg_formatter_0_0, msg_in]
+- [variable_qtgui_msg_push_button_0_0_0_0_0_0, pressed, msg_formatter_0_0_0, msg_in]
 - [virtual_source_0, '0', blocks_selector_2, '1']
 - [virtual_source_0, '0', blocks_selector_3, '1']
 - [virtual_source_0_1, '0', root_raised_cosine_filter_0, '0']
+- [virtual_source_1, '0', qtgui_edit_box_msg_0, val]
 - [virtual_source_4, '0', blocks_selector_3, '0']
 - [virtual_source_5, '0', blocks_selector_2, '0']
 

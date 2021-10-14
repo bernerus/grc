@@ -29,14 +29,14 @@ class one_shot:
         now = time.time_ns()
         if self.to_sleep is None:
             self.last_start = None
-            print("Timer timed out, at %d last_start is now %s" % (now, self.last_start))
+            #print("Timer timed out, at %d last_start is now %s" % (now, self.last_start))
             self.timer.cancel()
             self.callback()
             return
         self.timer = threading.Timer(self.to_sleep, self.countdown)
         self.timer.start()
         self.last_start = now
-        print("Timer restarted at %d for %f seconds" % (self.last_start, self.to_sleep))
+        #print("Timer restarted at %d for %f seconds" % (self.last_start, self.to_sleep))
         self.to_sleep = None
 
     def trigger(self):
@@ -46,13 +46,13 @@ class one_shot:
             self.timer = threading.Timer(self.to_sleep, self.countdown)
             self.timer.start()
             self.last_start = now
-            print("Timer started at %d for %f seconds" % (self.last_start, self.to_sleep))
+            #print("Timer started at %d for %f seconds" % (self.last_start, self.to_sleep))
             self.to_sleep = None
             return
         else:
-            print("Trig, last_start=%f" % self.last_start)
+            #print("Trig, last_start=%f" % self.last_start)
             self.to_sleep = (now - self.last_start) / 1000000000
-            print("Timer retrig at %d, To_sleep = %f" % (now, self.to_sleep))
+            #print("Timer retrig at %d, To_sleep = %f" % (now, self.to_sleep))
 
 
 # noinspection PyPep8Naming
@@ -118,7 +118,7 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
 
 
     def work(self, input_items, output_items):
-        print("Input0(%d)=" % len(input_items[0]), input_items[0])
+        #print("Input0(%d)=" % len(input_items[0]), input_items[0])
         # print("Output0(%d)=" % len(output_items[0]), output_items[0])
         for item in input_items[0]:
             if item is not None:
@@ -145,6 +145,6 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
     def trigger_one_shot(self):
         if self.one_shot is None:
             self.one_shot = one_shot(self.delay, self.send_offair_message)
-            print("Oneshot created")
+            #print("Oneshot created")
         self.one_shot.trigger()
-        print("Oneshot triggered")
+        #print("Oneshot triggered")

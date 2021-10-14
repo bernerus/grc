@@ -85,7 +85,7 @@ class mc_sync_block(gr.sync_block):
     generates a vector of Morse code bits
     """
 
-    def __init__(self):
+    def __init__(self, enable=True):
         gr.sync_block.__init__(self,
                                name="Morse code vector source",
                                in_sig=None,
@@ -93,16 +93,25 @@ class mc_sync_block(gr.sync_block):
         self.message_port_register_in(pmt.intern('msg_in'))
         self.message_port_register_out(pmt.intern('clear_input'))
         self.set_msg_handler(pmt.intern('msg_in'), self.handle_msg)
+        self.enable=enable
         self.textboxValue = None
 
     def handle_msg(self, msg):
         global textboxValue
-        self.textboxValue = pmt.symbol_to_string(msg)
-        # print(textboxValue)
+        print(msg)
+        if pmt.is_symbol(msg):
+            self.textboxValue = pmt.symbol_to_string(msg)
+        else:
+            self.textboxValue = pmt.to_python(pmt.cdr(msg))
+        print(textboxValue)
 
     def work(self, input_items, output_items):
 
         nbit_stream = ""
+
+        if not self.enable:
+            self.message_port_pub(pmt.intern('clear_input'), pmt.intern(''))
+            return 0
 
         if not self.textboxValue:
             return 0
