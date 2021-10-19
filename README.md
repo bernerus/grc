@@ -25,3 +25,7 @@ Of course, there is more hardware involver that the HackRF. The QSO was done usi
 * The HackRF was modified to have a separate transmit port.
 
 There are a number of issues left with this code so please don't try this at home yet.
+
+Also some fixes had to be done to SoapyHackRF to make this work. See my forked Repo.
+
+
