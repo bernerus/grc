@@ -5,10 +5,9 @@
 This project aims to develop a functioning VHF/UHF transceiver that use the HackRF hardware over a SoapyRemote connection.
 
 As of the initial commit, the transceiver has been used to work exactly 1 QSO over FT8 on 144 MHz. A few months later, I have worked
-over 50 QSOs over FT8 and MSK144 on 2m. 70cm has also been tested on CW, but running CW has been quite impractical. The transceiver
-needs more work on the GUI to become practical.
+over 50 QSOs over FT8 and MSK144 on 2m. 70cm has also been tested on CW. 
 
-Of course, there is more hardware involver that the HackRF. The QSO was done using the following stuff:
+Of course, there is more hardware involved than the HackRF. The QSO:s on 144 MHz were done using the following stuff:
 
 * An iMac for running the GRC script.
 
