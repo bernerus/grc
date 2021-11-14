@@ -4013,7 +4013,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [712, 2372.0]
+    coordinate: [616, 2292.0]
     rotation: 0
     state: true
 - name: zeromq_pull_msg_source_0
