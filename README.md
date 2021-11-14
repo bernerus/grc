@@ -25,15 +25,15 @@ For 144 MHz, the additional equipment is
 
 * A linear transistor amplifier using an old 2N6082 to reach about a Watt or two.
 
-* My very old kilowatt PA (Dual 4CX250B designed by W2GN and K2RIW) taking the power to some 200W. (Running very cool :)
+* My very old kilowatt PA (Dual 4CX250B designed by W2GN and K2RIW in the 1980s) taking the power to some 250W.
 
 * A home build 15 element yagi as described by DJ9BV in the mid 1990s
 
-For 432 MHz, the additinal equipment is
+For 432 MHz, the additional equipment is
 
 * A 3 stage helical filter to keep unwanted signals from being sent
 
-* A 3 stage linear transistor amplifier as described by DJ6SC also in the mid 1990s.
+* A 3 stage linear transistor amplifier as described by DJ6SC also in the mid 1990s, giving about 15 Watts output.
 
 * A 21 element yagi by F9FT
 
