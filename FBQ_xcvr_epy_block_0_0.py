@@ -114,11 +114,15 @@ class mc_sync_block(gr.sync_block):
             return 0
 
         if not self.textboxValue:
+            # nbit_stream = "0000000000000000000000"
             return 0
+        else:
 
-        for ch in self.textboxValue:
-            nbit_stream += (Morse.get(ch.upper()) if ch.upper() in Morse else Morse.get('?')) + "000"
-        nbit_stream += "0000"
+            for ch in self.textboxValue:
+                nbit_stream += (Morse.get(ch.upper()) if ch.upper() in Morse else Morse.get('?')) + "000"
+            nbit_stream += "0000"
+
+        #print(nbit_stream)
 
         for x in range(len(nbit_stream)):
             output_items[0][x] = int(nbit_stream[x])
