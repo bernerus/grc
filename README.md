@@ -1,6 +1,6 @@
 # GNU Radio Projects
 
-## The VHF transceiver
+## The VHF/UHF transceiver
 
 This project aims to develop a functioning VHF/UHF transceiver that use the HackRF hardware over a SoapyRemote connection.
 
@@ -41,4 +41,36 @@ There are a number of issues left with this code, so any suggestions fore improv
 
 Also some fixes had to be done to SoapyHackRF to make this work. See my forked Repo for this.
 
+###Prerequisites
+
+To be able to run this, there are a bunch of things to fix first.
+
+You need to have gnuradio installed.
+You also need the SoapySDR framework installed. You do not need all components,
+but install using the instructions at https://github.com/pothosware/SoapySDR
+
+### Mac M1 specific info
+
+As of today, gnuradio is not available in M1 native mode. Thus you will have to install Rosetta
+if running on Apple Silicon. I installed using homebrew by making a copy of the 
+terminal.app and specified in the info field that it should start with Rosetta.
+Then specifically ran /usr/local/bin/brew install <whatever>
+
+If lucky you can then start gnuradio-companion. Make sure it is not in /opt/homebrew, that's where homebrew put M1 native stuff.
+
+#### Audio config for WSJT-X
+
+In order to run some FT8 and MSK144 I installed the WSJT-X program and to get it to work with
+this transceiver some audio plumbing was necessary.
+The current plumbing uses blackhole-2ch for the receive audio, i.e. to WSJT-X, and
+blackhole-16ch for transmit audio from WSJT-X.
+
+Blackhole can be installed with homebrew and it is not necessary to involve Rosetta here.
+
+The transceiver uses a multiple output unit named WSJT-3 which sends audio to the internal speaker and to blackhole-2ch.
+WSJT-X similarly uses a multiple output unit named WSJT-out which sends output to the internal speaker and to blackhole-16ch
+Of course other possibilities exist. WSJT-X audio is configured to take input from Blackhole-2ch and so send on WSJT-out, and the 
+transceiver as is sends on WSJT-3 and listens on blackhole-15ch.
+
+Note that installing WSJT-X requires configuration of shared memory. See the README file accompanying the WSJT-app for Mac.
 
