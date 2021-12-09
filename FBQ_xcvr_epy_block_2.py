@@ -9,6 +9,7 @@ be the parameters. All of them are required to have default values!
 import numpy as np
 from gnuradio import gr
 import pmt
+import time
 
 
 class blk(gr.sync_block):  # other base classes are basic_block, decim_block, interp_block
@@ -18,7 +19,7 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
         Parameters:
             expr: String. The expression to apply. May use variables."""
 
-    def __init__(self, offset=0):  # only default arguments here
+    def __init__(self, offset=0, factor=10):  # only default arguments here
         """arguments to this function show up as parameters in GRC"""
         gr.sync_block.__init__(
             self,
@@ -31,11 +32,16 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
         self.message_port_register_out(pmt.intern('msg_out'))
         self.set_msg_handler(pmt.intern('msg_in'), self.handle_msg)
         self.offset=offset
+        self.factor=factor
         # if an attribute with the same name as a parameter is found,
         # a callback is registered (properties work, too).
 
 
     def handle_msg(self, msg):
-            new_value = self.offset + pmt.to_python(pmt.cdr(msg))
+            adj = self.factor*pmt.to_python(pmt.cdr(msg))
+            new_value = self.offset + adj
+            print(adj, new_value)
             p = pmt.to_pmt(new_value)
+            self.message_port_pub(pmt.intern("msg_out"), pmt.cons(pmt.intern("fq"), p))
+            time.sleep(0.1)
             self.message_port_pub(pmt.intern("msg_out"), pmt.cons(pmt.intern("fq"), p))
