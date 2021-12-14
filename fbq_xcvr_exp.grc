@@ -156,7 +156,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 3900,2900,2700,880,680
+    value: 3900,2900,2700,2100,880,680
   states:
     bus_sink: false
     bus_source: false
@@ -168,7 +168,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 100,100,100,380,480
+    value: 100,100,100,800,380,480
   states:
     bus_sink: false
     bus_source: false
@@ -567,7 +567,22 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1320, 408.0]
+    coordinate: [1728, 800.0]
+    rotation: 0
+    state: true
+- name: mode_display
+  id: variable_qtgui_entry
+  parameters:
+    comment: Displays the rx frequency of the hackrf
+    gui_hint: settings_tab@2:2,1,1,1
+    label: Mode
+    type: int
+    value: mode
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 1140.0]
     rotation: 0
     state: true
 - name: mode_labels
@@ -604,7 +619,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1224, 592.0]
+    coordinate: [1176, 584.0]
     rotation: 0
     state: true
 - name: mode_options
@@ -713,14 +728,14 @@ blocks:
     label2: '2.7'
     label3: '0.5'
     label4: '0.05'
-    labels: '[''3.9'',''2.7'',''0.5'',''0.2'']'
-    num_opts: '5'
+    labels: '[''3.9'',''3.2'',''2.7'',''1.3'',''0.5'',''0.2'']'
+    num_opts: '0'
     option0: '0'
     option1: '1'
     option2: '2'
     option3: '3'
     option4: '4'
-    options: '[0, 1, 2]'
+    options: '[0, 1, 2, 3, 4, 5]'
     orient: Qt.QVBoxLayout
     type: int
     value: '0'
@@ -729,7 +744,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1488, 612.0]
+    coordinate: [1488, 620.0]
     rotation: 0
     state: enabled
 - name: rx_center_fq
@@ -866,17 +881,35 @@ blocks:
     rotation: 0
     state: enabled
 - name: rx_samp_rate
-  id: variable
+  id: variable_qtgui_chooser
   parameters:
     comment: ''
+    gui_hint: ''
+    label: ''
+    label0: 1 MHz
+    label1: 2MHz
+    label2: 3Mhz
+    label3: 4MHz
+    label4: 5MHz
+    labels: '[]'
+    num_opts: '4'
+    option0: '1000000'
+    option1: '2000000'
+    option2: '3000000'
+    option3: '4000000'
+    option4: '5000000'
+    options: '[0, 1, 2]'
+    orient: Qt.QHBoxLayout
+    type: int
     value: '4000000'
+    widget: radio_buttons
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [408, 148.0]
+    coordinate: [488, 372.0]
     rotation: 0
-    state: enabled
+    state: true
 - name: sb_r
   id: variable
   parameters:
@@ -913,6 +946,21 @@ blocks:
     coordinate: [488, 252.0]
     rotation: 0
     state: true
+- name: side_band_dislay
+  id: variable_qtgui_entry
+  parameters:
+    comment: Displays the rx frequency of the hackrf
+    gui_hint: settings_tab@2:2,2,1,1
+    label: Side-band
+    type: int
+    value: side_band
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1200, 1140.0]
+    rotation: 0
+    state: true
 - name: split_fq
   id: variable_qtgui_check_box
   parameters:
@@ -927,7 +975,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1760, 592.0]
+    coordinate: [1760, 608.0]
     rotation: 0
     state: true
 - name: sq
@@ -1119,7 +1167,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1968, 516.0]
+    coordinate: [1960, 512.0]
     rotation: 0
     state: true
 - name: tx_gain
@@ -1175,7 +1223,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '5000000'
+    value: '3000000'
   states:
     bus_sink: false
     bus_source: false
@@ -1319,9 +1367,12 @@ blocks:
   id: snippet
   parameters:
     alias: ''
-    code: 'self._band_selector_combo_box.setCurrentIndex(13)
-
-      self.rx_distancer.desired_fq=self.ham_bands[''144-FT8''][2]'
+    code: "self._band_selector_combo_box.removeItem(0)\nfor _label in self._band_selector_labels:\
+      \ self._band_selector_combo_box.addItem(_label)\nself._band_selector_callback\
+      \ = lambda i: Qt.QMetaObject.invokeMethod(self._band_selector_combo_box, \"\
+      setCurrentIndex\", Qt.Q_ARG(\"int\", self._band_selector_options.index(i)))\n\
+      self._band_selector_combo_box.currentIndexChanged.connect(\n    lambda i: self.set_band_selector(self._band_selector_options[i])\n\
+      )\n\n\nself._band_selector_combo_box.setCurrentIndex(13)\nself.rx_distancer.desired_fq=self.ham_bands['144-FT8'][2]"
     comment: ''
     priority: '1'
     section: main_after_start
@@ -1636,12 +1687,7 @@ blocks:
       \ 1296994000,1296811000,    500, ['None']), # Beacons 23cm\n\n\n\n}\nself.ham_bands_keys\
       \ = list(self.ham_bands)\nself._band_selector_options = self.ham_bands_keys\n\
       self._band_selector_labels = self.ham_bands_keys\n\nself._band_selector_combo_box.setMinimumContentsLength(10)\n\
-      self._band_selector_combo_box.removeItem(0)\nfor _label in self._band_selector_labels:\
-      \ self._band_selector_combo_box.addItem(_label)\nself._band_selector_callback\
-      \ = lambda i: Qt.QMetaObject.invokeMethod(self._band_selector_combo_box, \"\
-      setCurrentIndex\", Qt.Q_ARG(\"int\", self._band_selector_options.index(i)))\n\
-      self._band_selector_combo_box.currentIndexChanged.connect(\n    lambda i: self.set_band_selector(self._band_selector_options[i])\n\
-      )\n\ndef find_valid_mode(self, valid_modes):\n\tavailable_modes = self.mode.labels\n\
+      \ndef find_valid_mode(self, valid_modes):\n\tavailable_modes = self.mode.labels\n\
       \tprint(available_modes)\n\tprint(valid_modes)\n\n\tfor mode in valid_modes:\n\
       \t\tif mode in available_modes:\n\t\t\treturn available_modes.index(mode) \n\
       \treturn 0"
@@ -2322,8 +2368,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1284.0, 2392]
-    rotation: 270
+    coordinate: [1104, 2668.0]
+    rotation: 0
     state: true
 - name: blocks_probe_signal_x_0
   id: blocks_probe_signal_x
@@ -2405,7 +2451,7 @@ blocks:
     alias: ''
     comment: ''
     enabled: 'True'
-    input_index: '3'
+    input_index: side_band
     maxoutbuf: '0'
     minoutbuf: '0'
     num_inputs: '6'
@@ -3803,52 +3849,118 @@ blocks:
     _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
       \ GRC will instantiate the first class it finds\nto get ports and parameters\
       \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\nimport time\n\nimport numpy\
+      \ as np\nfrom gnuradio import gr\nimport pmt\n\n\nclass blk(gr.sync_block):\
+      \  # other base classes are basic_block, decim_block, interp_block\n    \"\"\
+      \"Message gate. This module either transfer messages from the input port to\
+      \ the output port, or not.\n        Parameters:\n            gate_control(R):\
+      \ Boolean, true transfers messages, false swallows them\n            resync(R):\
+      \ If true, the last swallowed message will be sent when the message gate opens\n\
+      \            repeat(R): Defines how many copies of each message to send. (Used\
+      \ to work around a bug in QT DigitalNumberControl)\"\"\"\n\n    def __init__(self,\
+      \ gate_control=True, resync=True, repeat=1):  # only default arguments here\n\
+      \        \"\"\"arguments to this function show up as parameters in GRC\"\"\"\
+      \n        gr.sync_block.__init__(\n            self,\n            name='Message\
+      \ Gate',  # will show up in GRC\n            in_sig=None,\n            out_sig=None\n\
+      \        )\n\n        self.message_port_register_in(pmt.intern('msg_in'))\n\
+      \        self.message_port_register_out(pmt.intern('msg_out'))\n        self.set_msg_handler(pmt.intern('msg_in'),\
+      \ self.handle_msg)\n        # if an attribute with the same name as a parameter\
+      \ is found,\n        # a callback is registered (properties work, too).\n  \
+      \      self.last_msg = None\n        self.resync = resync\n        self.repeat\
+      \ = repeat\n\n\n        self._gate_control = gate_control\n\n    @property\n\
+      \    def gate_control(self):\n        \"\"\"The gate control parameter tells\
+      \ whether messages are to be transferred or not\"\"\"\n        return self._gate_control\n\
+      \n    @gate_control.setter\n    def gate_control(self, value):\n        if self.resync\
+      \ and value and value != self._gate_control and self.last_msg is not None:\n\
+      \            for i in range(self.repeat):\n                self.message_port_pub(pmt.intern('msg_out'),\
+      \ self.last_msg)\n                time.sleep(0.1)\n            self.last_msg\
+      \ = None\n        self._gate_control = value\n\n    @gate_control.deleter\n\
+      \    def gate_control(self):\n        del self._gate_control\n\n    def handle_msg(self,\
+      \ msg):\n        if self.gate_control:\n            for i in range(self.repeat):\n\
+      \                self.message_port_pub(pmt.intern('msg_out'), msg)\n       \
+      \         time.sleep(0.1)\n        else:\n            self.last_msg = msg\n"
+    affinity: ''
+    alias: ''
+    comment: "Transfers RX frequency changes to the \nTx freq iff the split_fq checkbox\
+      \ is *not* checked"
+    gate_control: split_fq
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: '2'
+    resync: 'True'
+  states:
+    _io_cache: '(''Message Gate'', ''blk'', [(''gate_control'', ''True''), (''resync'',
+      ''True''), (''repeat'', ''1'')], [(''msg_in'', ''message'', 1)], [(''msg_out'',
+      ''message'', 1)], ''Message gate. This module either transfer messages from
+      the input port to the output port, or not.\n        Parameters:\n            gate_control(R):
+      Boolean, true transfers messages, false swallows them\n            resync(R):
+      If true, the last swallowed message will be sent when the message gate opens\n            repeat(R):
+      Defines how many copies of each message to send. (Used to work around a bug
+      in QT DigitalNumberControl)'', [''gate_control'', ''repeat'', ''resync''])'
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1760, 524.0]
+    rotation: 0
+    state: true
+- name: tx_fq_sync_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
       \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
       from gnuradio import gr\nimport pmt\n\n\nclass blk(gr.sync_block):  # other\
       \ base classes are basic_block, decim_block, interp_block\n    \"\"\"Message\
       \ gate. This module either transfer messages from the input port to the output\
       \ port, or not.\n        Parameters:\n            gate_control(R): Boolean,\
       \ true transfers messages, false swallows them\n            resync(R): If true,\
-      \ the last swallowed message will be sent when the message gate opens\"\"\"\n\
-      \n    def __init__(self, gate_control=True, resync=True):  # only default arguments\
-      \ here\n        \"\"\"arguments to this function show up as parameters in GRC\"\
-      \"\"\n        gr.sync_block.__init__(\n            self,\n            name='Message\
+      \ the last swallowed message will be sent when the message gate opens\n    \
+      \        repeat(R): Defines how many copies of each message to send. (Used to\
+      \ work around a bug in QT DigitalNumberControl)\"\"\"\n\n    def __init__(self,\
+      \ gate_control=True, resync=True, repeat=1):  # only default arguments here\n\
+      \        \"\"\"arguments to this function show up as parameters in GRC\"\"\"\
+      \n        gr.sync_block.__init__(\n            self,\n            name='Message\
       \ Gate',  # will show up in GRC\n            in_sig=None,\n            out_sig=None\n\
       \        )\n\n        self.message_port_register_in(pmt.intern('msg_in'))\n\
       \        self.message_port_register_out(pmt.intern('msg_out'))\n        self.set_msg_handler(pmt.intern('msg_in'),\
       \ self.handle_msg)\n        # if an attribute with the same name as a parameter\
       \ is found,\n        # a callback is registered (properties work, too).\n  \
-      \      self.last_msg = None\n        self.resync = resync\n\n\n        self._gate_control\
-      \ = gate_control\n\n    @property\n    def gate_control(self):\n        \"\"\
-      \"The gate control parameter tells whether messages are to be transferred or\
-      \ not\"\"\"\n        return self._gate_control\n\n    @gate_control.setter\n\
-      \    def gate_control(self, value):\n        if self.resync and value and value\
-      \ != self._gate_control and self.last_msg is not None:\n            self.message_port_pub(pmt.intern('msg_out'),\
+      \      self.last_msg = None\n        self.resync = resync\n        self.repeat\
+      \ = repeat\n\n\n        self._gate_control = gate_control\n\n    @property\n\
+      \    def gate_control(self):\n        \"\"\"The gate control parameter tells\
+      \ whether messages are to be transferred or not\"\"\"\n        return self._gate_control\n\
+      \n    @gate_control.setter\n    def gate_control(self, value):\n        if self.resync\
+      \ and value and value != self._gate_control and self.last_msg is not None:\n\
+      \            for i in range(self.repeat):\n                self.message_port_pub(pmt.intern('msg_out'),\
       \ self.last_msg)\n            self.last_msg = None\n        self._gate_control\
       \ = value\n\n    @gate_control.deleter\n    def gate_control(self):\n      \
       \  del self._gate_control\n\n    def handle_msg(self, msg):\n        if self.gate_control:\n\
-      \            self.message_port_pub(pmt.intern('msg_out'), msg)\n        else:\n\
-      \            self.last_msg = msg\n"
+      \            for i in range(self.repeat):\n                self.message_port_pub(pmt.intern('msg_out'),\
+      \ msg)\n        else:\n            self.last_msg = msg\n"
     affinity: ''
     alias: ''
-    comment: Transfers RX frequency changes to the Tx freq iff the split_fq checkbox
-      is *not* checked
-    gate_control: split_fq
+    comment: 'Repeat each message twice
+
+      Workaround for bug in the QT GUI Digital Number Control'
+    gate_control: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
+    repeat: '2'
     resync: 'True'
   states:
     _io_cache: '(''Message Gate'', ''blk'', [(''gate_control'', ''True''), (''resync'',
-      ''True'')], [(''msg_in'', ''message'', 1)], [(''msg_out'', ''message'', 1)],
-      ''Message gate. This module either transfer messages from the input port to
-      the output port, or not.\n        Parameters:\n            gate_control(R):
+      ''True''), (''repeat'', ''1'')], [(''msg_in'', ''message'', 1)], [(''msg_out'',
+      ''message'', 1)], ''Message gate. This module either transfer messages from
+      the input port to the output port, or not.\n        Parameters:\n            gate_control(R):
       Boolean, true transfers messages, false swallows them\n            resync(R):
-      If true, the last swallowed message will be sent when the message gate opens'',
-      [''gate_control'', ''resync''])'
+      If true, the last swallowed message will be sent when the message gate opens\n            repeat(R):
+      Defines how many copies of each message to send. (Used to work around a bug
+      in QT DigitalNumberControl)'', [''gate_control'', ''repeat'', ''resync''])'
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1760, 524.0]
+    coordinate: [1320, 676.0]
     rotation: 0
     state: true
 - name: variable_qtgui_msg_push_button_0_0
@@ -4050,7 +4162,7 @@ connections:
 - [epy_block_1_0, onair, blocks_message_debug_0, print]
 - [epy_block_1_0, onair, blocks_msgpair_to_var_0_0, inpair]
 - [epy_block_2, msg_out, blocks_message_debug_0, print]
-- [epy_block_2, msg_out, rx_fq_win, valuein]
+- [epy_block_2, msg_out, tx_fq_sync_0, msg_in]
 - [freq_xlating_fft_filter_ccc_1, '0', pfb_decimator_ccf_0_0, '0']
 - [freq_xlating_fft_filter_ccc_1_0, '0', blocks_multiply_const_vxx_4_0_0_0, '0']
 - [freq_xlating_fft_filter_ccc_1_0, '0', pfb_decimator_ccf_0_0_0, '0']
@@ -4083,14 +4195,14 @@ connections:
 - [root_raised_cosine_filter_0_0, '0', blocks_multiply_xx_0, '0']
 - [rx_distancer, filter_fq_out, blocks_msgpair_to_var_1_0_0, inpair]
 - [rx_distancer, hw_fq_out, blocks_msgpair_to_var_1_0, inpair]
-- [rx_fq_win, valueout, blocks_message_debug_0, print]
 - [rx_fq_win, valueout, blocks_msgpair_to_var_1, inpair]
 - [rx_fq_win, valueout, rx_distancer, freq_in]
 - [rx_fq_win, valueout, tx_fq_sync, msg_in]
 - [soapy_hackrf_source_0, '0', freq_xlating_fft_filter_ccc_1, '0']
 - [soapy_hackrf_source_0, '0', freq_xlating_fft_filter_ccc_1_0, '0']
-- [tx_fq_sync, msg_out, blocks_msgpair_to_var_1_1, inpair]
 - [tx_fq_sync, msg_out, tx_fq_win, valuein]
+- [tx_fq_sync_0, msg_out, rx_fq_win, valuein]
+- [tx_fq_win, valueout, blocks_message_debug_0, print]
 - [tx_fq_win, valueout, blocks_msgpair_to_var_1_1, inpair]
 - [variable_qtgui_msg_push_button_0_0, pressed, msg_formatter_1, msg_in]
 - [variable_qtgui_msg_push_button_0_0_0, pressed, msg_formatter, msg_in]
