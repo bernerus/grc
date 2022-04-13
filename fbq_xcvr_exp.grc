@@ -1628,28 +1628,6 @@ blocks:
     coordinate: [568, 2120.0]
     rotation: 180
     state: enabled
-- name: analog_sig_source_x_0_1
-  id: analog_sig_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    amp: '1'
-    comment: ''
-    freq: '880'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    offset: '0'
-    phase: '0'
-    samp_rate: audio_samp_rate
-    type: float
-    waveform: analog.GR_SIN_WAVE
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [332.0, 2232]
-    rotation: 270
-    state: true
 - name: analog_sig_source_x_0_3_0
   id: analog_sig_source_x
   parameters:
@@ -1828,7 +1806,7 @@ blocks:
     gain: '1'
     high_cutoff_freq: '2700'
     interp: '1'
-    low_cutoff_freq: '50'
+    low_cutoff_freq: '200'
     maxoutbuf: '0'
     minoutbuf: '0'
     samp_rate: audio_samp_rate
@@ -2626,23 +2604,6 @@ blocks:
     coordinate: [2000, 1612.0]
     rotation: 0
     state: enabled
-- name: blocks_null_sink_0
-  id: blocks_null_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    bus_structure_sink: '[[0,],]'
-    comment: ''
-    num_inputs: '1'
-    type: float
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [448, 2372.0]
-    rotation: 0
-    state: true
 - name: blocks_null_sink_2
   id: blocks_null_sink
   parameters:
@@ -3937,35 +3898,6 @@ blocks:
     coordinate: [552, 1584.0]
     rotation: 0
     state: true
-- name: qtgui_sink_x_0_0
-  id: qtgui_sink_x
-  parameters:
-    affinity: ''
-    alias: ''
-    bw: ssb_tx_bandwidth*4
-    comment: ''
-    fc: '0'
-    fftsize: '4096'
-    gui_hint: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    name: '"SSB TX"'
-    plotconst: 'True'
-    plotfreq: 'True'
-    plottime: 'True'
-    plotwaterfall: 'True'
-    rate: '10'
-    showports: 'False'
-    showrf: 'False'
-    type: complex
-    wintype: window.WIN_HAMMING
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1152, 1976.0]
-    rotation: 0
-    state: true
 - name: qtgui_sink_x_0_0_0
   id: qtgui_sink_x
   parameters:
@@ -3993,93 +3925,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1552, 2824.0]
-    rotation: 0
-    state: true
-- name: qtgui_sink_x_0_0_1
-  id: qtgui_sink_x
-  parameters:
-    affinity: ''
-    alias: ''
-    bw: ssb_tx_bandwidth*4
-    comment: ''
-    fc: '0'
-    fftsize: '4096'
-    gui_hint: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    name: '"SSB TX"'
-    plotconst: 'True'
-    plotfreq: 'True'
-    plottime: 'True'
-    plotwaterfall: 'True'
-    rate: '10'
-    showports: 'False'
-    showrf: 'False'
-    type: float
-    wintype: window.WIN_BLACKMAN_hARRIS
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [168, 1960.0]
-    rotation: 0
-    state: true
-- name: qtgui_sink_x_0_0_1_0
-  id: qtgui_sink_x
-  parameters:
-    affinity: ''
-    alias: ''
-    bw: ssb_tx_bandwidth*4
-    comment: ''
-    fc: '0'
-    fftsize: '4096'
-    gui_hint: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    name: '"SSB TX Filtered"'
-    plotconst: 'True'
-    plotfreq: 'True'
-    plottime: 'True'
-    plotwaterfall: 'True'
-    rate: '10'
-    showports: 'False'
-    showrf: 'False'
-    type: float
-    wintype: window.WIN_BLACKMAN_hARRIS
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [920, 1944.0]
-    rotation: 0
-    state: true
-- name: qtgui_sink_x_0_0_1_0_0
-  id: qtgui_sink_x
-  parameters:
-    affinity: ''
-    alias: ''
-    bw: ssb_tx_bandwidth*4
-    comment: ''
-    fc: '0'
-    fftsize: '4096'
-    gui_hint: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    name: '"SSB TX Filtered"'
-    plotconst: 'True'
-    plotfreq: 'True'
-    plottime: 'True'
-    plotwaterfall: 'True'
-    rate: '10'
-    showports: 'False'
-    showrf: 'False'
-    type: float
-    wintype: window.WIN_BLACKMAN_hARRIS
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [928, 2216.0]
     rotation: 0
     state: true
 - name: rational_resampler_xxx_0
@@ -4671,7 +4516,6 @@ connections:
 - [analog_agc_xx_0, '0', blocks_multiply_const_vxx_1_0_0_0_0, '0']
 - [analog_sig_source_x_0, '0', blocks_multiply_xx_0, '1']
 - [analog_sig_source_x_0_0, '0', blocks_multiply_xx_0_0_0, '0']
-- [analog_sig_source_x_0_1, '0', blocks_null_sink_0, '0']
 - [analog_sig_source_x_0_3_0, '0', blocks_throttle_1_0, '0']
 - [analog_sig_source_x_1_0, '0', blocks_multiply_xx_0_0, '1']
 - [analog_simple_squelch_cc_0, '0', analog_agc3_xx_0, '0']
@@ -4699,7 +4543,6 @@ connections:
 - [blocks_float_to_complex_0_0_0, '0', analog_simple_squelch_cc_0, '0']
 - [blocks_float_to_complex_0_0_0, '0', blocks_add_xx_0, '1']
 - [blocks_float_to_complex_0_0_1, '0', blocks_selector_0, '0']
-- [blocks_float_to_complex_0_0_1, '0', qtgui_sink_x_0_0, '0']
 - [blocks_float_to_complex_0_1, '0', band_pass_filter_0_0, '0']
 - [blocks_float_to_complex_0_1_0, '0', band_pass_filter_0_1, '0']
 - [blocks_float_to_complex_0_1_0_0, '0', analog_simple_squelch_cc_0_0, '0']
@@ -4725,9 +4568,7 @@ connections:
 - [blocks_multiply_matrix_xx_0, '1', blocks_multiply_const_vxx_1_0_0, '0']
 - [blocks_multiply_xx_0, '0', blocks_multiply_const_vxx_0, '0']
 - [blocks_multiply_xx_0_0, '0', filter_fft_low_pass_filter_0_0, '0']
-- [blocks_multiply_xx_0_0, '0', qtgui_sink_x_0_0_1_0, '0']
 - [blocks_multiply_xx_0_0_0, '0', filter_fft_low_pass_filter_0_0_0, '0']
-- [blocks_multiply_xx_0_0_0, '0', qtgui_sink_x_0_0_1_0_0, '0']
 - [blocks_nlog10_ff_0, '0', blocks_probe_signal_x_0, '0']
 - [blocks_null_source_0, '0', blocks_selector_1, '0']
 - [blocks_null_source_0, '0', blocks_selector_1, '5']
@@ -4740,7 +4581,6 @@ connections:
 - [blocks_selector_1, '0', qtgui_sink_x_0_0_0, '0']
 - [blocks_selector_1, '0', soapy_hackrf_sink_0, '0']
 - [blocks_selector_2, '0', band_pass_filter_0, '0']
-- [blocks_selector_2, '0', qtgui_sink_x_0_0_1, '0']
 - [blocks_uchar_to_float_0, '0', virtual_sink_0_1, '0']
 - [cw_msg_in, '0', epy_block_0_0, msg_in]
 - [epy_block_0_0, '0', blocks_repeat_0, '0']

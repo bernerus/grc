@@ -905,60 +905,6 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
                 decimation=int(if2_samp_rate/1000),
                 taps=[],
                 fractional_bw=0.4)
-        self.qtgui_sink_x_0_0_1_0_0 = qtgui.sink_f(
-            4096, #fftsize
-            window.WIN_BLACKMAN_hARRIS, #wintype
-            0, #fc
-            ssb_tx_bandwidth*4, #bw
-            "SSB TX Filtered", #name
-            True, #plotfreq
-            True, #plotwaterfall
-            True, #plottime
-            True, #plotconst
-            None # parent
-        )
-        self.qtgui_sink_x_0_0_1_0_0.set_update_time(1.0/10)
-        self._qtgui_sink_x_0_0_1_0_0_win = sip.wrapinstance(self.qtgui_sink_x_0_0_1_0_0.qwidget(), Qt.QWidget)
-
-        self.qtgui_sink_x_0_0_1_0_0.enable_rf_freq(False)
-
-        self.top_layout.addWidget(self._qtgui_sink_x_0_0_1_0_0_win)
-        self.qtgui_sink_x_0_0_1_0 = qtgui.sink_f(
-            4096, #fftsize
-            window.WIN_BLACKMAN_hARRIS, #wintype
-            0, #fc
-            ssb_tx_bandwidth*4, #bw
-            "SSB TX Filtered", #name
-            True, #plotfreq
-            True, #plotwaterfall
-            True, #plottime
-            True, #plotconst
-            None # parent
-        )
-        self.qtgui_sink_x_0_0_1_0.set_update_time(1.0/10)
-        self._qtgui_sink_x_0_0_1_0_win = sip.wrapinstance(self.qtgui_sink_x_0_0_1_0.qwidget(), Qt.QWidget)
-
-        self.qtgui_sink_x_0_0_1_0.enable_rf_freq(False)
-
-        self.top_layout.addWidget(self._qtgui_sink_x_0_0_1_0_win)
-        self.qtgui_sink_x_0_0_1 = qtgui.sink_f(
-            4096, #fftsize
-            window.WIN_BLACKMAN_hARRIS, #wintype
-            0, #fc
-            ssb_tx_bandwidth*4, #bw
-            "SSB TX", #name
-            True, #plotfreq
-            True, #plotwaterfall
-            True, #plottime
-            True, #plotconst
-            None # parent
-        )
-        self.qtgui_sink_x_0_0_1.set_update_time(1.0/10)
-        self._qtgui_sink_x_0_0_1_win = sip.wrapinstance(self.qtgui_sink_x_0_0_1.qwidget(), Qt.QWidget)
-
-        self.qtgui_sink_x_0_0_1.enable_rf_freq(False)
-
-        self.top_layout.addWidget(self._qtgui_sink_x_0_0_1_win)
         self.qtgui_sink_x_0_0_0 = qtgui.sink_c(
             4096, #fftsize
             window.WIN_HAMMING, #wintype
@@ -977,24 +923,6 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.qtgui_sink_x_0_0_0.enable_rf_freq(False)
 
         self.top_layout.addWidget(self._qtgui_sink_x_0_0_0_win)
-        self.qtgui_sink_x_0_0 = qtgui.sink_c(
-            4096, #fftsize
-            window.WIN_HAMMING, #wintype
-            0, #fc
-            ssb_tx_bandwidth*4, #bw
-            "SSB TX", #name
-            True, #plotfreq
-            True, #plotwaterfall
-            True, #plottime
-            True, #plotconst
-            None # parent
-        )
-        self.qtgui_sink_x_0_0.set_update_time(1.0/10)
-        self._qtgui_sink_x_0_0_win = sip.wrapinstance(self.qtgui_sink_x_0_0.qwidget(), Qt.QWidget)
-
-        self.qtgui_sink_x_0_0.enable_rf_freq(False)
-
-        self.top_layout.addWidget(self._qtgui_sink_x_0_0_win)
         self.qtgui_sink_x_0 = qtgui.sink_c(
             4096, #fftsize
             window.WIN_HANN, #wintype
@@ -1141,7 +1069,6 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.blocks_null_source_1 = blocks.null_source(gr.sizeof_float*1)
         self.blocks_null_source_0 = blocks.null_source(gr.sizeof_gr_complex*1)
         self.blocks_null_sink_2 = blocks.null_sink(gr.sizeof_gr_complex*1)
-        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_float*1)
         self.blocks_nlog10_ff_0 = blocks.nlog10_ff(10.6, 1, RX_power_offset_dB)
         self.blocks_multiply_xx_0_0_0 = blocks.multiply_vff(1)
         self.blocks_multiply_xx_0_0 = blocks.multiply_vff(1)
@@ -1228,7 +1155,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             firdes.band_pass(
                 1,
                 audio_samp_rate,
-                50,
+                200,
                 2700,
                 100,
                 window.WIN_HAMMING,
@@ -1241,7 +1168,6 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.analog_simple_squelch_cc_0_0 = analog.simple_squelch_cc(sq, .001)
         self.analog_simple_squelch_cc_0 = analog.simple_squelch_cc(sq, .001)
         self.analog_sig_source_x_1_0 = analog.sig_source_f(audio_samp_rate, analog.GR_SIN_WAVE, ssb_tx_bandwidth/2, 1, 0, 0)
-        self.analog_sig_source_x_0_1 = analog.sig_source_f(audio_samp_rate, analog.GR_SIN_WAVE, 880, 1, 0, 0)
         self.analog_sig_source_x_0_0 = analog.sig_source_f(audio_samp_rate, analog.GR_COS_WAVE, ssb_tx_bandwidth/2, 1, 0, 0)
         self.analog_sig_source_x_0 = analog.sig_source_f(50e3, analog.GR_COS_WAVE, cw_midear_beat[side_band_tx], 1, 0, 0)
         self.analog_agc_xx_0 = analog.agc_ff(1e-4, 0.98, 1.0)
@@ -1291,7 +1217,6 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.connect((self.analog_agc_xx_0, 0), (self.blocks_multiply_const_vxx_1_0_0_0_0, 0))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_multiply_xx_0, 1))
         self.connect((self.analog_sig_source_x_0_0, 0), (self.blocks_multiply_xx_0_0_0, 0))
-        self.connect((self.analog_sig_source_x_0_1, 0), (self.blocks_null_sink_0, 0))
         self.connect((self.analog_sig_source_x_1_0, 0), (self.blocks_multiply_xx_0_0, 1))
         self.connect((self.analog_simple_squelch_cc_0, 0), (self.analog_agc3_xx_0, 0))
         self.connect((self.analog_simple_squelch_cc_0_0, 0), (self.analog_agc3_xx_0_0, 0))
@@ -1318,7 +1243,6 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_float_to_complex_0_0_0, 0), (self.analog_simple_squelch_cc_0, 0))
         self.connect((self.blocks_float_to_complex_0_0_0, 0), (self.blocks_add_xx_0, 1))
         self.connect((self.blocks_float_to_complex_0_0_1, 0), (self.blocks_selector_0, 0))
-        self.connect((self.blocks_float_to_complex_0_0_1, 0), (self.qtgui_sink_x_0_0, 0))
         self.connect((self.blocks_float_to_complex_0_1, 0), (self.band_pass_filter_0_0, 0))
         self.connect((self.blocks_float_to_complex_0_1_0, 0), (self.band_pass_filter_0_1, 0))
         self.connect((self.blocks_float_to_complex_0_1_0_0, 0), (self.analog_simple_squelch_cc_0_0, 0))
@@ -1344,22 +1268,19 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_multiply_matrix_xx_0, 0), (self.blocks_multiply_const_vxx_1_0_1_0_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.blocks_multiply_xx_0_0, 0), (self.filter_fft_low_pass_filter_0_0, 0))
-        self.connect((self.blocks_multiply_xx_0_0, 0), (self.qtgui_sink_x_0_0_1_0, 0))
         self.connect((self.blocks_multiply_xx_0_0_0, 0), (self.filter_fft_low_pass_filter_0_0_0, 0))
-        self.connect((self.blocks_multiply_xx_0_0_0, 0), (self.qtgui_sink_x_0_0_1_0_0, 0))
         self.connect((self.blocks_nlog10_ff_0, 0), (self.blocks_probe_signal_x_0, 0))
-        self.connect((self.blocks_null_source_0, 0), (self.blocks_selector_1, 0))
         self.connect((self.blocks_null_source_0, 0), (self.blocks_selector_1, 5))
+        self.connect((self.blocks_null_source_0, 0), (self.blocks_selector_1, 0))
         self.connect((self.blocks_null_source_1, 0), (self.blocks_selector_2, 0))
         self.connect((self.blocks_repeat_0, 0), (self.blocks_uchar_to_float_0, 0))
-        self.connect((self.blocks_repeat_0_0, 0), (self.blocks_selector_1, 3))
         self.connect((self.blocks_repeat_0_0, 0), (self.blocks_selector_1, 4))
+        self.connect((self.blocks_repeat_0_0, 0), (self.blocks_selector_1, 3))
         self.connect((self.blocks_selector_0, 0), (self.blocks_null_sink_2, 0))
         self.connect((self.blocks_selector_0, 1), (self.rational_resampler_xxx_4_0, 0))
         self.connect((self.blocks_selector_1, 0), (self.qtgui_sink_x_0_0_0, 0))
         self.connect((self.blocks_selector_1, 0), (self.soapy_hackrf_sink_0, 0))
         self.connect((self.blocks_selector_2, 0), (self.band_pass_filter_0, 0))
-        self.connect((self.blocks_selector_2, 0), (self.qtgui_sink_x_0_0_1, 0))
         self.connect((self.blocks_uchar_to_float_0, 0), (self.root_raised_cosine_filter_0, 0))
         self.connect((self.epy_block_0_0, 0), (self.blocks_repeat_0, 0))
         self.connect((self.filter_fft_low_pass_filter_0, 0), (self.blocks_selector_1, 2))
@@ -1794,11 +1715,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.analog_sig_source_x_1_0.set_frequency(self.ssb_tx_bandwidth/2)
         self.filter_fft_low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76))
         self.filter_fft_low_pass_filter_0_0_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76))
-        self.qtgui_sink_x_0_0.set_frequency_range(0, self.ssb_tx_bandwidth*4)
         self.qtgui_sink_x_0_0_0.set_frequency_range(0, self.ssb_tx_bandwidth*4)
-        self.qtgui_sink_x_0_0_1.set_frequency_range(0, self.ssb_tx_bandwidth*4)
-        self.qtgui_sink_x_0_0_1_0.set_frequency_range(0, self.ssb_tx_bandwidth*4)
-        self.qtgui_sink_x_0_0_1_0_0.set_frequency_range(0, self.ssb_tx_bandwidth*4)
 
     def get_sq(self):
         return self.sq
@@ -2119,9 +2036,8 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_audio_samp_rate(self, audio_samp_rate):
         self.audio_samp_rate = audio_samp_rate
         self.analog_sig_source_x_0_0.set_sampling_freq(self.audio_samp_rate)
-        self.analog_sig_source_x_0_1.set_sampling_freq(self.audio_samp_rate)
         self.analog_sig_source_x_1_0.set_sampling_freq(self.audio_samp_rate)
-        self.band_pass_filter_0.set_taps(firdes.band_pass(1, self.audio_samp_rate, 50, 2700, 100, window.WIN_HAMMING, 6.76))
+        self.band_pass_filter_0.set_taps(firdes.band_pass(1, self.audio_samp_rate, 200, 2700, 100, window.WIN_HAMMING, 6.76))
         self.filter_fft_low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76))
         self.filter_fft_low_pass_filter_0_0_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76))
 
