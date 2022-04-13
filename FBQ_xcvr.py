@@ -40,6 +40,7 @@ import signal
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import soapy
+from gnuradio import zeromq
 from gnuradio.filter import pfb
 from gnuradio.qtgui import Range, RangeWidget
 from PyQt5 import QtCore
@@ -168,69 +169,80 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.mode_labels = mode_labels = {'None':0 , 'USB':1, 'LSB':2, 'CW': 3, 'CW Stereo':4, 'FT8':5, 'MSK144':6}
         self.current_allowed_modes = current_allowed_modes = ham_bands[band_selector][4]
         self.mode_default_option = mode_default_option = mode_labels[(list(set(mode_labels) & set(current_allowed_modes))[0])]
-        self.mode_to_sb = mode_to_sb = [0,1,2,3,4,1,1]
+        self.mode_to_sb_rx = mode_to_sb_rx = [3,1,2,3,4,1,1]
         self.mode = mode = mode_default_option
         self.current_min_fq = current_min_fq = ham_bands[band_selector][0]
         self.current_max_fq = current_max_fq = ham_bands[band_selector][1]
         self.current_default_fq = current_default_fq = ham_bands[band_selector][2]
+        self.tx_gain = tx_gain = 47
         self.tx_fq = tx_fq = 0
         self.tx_center_fq = tx_center_fq = current_default_fq
         self.tx_bw_opts = tx_bw_opts = 1
         self.tx_bw = tx_bw = [5000.0,3500.0,2500.0,1750.0,500.0]
         self.ssb_txing = ssb_txing = 0
-        self.side_band = side_band = mode_to_sb[mode]
+        self.side_band_rx = side_band_rx = mode_to_sb_rx[mode]
         self.rx_samp_rate = rx_samp_rate = 4000000
         self.rx_hw_fq = rx_hw_fq = 0
-        self.rx_fq = rx_fq = 0
+        self.mode_to_sb_tx = mode_to_sb_tx = [0,1,2,3,4,1,1]
+        self.mic_gain = mic_gain = 1.0
+        self.mgm_input_gain = mgm_input_gain = 1.4
         self.freq = freq = 0
         self.filter_fq = filter_fq = 0
         self.f0 = f0 = current_min_fq + (current_max_fq - current_min_fq)/2.0
         self.cw_txing = cw_txing = 0
         self.wf_gain = wf_gain = 1
         self.wf_fq = wf_fq = freq+rx_hw_fq
-        self.vox_gain = vox_gain = 150
+        self.vox_threshold = vox_threshold = [10000,0.6,0.6,0.4,0.4,0.4,0.4]
+        self.vox_sensitivity = vox_sensitivity = 2
+        self.vox_delay = vox_delay = [0,1.2,1.2,0.7,0.7,0.4,0.4]
+        self.vox_attack = vox_attack = [10000,100,100,1,1,1,1]
         self.vga_gain = vga_gain = 53
-        self.variable_qtgui_entry_0 = variable_qtgui_entry_0 = side_band
+        self.variable_qtgui_entry_0 = variable_qtgui_entry_0 = side_band_rx
         self.variable_function_probe_0 = variable_function_probe_0 = 0
         self.usb_chain_gain = usb_chain_gain = 1,1,0,1,1,1,1
         self.txing = txing = cw_txing or ssb_txing
         self.tx_samp_rate = tx_samp_rate = 3000000
         self.tx_rprt = tx_rprt = ''
-        self.tx_mode_offset = tx_mode_offset = [0, tx_bw[tx_bw_opts], -tx_bw[tx_bw_opts], 0, 0, [tx_bw_opts],[tx_bw_opts]]
-        self.tx_gain = tx_gain = 47
+        self.tx_mode_offset = tx_mode_offset = [0, tx_bw[tx_bw_opts]/2, -tx_bw[tx_bw_opts]/2, 0, 0, tx_bw[tx_bw_opts]/2,tx_bw[tx_bw_opts]/2]
         self.tx_fq_win = tx_fq_win = tx_center_fq
         self.tx_fq_q = tx_fq_q = int(tx_fq)
+        self.tc_vga = tc_vga = tx_gain
         self.symbol_rate = symbol_rate = 20
         self.ssb_txing_btn = ssb_txing_btn = 0
-        self.ssb_tx_mode = ssb_tx_mode = 0,1,1,0,0
         self.ssb_tx_bandwidth = ssb_tx_bandwidth = tx_bw[tx_bw_opts]
         self.sq = sq = -110
         self.split_fq = split_fq = True
-        self.side_band_dislay = side_band_dislay = side_band
+        self.spkr_gain = spkr_gain = 75
+        self.side_band_tx = side_band_tx = mode_to_sb_tx[mode]
+        self.side_band_dislay = side_band_dislay = side_band_rx
         self.sb_t = sb_t = [1,-1,1,1]
         self.sb_r = sb_r = [-1,1,1,-1]
         self.rx_preamp = rx_preamp = 0
         self.rx_fq_win = rx_fq_win = current_default_fq
-        self.rx_ctr_fq_0 = rx_ctr_fq_0 = int(filter_fq + rx_fq - current_default_fq)
+        self.rx_fq = rx_fq = 0
+        self.rx_ctr_fq_0 = rx_ctr_fq_0 = int(filter_fq)
         self.rx_ctr_fq = rx_ctr_fq = int(rx_hw_fq)
-        self.rx_corr = rx_corr = 0,0,580,0
         self.rx_center_fq = rx_center_fq = f0-100e3
-        self.rx_bw = rx_bw = 0
+        self.rx_bw = rx_bw = 2
 
         self.morse_speed = morse_speed = 120
         self.monitor = monitor = 25
+        self.mode_to_audio_input = mode_to_audio_input = [0,2,2,0,0,1,1]
         self.mode_options = mode_options = [0, 1, 2, 3, 4, 5]
         self.mode_labels_values = mode_labels_values = list(mode_labels.values())
         self.mode_labels_keys = mode_labels_keys = list(mode_labels.keys())
         self.mode_display = mode_display = mode
-        self.mic_gain = mic_gain = 1.4
+        self.mic_inpt_gain_0 = mic_inpt_gain_0 = mic_gain
+        self.mgm_output_gain = mgm_output_gain = 75
+        self.mgm_inpt_gain = mgm_inpt_gain = mgm_input_gain
         self.lsb_chain_gain = lsb_chain_gain = 0,0,1,0,1,0,0
         self.lna_gain = lna_gain = 39
         self.if_samp_rate = if_samp_rate = 1000e3
         self.if2_samp_rate = if2_samp_rate = 50000
         self.if0_samp_rate = if0_samp_rate = rx_samp_rate
         self.ham_bands_keys = ham_bands_keys = ['                  ']
-        self.fft_corr = fft_corr = 0,0,880,0
+        self.fq_calibration = fq_calibration = 64
+        self.fft_corr = fft_corr = 0,0,0,880,0
         self.f0_min = f0_min = ham_bands[band_selector][0]
         self.dx_call = dx_call = ''
         self.cw_samp_rate = cw_samp_rate = 50e3
@@ -239,13 +251,11 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.current_allowed_tx_bandwidth = current_allowed_tx_bandwidth = ham_bands[band_selector][3]
         self.cq_flavor = cq_flavor = ''
         self.channel_separation = channel_separation = [100,100,10,10,1000,1000]
-        self.bpf_low = bpf_low = 100,100,100,800,380,480
-        self.bpf_high = bpf_high = 3900,2900,2700,2100,880,680
+        self.bpf_low = bpf_low = 100,100,100,230,630,780, 855
+        self.bpf_high = bpf_high = 4000,3300,2800,1530,1130,1080, 905
         self.audio_samp_rate = audio_samp_rate = 48000
         self.af_right = af_right = 0.5
-        self.af_mix_matrices_0 = af_mix_matrices_0 = [((1,0,0), (1,0,0)),  ((1,0,0), (1,0,0)),  ((0,1,0),(0,1,0)),  ((1,0,cw_txing),  (1,0,cw_txing)),((1,0,cw_txing),(0,1,cw_txing))]
         self.af_mix_matrices = af_mix_matrices = [((1,0),(1,0)),  ((1,0), (1,0)),   ((0,1),(0,1)),   ((1,0),(1,0)),  ((1,0),(0,1))]
-        self.af_gain = af_gain = 75
         self.RX_power_offset_dB = RX_power_offset_dB = -104
 
         ##################################################
@@ -304,10 +314,10 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         	isFloat = True
         	scaleFactor = 1
 
-        _vox_gain_dial_control = qtgui.GrDialControl('VOX SENS', self, 0,200,150,"teal",self.set_vox_gain,isFloat, scaleFactor, 50, True, "'value'")
-        self.vox_gain = _vox_gain_dial_control
+        _vox_sensitivity_dial_control = qtgui.GrDialControl('VOX SENS', self, 0,200,2,"teal",self.set_vox_sensitivity,isFloat, scaleFactor, 50, True, "'value'")
+        self.vox_sensitivity = _vox_sensitivity_dial_control
 
-        self.op_tab_grid_layout_0.addWidget(_vox_gain_dial_control, 4, 6, 1, 1)
+        self.op_tab_grid_layout_0.addWidget(_vox_sensitivity_dial_control, 4, 6, 1, 1)
         for r in range(4, 5):
             self.op_tab_grid_layout_0.setRowStretch(r, 1)
         for c in range(6, 7):
@@ -425,10 +435,17 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(3, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
+        self._spkr_gain_range = Range(0, 200, 1, 75, 50)
+        self._spkr_gain_win = RangeWidget(self._spkr_gain_range, self.set_spkr_gain, '  AF VOL', "dial", float, QtCore.Qt.Horizontal)
+        self.top_grid_layout.addWidget(self._spkr_gain_win, 1, 0, 1, 1)
+        for r in range(1, 2):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(0, 1):
+            self.top_grid_layout.setColumnStretch(c, 1)
         # Create the options list
-        self._rx_samp_rate_options = [1000000, 2000000, 3000000, 4000000]
+        self._rx_samp_rate_options = [1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000]
         # Create the labels list
-        self._rx_samp_rate_labels = ['1 MHz', '2MHz', '3Mhz', '4MHz']
+        self._rx_samp_rate_labels = ['1 MHz', '2 MHz', '3 MHz', '4 MHz', '5 MHz', '6 MHz', '7 MHz', '8 MHz']
         # Create the combo box
         # Create the radio buttons
         self._rx_samp_rate_group_box = Qt.QGroupBox('rx_samp_rate' + ": ")
@@ -480,9 +497,9 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         for c in range(1, 2):
             self.settings_tab_grid_layout_0.setColumnStretch(c, 1)
         # Create the options list
-        self._rx_bw_options = [0, 1, 2, 3, 4, 5]
+        self._rx_bw_options = [0, 1, 2, 3, 4, 5, 6]
         # Create the labels list
-        self._rx_bw_labels = ['3.9', '3.2', '2.7', '1.3', '0.5', '0.2']
+        self._rx_bw_labels = ['3.9', '3.2', '2.7', '1.3', '0.5', '0.2', '0.05']
         # Create the combo box
         # Create the radio buttons
         self._rx_bw_group_box = Qt.QGroupBox('RX BW - kHz' + ": ")
@@ -538,14 +555,43 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             self.op_tab_grid_layout_2.setRowStretch(r, 1)
         for c in range(2, 3):
             self.op_tab_grid_layout_2.setColumnStretch(c, 1)
+        # Create the options list
+        self._mode_options = [0, 1, 2, 3, 4, 5, 6]
+        # Create the labels list
+        self._mode_labels = ['None', 'USB', 'LSB', 'CW', 'CW Stereo', 'FT8', 'MSK144']
+        # Create the combo box
+        # Create the radio buttons
+        self._mode_group_box = Qt.QGroupBox('TX MODE' + ": ")
+        self._mode_box = Qt.QVBoxLayout()
+        class variable_chooser_button_group(Qt.QButtonGroup):
+            def __init__(self, parent=None):
+                Qt.QButtonGroup.__init__(self, parent)
+            @pyqtSlot(int)
+            def updateButtonChecked(self, button_id):
+                self.button(button_id).setChecked(True)
+        self._mode_button_group = variable_chooser_button_group()
+        self._mode_group_box.setLayout(self._mode_box)
+        for i, _label in enumerate(self._mode_labels):
+            radio_button = Qt.QRadioButton(_label)
+            self._mode_box.addWidget(radio_button)
+            self._mode_button_group.addButton(radio_button, i)
+        self._mode_callback = lambda i: Qt.QMetaObject.invokeMethod(self._mode_button_group, "updateButtonChecked", Qt.Q_ARG("int", self._mode_options.index(i)))
+        self._mode_callback(self.mode)
+        self._mode_button_group.buttonClicked[int].connect(
+            lambda i: self.set_mode(self._mode_options[i]))
+        self.top_grid_layout.addWidget(self._mode_group_box, 3, 3, 1, 1)
+        for r in range(3, 4):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(3, 4):
+            self.top_grid_layout.setColumnStretch(c, 1)
         if "real" == "int":
         	isFloat = False
         	scaleFactor = 1
         else:
         	isFloat = True
-        	scaleFactor = 0.01
+        	scaleFactor = 0.001
 
-        _mic_gain_dial_control = qtgui.GrDialControl('MIC GAIN', self, 0,200,1.4,"silver",self.set_mic_gain,isFloat, scaleFactor, 50, True, "'value'")
+        _mic_gain_dial_control = qtgui.GrDialControl('MIC GAIN', self, 0,995,1.0,"silver",self.set_mic_gain,isFloat, scaleFactor, 50, True, "'value'")
         self.mic_gain = _mic_gain_dial_control
 
         self.op_tab_grid_layout_0.addWidget(_mic_gain_dial_control, 3, 6, 1, 1)
@@ -553,6 +599,28 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             self.op_tab_grid_layout_0.setRowStretch(r, 1)
         for c in range(6, 7):
             self.op_tab_grid_layout_0.setColumnStretch(c, 1)
+        self._mgm_output_gain_range = Range(0, 200, 1, 75, 50)
+        self._mgm_output_gain_win = RangeWidget(self._mgm_output_gain_range, self.set_mgm_output_gain, ' MGM VOL', "dial", float, QtCore.Qt.Horizontal)
+        self.op_tab_grid_layout_1.addWidget(self._mgm_output_gain_win, 0, 1, 1, 1)
+        for r in range(0, 1):
+            self.op_tab_grid_layout_1.setRowStretch(r, 1)
+        for c in range(1, 2):
+            self.op_tab_grid_layout_1.setColumnStretch(c, 1)
+        if "real" == "int":
+        	isFloat = False
+        	scaleFactor = 1
+        else:
+        	isFloat = True
+        	scaleFactor = 0.001
+
+        _mgm_input_gain_dial_control = qtgui.GrDialControl('MGM INPUT GAIN', self, 0,1995,1.4,"silver",self.set_mgm_input_gain,isFloat, scaleFactor, 50, True, "'value'")
+        self.mgm_input_gain = _mgm_input_gain_dial_control
+
+        self.op_tab_grid_layout_1.addWidget(_mgm_input_gain_dial_control, 0, 0, 1, 1)
+        for r in range(0, 1):
+            self.op_tab_grid_layout_1.setRowStretch(r, 1)
+        for c in range(0, 1):
+            self.op_tab_grid_layout_1.setColumnStretch(c, 1)
         self._lna_gain_range = Range(0, 39, 1, 39, 100)
         self._lna_gain_win = RangeWidget(self._lna_gain_range, self.set_lna_gain, 'RX LNA GAIN', "dial", float, QtCore.Qt.Horizontal)
         self.settings_tab_grid_layout_0.addWidget(self._lna_gain_win, 5, 1, 1, 1)
@@ -648,14 +716,8 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             self.settings_tab_grid_layout_0.setRowStretch(r, 1)
         for c in range(1, 3):
             self.settings_tab_grid_layout_0.setColumnStretch(c, 1)
-        self._af_gain_range = Range(0, 200, 1, 75, 50)
-        self._af_gain_win = RangeWidget(self._af_gain_range, self.set_af_gain, '  AF VOL', "dial", float, QtCore.Qt.Horizontal)
-        self.top_grid_layout.addWidget(self._af_gain_win, 1, 0, 1, 1)
-        for r in range(1, 2):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(0, 1):
-            self.top_grid_layout.setColumnStretch(c, 1)
-        self.variable_qtgui_msg_push_button_0_0_0_0_0_0 = _variable_qtgui_msg_push_button_0_0_0_0_0_0_toggle_button = qtgui.MsgPushButton('Send  RR 773', '','%s de SM6FBQ RR FB  73 Hej e e',"white","black")
+        self.zeromq_pull_msg_source_0 = zeromq.pull_msg_source('tcp://127.0.0.1:8755', 100, False)
+        self.variable_qtgui_msg_push_button_0_0_0_0_0_0 = _variable_qtgui_msg_push_button_0_0_0_0_0_0_toggle_button = qtgui.MsgPushButton('Send  RR 73', '','%s de SM6FBQ RR FB  73 Hej e e',"white","black")
         self.variable_qtgui_msg_push_button_0_0_0_0_0_0 = _variable_qtgui_msg_push_button_0_0_0_0_0_0_toggle_button
 
         self.op_tab_grid_layout_2.addWidget(_variable_qtgui_msg_push_button_0_0_0_0_0_0_toggle_button, 7, 0, 1, 1)
@@ -702,7 +764,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self._variable_qtgui_entry_0_line_edit.returnPressed.connect(
             lambda: self.set_variable_qtgui_entry_0(int(str(self._variable_qtgui_entry_0_line_edit.text()))))
         self.top_layout.addWidget(self._variable_qtgui_entry_0_tool_bar)
-        self._tx_fq_win_msgdigctl_win = qtgui.MsgDigitalNumberControl(lbl = 'TX FQ', min_freq_hz = current_min_fq + current_allowed_tx_bandwidth, max_freq_hz=current_max_fq - current_allowed_tx_bandwidth, parent=self,  thousands_separator=".",background_color="black",fontColor="red", var_callback=self.set_tx_fq_win,outputmsgname="'freq'".replace("'",""))
+        self._tx_fq_win_msgdigctl_win = qtgui.MsgDigitalNumberControl(lbl = 'TX FQ', min_freq_hz = current_min_fq + current_allowed_tx_bandwidth - 29e6, max_freq_hz=current_max_fq - current_allowed_tx_bandwidth, parent=self,  thousands_separator=".",background_color="black",fontColor="red", var_callback=self.set_tx_fq_win,outputmsgname="'freq'".replace("'",""))
         self._tx_fq_win_msgdigctl_win.setValue(tx_center_fq)
         self._tx_fq_win_msgdigctl_win.setReadOnly((not split_fq))
         self.tx_fq_win = self._tx_fq_win_msgdigctl_win
@@ -725,6 +787,17 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             self.settings_tab_grid_layout_2.setRowStretch(r, 1)
         for c in range(0, 1):
             self.settings_tab_grid_layout_2.setColumnStretch(c, 1)
+        self._tc_vga_tool_bar = Qt.QToolBar(self)
+        self._tc_vga_tool_bar.addWidget(Qt.QLabel('TX VGA' + ": "))
+        self._tc_vga_line_edit = Qt.QLineEdit(str(self.tc_vga))
+        self._tc_vga_tool_bar.addWidget(self._tc_vga_line_edit)
+        self._tc_vga_line_edit.returnPressed.connect(
+            lambda: self.set_tc_vga(eng_notation.str_to_num(str(self._tc_vga_line_edit.text()))))
+        self.settings_tab_grid_layout_2.addWidget(self._tc_vga_tool_bar, 2, 3, 1, 1)
+        for r in range(2, 3):
+            self.settings_tab_grid_layout_2.setRowStretch(r, 1)
+        for c in range(3, 4):
+            self.settings_tab_grid_layout_2.setColumnStretch(c, 1)
         self.soapy_hackrf_source_0 = None
         dev = 'driver=hackrf'
         stream_args = ''
@@ -735,7 +808,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
                                   stream_args, tune_args, settings)
         self.soapy_hackrf_source_0.set_sample_rate(0, rx_samp_rate)
         self.soapy_hackrf_source_0.set_bandwidth(0, 0)
-        self.soapy_hackrf_source_0.set_frequency(0, rx_hw_fq)
+        self.soapy_hackrf_source_0.set_frequency(0, rx_hw_fq + fq_calibration)
         self.soapy_hackrf_source_0.set_gain(0, 'AMP', rx_preamp)
         self.soapy_hackrf_source_0.set_gain(0, 'LNA', min(max(lna_gain, 0.0), 40.0))
         self.soapy_hackrf_source_0.set_gain(0, 'VGA', min(max(vga_gain, 0.0), 62.0))
@@ -749,7 +822,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
                                   stream_args, tune_args, settings)
         self.soapy_hackrf_sink_0.set_sample_rate(0, tx_samp_rate)
         self.soapy_hackrf_sink_0.set_bandwidth(0, tx_bw[tx_bw_opts])
-        self.soapy_hackrf_sink_0.set_frequency(0, tx_fq+tx_mode_offset[side_band])
+        self.soapy_hackrf_sink_0.set_frequency(0, tx_fq+tx_mode_offset[side_band_tx] + fq_calibration)
         self.soapy_hackrf_sink_0.set_gain(0, 'AMP', True)
         self.soapy_hackrf_sink_0.set_gain(0, 'VGA', min(max(tx_gain, 0.0), 47.0))
         self._side_band_dislay_tool_bar = Qt.QToolBar(self)
@@ -763,7 +836,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             self.settings_tab_grid_layout_2.setRowStretch(r, 1)
         for c in range(2, 3):
             self.settings_tab_grid_layout_2.setColumnStretch(c, 1)
-        self._rx_fq_win_msgdigctl_win = qtgui.MsgDigitalNumberControl(lbl = 'RX FQ', min_freq_hz = current_min_fq, max_freq_hz=current_max_fq, parent=self,  thousands_separator=".",background_color="black",fontColor="green", var_callback=self.set_rx_fq_win,outputmsgname="'freq'".replace("'",""))
+        self._rx_fq_win_msgdigctl_win = qtgui.MsgDigitalNumberControl(lbl = 'RX FQ', min_freq_hz = current_min_fq - 29e6, max_freq_hz=current_max_fq, parent=self,  thousands_separator=".",background_color="black",fontColor="green", var_callback=self.set_rx_fq_win,outputmsgname="'freq'".replace("'",""))
         self._rx_fq_win_msgdigctl_win.setValue(current_default_fq)
         self._rx_fq_win_msgdigctl_win.setReadOnly(False)
         self.rx_fq_win = self._rx_fq_win_msgdigctl_win
@@ -832,10 +905,100 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
                 decimation=int(if2_samp_rate/1000),
                 taps=[],
                 fractional_bw=0.4)
+        self.qtgui_sink_x_0_0_1_0_0 = qtgui.sink_f(
+            4096, #fftsize
+            window.WIN_BLACKMAN_hARRIS, #wintype
+            0, #fc
+            ssb_tx_bandwidth*4, #bw
+            "SSB TX Filtered", #name
+            True, #plotfreq
+            True, #plotwaterfall
+            True, #plottime
+            True, #plotconst
+            None # parent
+        )
+        self.qtgui_sink_x_0_0_1_0_0.set_update_time(1.0/10)
+        self._qtgui_sink_x_0_0_1_0_0_win = sip.wrapinstance(self.qtgui_sink_x_0_0_1_0_0.qwidget(), Qt.QWidget)
+
+        self.qtgui_sink_x_0_0_1_0_0.enable_rf_freq(False)
+
+        self.top_layout.addWidget(self._qtgui_sink_x_0_0_1_0_0_win)
+        self.qtgui_sink_x_0_0_1_0 = qtgui.sink_f(
+            4096, #fftsize
+            window.WIN_BLACKMAN_hARRIS, #wintype
+            0, #fc
+            ssb_tx_bandwidth*4, #bw
+            "SSB TX Filtered", #name
+            True, #plotfreq
+            True, #plotwaterfall
+            True, #plottime
+            True, #plotconst
+            None # parent
+        )
+        self.qtgui_sink_x_0_0_1_0.set_update_time(1.0/10)
+        self._qtgui_sink_x_0_0_1_0_win = sip.wrapinstance(self.qtgui_sink_x_0_0_1_0.qwidget(), Qt.QWidget)
+
+        self.qtgui_sink_x_0_0_1_0.enable_rf_freq(False)
+
+        self.top_layout.addWidget(self._qtgui_sink_x_0_0_1_0_win)
+        self.qtgui_sink_x_0_0_1 = qtgui.sink_f(
+            4096, #fftsize
+            window.WIN_BLACKMAN_hARRIS, #wintype
+            0, #fc
+            ssb_tx_bandwidth*4, #bw
+            "SSB TX", #name
+            True, #plotfreq
+            True, #plotwaterfall
+            True, #plottime
+            True, #plotconst
+            None # parent
+        )
+        self.qtgui_sink_x_0_0_1.set_update_time(1.0/10)
+        self._qtgui_sink_x_0_0_1_win = sip.wrapinstance(self.qtgui_sink_x_0_0_1.qwidget(), Qt.QWidget)
+
+        self.qtgui_sink_x_0_0_1.enable_rf_freq(False)
+
+        self.top_layout.addWidget(self._qtgui_sink_x_0_0_1_win)
+        self.qtgui_sink_x_0_0_0 = qtgui.sink_c(
+            4096, #fftsize
+            window.WIN_HAMMING, #wintype
+            0, #fc
+            ssb_tx_bandwidth*4, #bw
+            "SOAPY RF", #name
+            True, #plotfreq
+            True, #plotwaterfall
+            True, #plottime
+            True, #plotconst
+            None # parent
+        )
+        self.qtgui_sink_x_0_0_0.set_update_time(1.0/10)
+        self._qtgui_sink_x_0_0_0_win = sip.wrapinstance(self.qtgui_sink_x_0_0_0.qwidget(), Qt.QWidget)
+
+        self.qtgui_sink_x_0_0_0.enable_rf_freq(False)
+
+        self.top_layout.addWidget(self._qtgui_sink_x_0_0_0_win)
+        self.qtgui_sink_x_0_0 = qtgui.sink_c(
+            4096, #fftsize
+            window.WIN_HAMMING, #wintype
+            0, #fc
+            ssb_tx_bandwidth*4, #bw
+            "SSB TX", #name
+            True, #plotfreq
+            True, #plotwaterfall
+            True, #plottime
+            True, #plotconst
+            None # parent
+        )
+        self.qtgui_sink_x_0_0.set_update_time(1.0/10)
+        self._qtgui_sink_x_0_0_win = sip.wrapinstance(self.qtgui_sink_x_0_0.qwidget(), Qt.QWidget)
+
+        self.qtgui_sink_x_0_0.enable_rf_freq(False)
+
+        self.top_layout.addWidget(self._qtgui_sink_x_0_0_win)
         self.qtgui_sink_x_0 = qtgui.sink_c(
             4096, #fftsize
             window.WIN_HANN, #wintype
-            fft_corr[side_band], #fc
+            fft_corr[side_band_rx], #fc
             rx_samp_rate, #bw
             "", #name
             False, #plotfreq
@@ -920,61 +1083,39 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             self.settings_tab_grid_layout_2.setRowStretch(r, 1)
         for c in range(1, 2):
             self.settings_tab_grid_layout_2.setColumnStretch(c, 1)
-        # Create the options list
-        self._mode_options = [0, 1, 2, 3, 4, 5, 6]
-        # Create the labels list
-        self._mode_labels = ['None', 'USB', 'LSB', 'CW', 'CW Stereo', 'FT8', 'MSK144']
-        # Create the combo box
-        # Create the radio buttons
-        self._mode_group_box = Qt.QGroupBox('MODE' + ": ")
-        self._mode_box = Qt.QVBoxLayout()
-        class variable_chooser_button_group(Qt.QButtonGroup):
-            def __init__(self, parent=None):
-                Qt.QButtonGroup.__init__(self, parent)
-            @pyqtSlot(int)
-            def updateButtonChecked(self, button_id):
-                self.button(button_id).setChecked(True)
-        self._mode_button_group = variable_chooser_button_group()
-        self._mode_group_box.setLayout(self._mode_box)
-        for i, _label in enumerate(self._mode_labels):
-            radio_button = Qt.QRadioButton(_label)
-            self._mode_box.addWidget(radio_button)
-            self._mode_button_group.addButton(radio_button, i)
-        self._mode_callback = lambda i: Qt.QMetaObject.invokeMethod(self._mode_button_group, "updateButtonChecked", Qt.Q_ARG("int", self._mode_options.index(i)))
-        self._mode_callback(self.mode)
-        self._mode_button_group.buttonClicked[int].connect(
-            lambda i: self.set_mode(self._mode_options[i]))
-        self.top_grid_layout.addWidget(self._mode_group_box, 3, 3, 1, 1)
+        self._mic_inpt_gain_0_tool_bar = Qt.QToolBar(self)
+        self._mic_inpt_gain_0_tool_bar.addWidget(Qt.QLabel('MIC gain' + ": "))
+        self._mic_inpt_gain_0_line_edit = Qt.QLineEdit(str(self.mic_inpt_gain_0))
+        self._mic_inpt_gain_0_tool_bar.addWidget(self._mic_inpt_gain_0_line_edit)
+        self._mic_inpt_gain_0_line_edit.returnPressed.connect(
+            lambda: self.set_mic_inpt_gain_0(eng_notation.str_to_num(str(self._mic_inpt_gain_0_line_edit.text()))))
+        self.settings_tab_grid_layout_2.addWidget(self._mic_inpt_gain_0_tool_bar, 3, 1, 1, 1)
         for r in range(3, 4):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(3, 4):
-            self.top_grid_layout.setColumnStretch(c, 1)
-        self.low_pass_filter_0_0 = filter.fir_filter_fff(
-            2,
-            firdes.low_pass(
-                1,
-                audio_samp_rate,
-                ssb_tx_bandwidth,
-                50,
-                window.WIN_HAMMING,
-                6.76))
-        self.low_pass_filter_0 = filter.fir_filter_fff(
-            2,
-            firdes.low_pass(
-                1,
-                audio_samp_rate,
-                ssb_tx_bandwidth,
-                50,
-                window.WIN_HAMMING,
-                6.76))
-        self.freq_xlating_fft_filter_ccc_1_0 = filter.freq_xlating_fft_filter_ccc(int(rx_samp_rate/if0_samp_rate), firdes.low_pass(1,rx_samp_rate,rx_samp_rate/(2*1),4000), filter_fq-cw_midear_beat[side_band], rx_samp_rate)
+            self.settings_tab_grid_layout_2.setRowStretch(r, 1)
+        for c in range(1, 2):
+            self.settings_tab_grid_layout_2.setColumnStretch(c, 1)
+        self._mgm_inpt_gain_tool_bar = Qt.QToolBar(self)
+        self._mgm_inpt_gain_tool_bar.addWidget(Qt.QLabel('MGM input gain' + ": "))
+        self._mgm_inpt_gain_line_edit = Qt.QLineEdit(str(self.mgm_inpt_gain))
+        self._mgm_inpt_gain_tool_bar.addWidget(self._mgm_inpt_gain_line_edit)
+        self._mgm_inpt_gain_line_edit.returnPressed.connect(
+            lambda: self.set_mgm_inpt_gain(eng_notation.str_to_num(str(self._mgm_inpt_gain_line_edit.text()))))
+        self.settings_tab_grid_layout_2.addWidget(self._mgm_inpt_gain_tool_bar, 3, 0, 1, 1)
+        for r in range(3, 4):
+            self.settings_tab_grid_layout_2.setRowStretch(r, 1)
+        for c in range(0, 1):
+            self.settings_tab_grid_layout_2.setColumnStretch(c, 1)
+        self.freq_xlating_fft_filter_ccc_1_0 = filter.freq_xlating_fft_filter_ccc(int(rx_samp_rate/if0_samp_rate), firdes.low_pass(1,rx_samp_rate,rx_samp_rate/(2*1),4000), filter_fq-cw_midear_beat[side_band_rx], rx_samp_rate)
         self.freq_xlating_fft_filter_ccc_1_0.set_nthreads(2)
         self.freq_xlating_fft_filter_ccc_1_0.declare_sample_delay(0)
-        self.freq_xlating_fft_filter_ccc_1 = filter.freq_xlating_fft_filter_ccc(int(rx_samp_rate/if0_samp_rate), firdes.low_pass(1,rx_samp_rate,rx_samp_rate/(2*1),4000), filter_fq+cw_midear_beat[side_band], rx_samp_rate)
+        self.freq_xlating_fft_filter_ccc_1 = filter.freq_xlating_fft_filter_ccc(int(rx_samp_rate/if0_samp_rate), firdes.low_pass(1,rx_samp_rate,rx_samp_rate/(2*1),4000), filter_fq+cw_midear_beat[side_band_rx], rx_samp_rate)
         self.freq_xlating_fft_filter_ccc_1.set_nthreads(2)
         self.freq_xlating_fft_filter_ccc_1.declare_sample_delay(0)
+        self.filter_fft_low_pass_filter_0_0_0 = filter.fft_filter_fff(2, firdes.low_pass(1, audio_samp_rate, ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76), 1)
+        self.filter_fft_low_pass_filter_0_0 = filter.fft_filter_fff(2, firdes.low_pass(1, audio_samp_rate, ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76), 1)
+        self.filter_fft_low_pass_filter_0 = filter.fft_filter_ccc(1, firdes.low_pass(1, tx_samp_rate, 2500, 50, window.WIN_KAISER, 6.76), 1)
         self.epy_block_2 = epy_block_2.blk(offset=rx_hw_fq + filter_fq, factor=1)
-        self.epy_block_1_0 = epy_block_1_0.blk(threshold=0.4, attack=1, delay=0.5)
+        self.epy_block_1_0 = epy_block_1_0.blk(threshold=vox_threshold[mode], attack=vox_attack[mode], delay=vox_delay[mode])
         self.epy_block_1 = epy_block_1.blk(threshold=0.4, attack=1, delay=6/morse_speed * 25 + 2)
         self.epy_block_0_0 = epy_block_0_0.mc_sync_block(enable=True)
         self._current_allowed_modes_tool_bar = Qt.QToolBar(self)
@@ -989,26 +1130,33 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         for c in range(5, 6):
             self.settings_tab_grid_layout_2.setColumnStretch(c, 1)
         self.blocks_uchar_to_float_0 = blocks.uchar_to_float()
-        self.blocks_selector_1 = blocks.selector(gr.sizeof_gr_complex*1,side_band,0)
+        self.blocks_selector_2 = blocks.selector(gr.sizeof_float*1,mode_to_audio_input[mode],0)
+        self.blocks_selector_2.set_enabled(True)
+        self.blocks_selector_1 = blocks.selector(gr.sizeof_gr_complex*1,side_band_tx,0)
         self.blocks_selector_1.set_enabled(True)
-        self.blocks_selector_0 = blocks.selector(gr.sizeof_gr_complex*1,0,(ssb_txing or ssb_txing_btn))
+        self.blocks_selector_0 = blocks.selector(gr.sizeof_gr_complex*1,0,(ssb_txing or ssb_txing_btn) and mode > 0)
         self.blocks_selector_0.set_enabled(True)
         self.blocks_repeat_0_0 = blocks.repeat(gr.sizeof_gr_complex*1, int(tx_samp_rate/cw_samp_rate))
         self.blocks_repeat_0 = blocks.repeat(gr.sizeof_char*1, int(6* cw_samp_rate / morse_speed))
+        self.blocks_null_source_1 = blocks.null_source(gr.sizeof_float*1)
         self.blocks_null_source_0 = blocks.null_source(gr.sizeof_gr_complex*1)
         self.blocks_null_sink_2 = blocks.null_sink(gr.sizeof_gr_complex*1)
+        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_float*1)
         self.blocks_nlog10_ff_0 = blocks.nlog10_ff(10.6, 1, RX_power_offset_dB)
         self.blocks_multiply_xx_0_0_0 = blocks.multiply_vff(1)
         self.blocks_multiply_xx_0_0 = blocks.multiply_vff(1)
         self.blocks_multiply_xx_0 = blocks.multiply_vff(1)
-        self.blocks_multiply_matrix_xx_0 = blocks.multiply_matrix_ff(af_mix_matrices[side_band], gr.TPP_DONT)
+        self.blocks_multiply_matrix_xx_0 = blocks.multiply_matrix_ff(af_mix_matrices[side_band_rx], gr.TPP_DONT)
         self.blocks_multiply_const_vxx_4_0_0_0 = blocks.multiply_const_cc(wf_gain)
-        self.blocks_multiply_const_vxx_4_0_0 = blocks.multiply_const_cc(usb_chain_gain[side_band])
-        self.blocks_multiply_const_vxx_4_0 = blocks.multiply_const_cc(lsb_chain_gain[side_band])
-        self.blocks_multiply_const_vxx_1_0_1 = blocks.multiply_const_ff(af_gain*(1-af_right))
-        self.blocks_multiply_const_vxx_1_0_0_1 = blocks.multiply_const_ff(vox_gain)
-        self.blocks_multiply_const_vxx_1_0_0_0 = blocks.multiply_const_ff(mic_gain)
-        self.blocks_multiply_const_vxx_1 = blocks.multiply_const_ff(af_gain *af_right)
+        self.blocks_multiply_const_vxx_4_0_0 = blocks.multiply_const_cc(usb_chain_gain[side_band_rx])
+        self.blocks_multiply_const_vxx_4_0 = blocks.multiply_const_cc(lsb_chain_gain[side_band_rx])
+        self.blocks_multiply_const_vxx_1_0_1_0_0 = blocks.multiply_const_ff(mgm_output_gain*(1-af_right))
+        self.blocks_multiply_const_vxx_1_0_1_0 = blocks.multiply_const_ff(spkr_gain*(1-af_right))
+        self.blocks_multiply_const_vxx_1_0_0_1 = blocks.multiply_const_ff(vox_sensitivity)
+        self.blocks_multiply_const_vxx_1_0_0_0_0 = blocks.multiply_const_ff(mic_gain)
+        self.blocks_multiply_const_vxx_1_0_0_0 = blocks.multiply_const_ff(mgm_input_gain)
+        self.blocks_multiply_const_vxx_1_0_0 = blocks.multiply_const_ff(mgm_output_gain *af_right)
+        self.blocks_multiply_const_vxx_1_0 = blocks.multiply_const_ff(spkr_gain *af_right)
         self.blocks_multiply_const_vxx_0_0 = blocks.multiply_const_ff(cw_level)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(monitor*0.0001*1000)
         self.blocks_msgpair_to_var_1_1 = blocks.msg_pair_to_var(self.set_tx_fq)
@@ -1019,14 +1167,14 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.blocks_msgpair_to_var_0 = blocks.msg_pair_to_var(self.set_cw_txing)
         self.blocks_message_debug_0 = blocks.message_debug(True)
         self.blocks_integrate_xx_1 = blocks.integrate_ff(1, 1)
-        self.blocks_integrate_xx_0 = blocks.integrate_ff(if2_samp_rate*5, 1)
+        self.blocks_integrate_xx_0 = blocks.integrate_ff(if2_samp_rate*2, 1)
         self.blocks_float_to_complex_0_3 = blocks.float_to_complex(1)
         self.blocks_float_to_complex_0_1_0_0 = blocks.float_to_complex(1)
         self.blocks_float_to_complex_0_1_0 = blocks.float_to_complex(1)
         self.blocks_float_to_complex_0_1 = blocks.float_to_complex(1)
         self.blocks_float_to_complex_0_0_1 = blocks.float_to_complex(1)
         self.blocks_float_to_complex_0_0_0 = blocks.float_to_complex(1)
-        self.blocks_float_to_char_0 = blocks.float_to_char(1, 1)
+        self.blocks_float_to_char_0 = blocks.float_to_char(1, 1 if mode > 0 else 0)
         self.blocks_complex_to_real_0_0_0 = blocks.complex_to_real(1)
         self.blocks_complex_to_real_0 = blocks.complex_to_real(1)
         self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(1)
@@ -1080,19 +1228,24 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
             firdes.band_pass(
                 1,
                 audio_samp_rate,
-                200,
+                50,
                 2700,
                 100,
                 window.WIN_HAMMING,
                 6.76))
+        self.audio_source_0_0 = audio.source(audio_samp_rate, "MacBook Pro-mikrofon", True)
         self.audio_source_0 = audio.source(audio_samp_rate, "BlackHole 16ch", True)
+        self.audio_sink_0_2 = audio.sink(audio_samp_rate, "WSJT-3", True)
+        self.audio_sink_0_1 = audio.sink(audio_samp_rate, "std_spkr", True)
         self.audio_sink_0_0 = audio.sink(audio_samp_rate, "WSJT-3", True)
-        self.audio_sink_0 = audio.sink(audio_samp_rate, "WSJT-3", True)
         self.analog_simple_squelch_cc_0_0 = analog.simple_squelch_cc(sq, .001)
         self.analog_simple_squelch_cc_0 = analog.simple_squelch_cc(sq, .001)
-        self.analog_sig_source_x_1_0 = analog.sig_source_f(audio_samp_rate, analog.GR_SIN_WAVE, ssb_tx_bandwidth, 1, 0, 0)
-        self.analog_sig_source_x_0_0 = analog.sig_source_f(audio_samp_rate, analog.GR_COS_WAVE, ssb_tx_bandwidth, 1, 0, 0)
-        self.analog_sig_source_x_0 = analog.sig_source_f(50e3, analog.GR_COS_WAVE, cw_midear_beat[side_band], 1, 0, 0)
+        self.analog_sig_source_x_1_0 = analog.sig_source_f(audio_samp_rate, analog.GR_SIN_WAVE, ssb_tx_bandwidth/2, 1, 0, 0)
+        self.analog_sig_source_x_0_1 = analog.sig_source_f(audio_samp_rate, analog.GR_SIN_WAVE, 880, 1, 0, 0)
+        self.analog_sig_source_x_0_0 = analog.sig_source_f(audio_samp_rate, analog.GR_COS_WAVE, ssb_tx_bandwidth/2, 1, 0, 0)
+        self.analog_sig_source_x_0 = analog.sig_source_f(50e3, analog.GR_COS_WAVE, cw_midear_beat[side_band_tx], 1, 0, 0)
+        self.analog_agc_xx_0 = analog.agc_ff(1e-4, 0.98, 1.0)
+        self.analog_agc_xx_0.set_max_gain(2)
         self.analog_agc3_xx_0_0 = analog.agc3_cc((1e-1), 3e-6, (.001)*0+.002, .1, 1)
         self.analog_agc3_xx_0_0.set_max_gain(.1)
         self.analog_agc3_xx_0 = analog.agc3_cc((1e-1), 3e-6, (.001)*0+.002, .1, 1)
@@ -1132,14 +1285,18 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.msg_connect((self.variable_qtgui_msg_push_button_0_0_0_0, 'pressed'), (self.msg_formatter_0, 'msg_in'))
         self.msg_connect((self.variable_qtgui_msg_push_button_0_0_0_0_0, 'pressed'), (self.msg_formatter_0_0, 'msg_in'))
         self.msg_connect((self.variable_qtgui_msg_push_button_0_0_0_0_0_0, 'pressed'), (self.msg_formatter_0_0_0, 'msg_in'))
+        self.msg_connect((self.zeromq_pull_msg_source_0, 'out'), (self.tx_fq_sync_0, 'msg_in'))
         self.connect((self.analog_agc3_xx_0, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.analog_agc3_xx_0_0, 0), (self.rational_resampler_xxx_0_0_0, 0))
+        self.connect((self.analog_agc_xx_0, 0), (self.blocks_multiply_const_vxx_1_0_0_0_0, 0))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_multiply_xx_0, 1))
         self.connect((self.analog_sig_source_x_0_0, 0), (self.blocks_multiply_xx_0_0_0, 0))
+        self.connect((self.analog_sig_source_x_0_1, 0), (self.blocks_null_sink_0, 0))
         self.connect((self.analog_sig_source_x_1_0, 0), (self.blocks_multiply_xx_0_0, 1))
         self.connect((self.analog_simple_squelch_cc_0, 0), (self.analog_agc3_xx_0, 0))
         self.connect((self.analog_simple_squelch_cc_0_0, 0), (self.analog_agc3_xx_0_0, 0))
         self.connect((self.audio_source_0, 0), (self.blocks_multiply_const_vxx_1_0_0_0, 0))
+        self.connect((self.audio_source_0_0, 0), (self.analog_agc_xx_0, 0))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_multiply_const_vxx_1_0_0_1, 0))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_multiply_xx_0_0, 0))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_multiply_xx_0_0_0, 1))
@@ -1155,12 +1312,13 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_complex_to_float_0_2_0_0, 0), (self.blocks_float_to_complex_0_1_0_0, 1))
         self.connect((self.blocks_complex_to_float_0_2_0_0, 1), (self.mulc_usb1, 0))
         self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.blocks_integrate_xx_0, 0))
-        self.connect((self.blocks_complex_to_real_0, 0), (self.blocks_multiply_const_vxx_1, 0))
-        self.connect((self.blocks_complex_to_real_0_0_0, 0), (self.blocks_multiply_const_vxx_1_0_1, 0))
+        self.connect((self.blocks_complex_to_real_0, 0), (self.blocks_multiply_matrix_xx_0, 1))
+        self.connect((self.blocks_complex_to_real_0_0_0, 0), (self.blocks_multiply_matrix_xx_0, 0))
         self.connect((self.blocks_float_to_char_0, 0), (self.epy_block_1, 0))
         self.connect((self.blocks_float_to_complex_0_0_0, 0), (self.analog_simple_squelch_cc_0, 0))
         self.connect((self.blocks_float_to_complex_0_0_0, 0), (self.blocks_add_xx_0, 1))
         self.connect((self.blocks_float_to_complex_0_0_1, 0), (self.blocks_selector_0, 0))
+        self.connect((self.blocks_float_to_complex_0_0_1, 0), (self.qtgui_sink_x_0_0, 0))
         self.connect((self.blocks_float_to_complex_0_1, 0), (self.band_pass_filter_0_0, 0))
         self.connect((self.blocks_float_to_complex_0_1_0, 0), (self.band_pass_filter_0_1, 0))
         self.connect((self.blocks_float_to_complex_0_1_0_0, 0), (self.analog_simple_squelch_cc_0_0, 0))
@@ -1170,34 +1328,47 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_integrate_xx_1, 0), (self.blocks_float_to_char_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.rational_resampler_xxx_1, 0))
         self.connect((self.blocks_multiply_const_vxx_0_0, 0), (self.blocks_float_to_complex_0_3, 0))
-        self.connect((self.blocks_multiply_const_vxx_1, 0), (self.blocks_multiply_matrix_xx_0, 1))
-        self.connect((self.blocks_multiply_const_vxx_1_0_0_0, 0), (self.band_pass_filter_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_1_0, 0), (self.audio_sink_0_1, 1))
+        self.connect((self.blocks_multiply_const_vxx_1_0_0, 0), (self.audio_sink_0_2, 1))
+        self.connect((self.blocks_multiply_const_vxx_1_0_0_0, 0), (self.blocks_selector_2, 1))
+        self.connect((self.blocks_multiply_const_vxx_1_0_0_0_0, 0), (self.blocks_selector_2, 2))
         self.connect((self.blocks_multiply_const_vxx_1_0_0_1, 0), (self.epy_block_1_0, 0))
-        self.connect((self.blocks_multiply_const_vxx_1_0_1, 0), (self.blocks_multiply_matrix_xx_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_1_0_1_0, 0), (self.audio_sink_0_1, 0))
+        self.connect((self.blocks_multiply_const_vxx_1_0_1_0_0, 0), (self.audio_sink_0_2, 0))
         self.connect((self.blocks_multiply_const_vxx_4_0, 0), (self.blocks_complex_to_float_0_2, 0))
         self.connect((self.blocks_multiply_const_vxx_4_0_0, 0), (self.blocks_complex_to_float_0_2_0, 0))
         self.connect((self.blocks_multiply_const_vxx_4_0_0_0, 0), (self.qtgui_sink_x_0, 0))
-        self.connect((self.blocks_multiply_matrix_xx_0, 1), (self.audio_sink_0, 1))
-        self.connect((self.blocks_multiply_matrix_xx_0, 0), (self.audio_sink_0, 0))
+        self.connect((self.blocks_multiply_matrix_xx_0, 1), (self.blocks_multiply_const_vxx_1_0, 0))
+        self.connect((self.blocks_multiply_matrix_xx_0, 1), (self.blocks_multiply_const_vxx_1_0_0, 0))
+        self.connect((self.blocks_multiply_matrix_xx_0, 0), (self.blocks_multiply_const_vxx_1_0_1_0, 0))
+        self.connect((self.blocks_multiply_matrix_xx_0, 0), (self.blocks_multiply_const_vxx_1_0_1_0_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_multiply_const_vxx_0, 0))
-        self.connect((self.blocks_multiply_xx_0_0, 0), (self.low_pass_filter_0, 0))
-        self.connect((self.blocks_multiply_xx_0_0_0, 0), (self.low_pass_filter_0_0, 0))
+        self.connect((self.blocks_multiply_xx_0_0, 0), (self.filter_fft_low_pass_filter_0_0, 0))
+        self.connect((self.blocks_multiply_xx_0_0, 0), (self.qtgui_sink_x_0_0_1_0, 0))
+        self.connect((self.blocks_multiply_xx_0_0_0, 0), (self.filter_fft_low_pass_filter_0_0_0, 0))
+        self.connect((self.blocks_multiply_xx_0_0_0, 0), (self.qtgui_sink_x_0_0_1_0_0, 0))
         self.connect((self.blocks_nlog10_ff_0, 0), (self.blocks_probe_signal_x_0, 0))
-        self.connect((self.blocks_null_source_0, 0), (self.blocks_selector_1, 5))
         self.connect((self.blocks_null_source_0, 0), (self.blocks_selector_1, 0))
+        self.connect((self.blocks_null_source_0, 0), (self.blocks_selector_1, 5))
+        self.connect((self.blocks_null_source_1, 0), (self.blocks_selector_2, 0))
         self.connect((self.blocks_repeat_0, 0), (self.blocks_uchar_to_float_0, 0))
         self.connect((self.blocks_repeat_0_0, 0), (self.blocks_selector_1, 3))
         self.connect((self.blocks_repeat_0_0, 0), (self.blocks_selector_1, 4))
         self.connect((self.blocks_selector_0, 0), (self.blocks_null_sink_2, 0))
         self.connect((self.blocks_selector_0, 1), (self.rational_resampler_xxx_4_0, 0))
+        self.connect((self.blocks_selector_1, 0), (self.qtgui_sink_x_0_0_0, 0))
         self.connect((self.blocks_selector_1, 0), (self.soapy_hackrf_sink_0, 0))
+        self.connect((self.blocks_selector_2, 0), (self.band_pass_filter_0, 0))
+        self.connect((self.blocks_selector_2, 0), (self.qtgui_sink_x_0_0_1, 0))
         self.connect((self.blocks_uchar_to_float_0, 0), (self.root_raised_cosine_filter_0, 0))
         self.connect((self.epy_block_0_0, 0), (self.blocks_repeat_0, 0))
+        self.connect((self.filter_fft_low_pass_filter_0, 0), (self.blocks_selector_1, 2))
+        self.connect((self.filter_fft_low_pass_filter_0, 0), (self.blocks_selector_1, 1))
+        self.connect((self.filter_fft_low_pass_filter_0_0, 0), (self.blocks_float_to_complex_0_0_1, 0))
+        self.connect((self.filter_fft_low_pass_filter_0_0_0, 0), (self.blocks_float_to_complex_0_0_1, 1))
         self.connect((self.freq_xlating_fft_filter_ccc_1, 0), (self.pfb_decimator_ccf_0_0, 0))
         self.connect((self.freq_xlating_fft_filter_ccc_1_0, 0), (self.blocks_multiply_const_vxx_4_0_0_0, 0))
         self.connect((self.freq_xlating_fft_filter_ccc_1_0, 0), (self.pfb_decimator_ccf_0_0_0, 0))
-        self.connect((self.low_pass_filter_0, 0), (self.blocks_float_to_complex_0_0_1, 0))
-        self.connect((self.low_pass_filter_0_0, 0), (self.blocks_float_to_complex_0_0_1, 1))
         self.connect((self.mulc_lsb1, 0), (self.blocks_float_to_complex_0_0_0, 0))
         self.connect((self.mulc_lsb_0, 0), (self.blocks_float_to_complex_0_1, 0))
         self.connect((self.mulc_usb1, 0), (self.blocks_float_to_complex_0_1_0_0, 0))
@@ -1207,8 +1378,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.connect((self.rational_resampler_xxx_0, 0), (self.blocks_complex_to_real_0, 0))
         self.connect((self.rational_resampler_xxx_0_0_0, 0), (self.blocks_complex_to_real_0_0_0, 0))
         self.connect((self.rational_resampler_xxx_1, 0), (self.audio_sink_0_0, 0))
-        self.connect((self.rational_resampler_xxx_4_0, 0), (self.blocks_selector_1, 1))
-        self.connect((self.rational_resampler_xxx_4_0, 0), (self.blocks_selector_1, 2))
+        self.connect((self.rational_resampler_xxx_4_0, 0), (self.filter_fft_low_pass_filter_0, 0))
         self.connect((self.root_raised_cosine_filter_0, 0), (self.root_raised_cosine_filter_0_0, 0))
         self.connect((self.root_raised_cosine_filter_0_0, 0), (self.blocks_integrate_xx_1, 0))
         self.connect((self.root_raised_cosine_filter_0_0, 0), (self.blocks_multiply_const_vxx_0_0, 0))
@@ -1282,12 +1452,12 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.mode_default_option = mode_default_option
         self.set_mode(self.mode_default_option)
 
-    def get_mode_to_sb(self):
-        return self.mode_to_sb
+    def get_mode_to_sb_rx(self):
+        return self.mode_to_sb_rx
 
-    def set_mode_to_sb(self, mode_to_sb):
-        self.mode_to_sb = mode_to_sb
-        self.set_side_band(self.mode_to_sb[self.mode])
+    def set_mode_to_sb_rx(self, mode_to_sb_rx):
+        self.mode_to_sb_rx = mode_to_sb_rx
+        self.set_side_band_rx(self.mode_to_sb_rx[self.mode])
 
     def get_mode(self):
         return self.mode
@@ -1296,7 +1466,14 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.mode = mode
         self._mode_callback(self.mode)
         self.set_mode_display(self.mode)
-        self.set_side_band(self.mode_to_sb[self.mode])
+        self.set_side_band_rx(self.mode_to_sb_rx[self.mode])
+        self.set_side_band_tx(self.mode_to_sb_tx[self.mode])
+        self.blocks_float_to_char_0.set_scale(1 if self.mode > 0 else 0)
+        self.blocks_selector_0.set_output_index((self.ssb_txing or self.ssb_txing_btn) and self.mode > 0)
+        self.blocks_selector_2.set_input_index(self.mode_to_audio_input[self.mode])
+        self.epy_block_1_0.attack = self.vox_attack[self.mode]
+        self.epy_block_1_0.delay = self.vox_delay[self.mode]
+        self.epy_block_1_0.threshold = self.vox_threshold[self.mode]
 
     def get_current_min_fq(self):
         return self.current_min_fq
@@ -1320,10 +1497,17 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_current_default_fq(self, current_default_fq):
         self.current_default_fq = current_default_fq
         Qt.QMetaObject.invokeMethod(self._current_default_fq_line_edit, "setText", Qt.Q_ARG("QString", eng_notation.num_to_str(self.current_default_fq)))
-        self.set_rx_ctr_fq_0(int(self.filter_fq + self.rx_fq - self.current_default_fq))
         self._rx_fq_win_msgdigctl_win.setValue(self.current_default_fq)
         self.set_tx_center_fq(self.current_default_fq)
         self.rx_distancer.desired_fq = self.current_default_fq
+
+    def get_tx_gain(self):
+        return self.tx_gain
+
+    def set_tx_gain(self, tx_gain):
+        self.tx_gain = tx_gain
+        self.set_tc_vga(self.tx_gain)
+        self.soapy_hackrf_sink_0.set_gain(0, 'VGA', min(max(self.tx_gain, 0.0), 47.0))
 
     def get_tx_fq(self):
         return self.tx_fq
@@ -1331,7 +1515,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_tx_fq(self, tx_fq):
         self.tx_fq = tx_fq
         self.set_tx_fq_q(int(self.tx_fq))
-        self.soapy_hackrf_sink_0.set_frequency(0, self.tx_fq+self.tx_mode_offset[self.side_band])
+        self.soapy_hackrf_sink_0.set_frequency(0, self.tx_fq+self.tx_mode_offset[self.side_band_tx] + self.fq_calibration)
 
     def get_tx_center_fq(self):
         return self.tx_center_fq
@@ -1347,7 +1531,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.tx_bw_opts = tx_bw_opts
         self.set_ssb_tx_bandwidth(self.tx_bw[self.tx_bw_opts])
         self._tx_bw_opts_callback(self.tx_bw_opts)
-        self.set_tx_mode_offset([0, self.tx_bw[self.tx_bw_opts], -self.tx_bw[self.tx_bw_opts], 0, 0, [self.tx_bw_opts],[self.tx_bw_opts]])
+        self.set_tx_mode_offset([0, self.tx_bw[self.tx_bw_opts]/2, -self.tx_bw[self.tx_bw_opts]/2, 0, 0, self.tx_bw[self.tx_bw_opts]/2,self.tx_bw[self.tx_bw_opts]/2])
         self.soapy_hackrf_sink_0.set_bandwidth(0, self.tx_bw[self.tx_bw_opts])
 
     def get_tx_bw(self):
@@ -1356,7 +1540,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_tx_bw(self, tx_bw):
         self.tx_bw = tx_bw
         self.set_ssb_tx_bandwidth(self.tx_bw[self.tx_bw_opts])
-        self.set_tx_mode_offset([0, self.tx_bw[self.tx_bw_opts], -self.tx_bw[self.tx_bw_opts], 0, 0, [self.tx_bw_opts],[self.tx_bw_opts]])
+        self.set_tx_mode_offset([0, self.tx_bw[self.tx_bw_opts]/2, -self.tx_bw[self.tx_bw_opts]/2, 0, 0, self.tx_bw[self.tx_bw_opts]/2,self.tx_bw[self.tx_bw_opts]/2])
         self.soapy_hackrf_sink_0.set_bandwidth(0, self.tx_bw[self.tx_bw_opts])
 
     def get_ssb_txing(self):
@@ -1365,25 +1549,22 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_ssb_txing(self, ssb_txing):
         self.ssb_txing = ssb_txing
         self.set_txing(self.cw_txing or self.ssb_txing)
-        self.blocks_selector_0.set_output_index((self.ssb_txing or self.ssb_txing_btn))
+        self.blocks_selector_0.set_output_index((self.ssb_txing or self.ssb_txing_btn) and self.mode > 0)
         self.qtgui_ledindicator_0_0.setState((self.ssb_txing or self.ssb_txing_btn or self.cw_txing))
 
-    def get_side_band(self):
-        return self.side_band
+    def get_side_band_rx(self):
+        return self.side_band_rx
 
-    def set_side_band(self, side_band):
-        self.side_band = side_band
-        self.set_side_band_dislay(self.side_band)
-        self.set_variable_qtgui_entry_0(self.side_band)
-        self.analog_sig_source_x_0.set_frequency(self.cw_midear_beat[self.side_band])
-        self.blocks_multiply_const_vxx_4_0.set_k(self.lsb_chain_gain[self.side_band])
-        self.blocks_multiply_const_vxx_4_0_0.set_k(self.usb_chain_gain[self.side_band])
-        self.blocks_multiply_matrix_xx_0.set_A(self.af_mix_matrices[self.side_band])
-        self.blocks_selector_1.set_input_index(self.side_band)
-        self.freq_xlating_fft_filter_ccc_1.set_center_freq(self.filter_fq+self.cw_midear_beat[self.side_band])
-        self.freq_xlating_fft_filter_ccc_1_0.set_center_freq(self.filter_fq-self.cw_midear_beat[self.side_band])
-        self.qtgui_sink_x_0.set_frequency_range(self.fft_corr[self.side_band], self.rx_samp_rate)
-        self.soapy_hackrf_sink_0.set_frequency(0, self.tx_fq+self.tx_mode_offset[self.side_band])
+    def set_side_band_rx(self, side_band_rx):
+        self.side_band_rx = side_band_rx
+        self.set_side_band_dislay(self.side_band_rx)
+        self.set_variable_qtgui_entry_0(self.side_band_rx)
+        self.blocks_multiply_const_vxx_4_0.set_k(self.lsb_chain_gain[self.side_band_rx])
+        self.blocks_multiply_const_vxx_4_0_0.set_k(self.usb_chain_gain[self.side_band_rx])
+        self.blocks_multiply_matrix_xx_0.set_A(self.af_mix_matrices[self.side_band_rx])
+        self.freq_xlating_fft_filter_ccc_1.set_center_freq(self.filter_fq+self.cw_midear_beat[self.side_band_rx])
+        self.freq_xlating_fft_filter_ccc_1_0.set_center_freq(self.filter_fq-self.cw_midear_beat[self.side_band_rx])
+        self.qtgui_sink_x_0.set_frequency_range(self.fft_corr[self.side_band_rx], self.rx_samp_rate)
 
     def get_rx_samp_rate(self):
         return self.rx_samp_rate
@@ -1396,7 +1577,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.freq_xlating_fft_filter_ccc_1_0.set_taps(firdes.low_pass(1,self.rx_samp_rate,self.rx_samp_rate/(2*1),4000))
         self.pfb_decimator_ccf_0_0.set_taps(firdes.low_pass(1,self.rx_samp_rate/2, 3900,100))
         self.pfb_decimator_ccf_0_0_0.set_taps(firdes.low_pass(1,self.rx_samp_rate/2, 3900,100))
-        self.qtgui_sink_x_0.set_frequency_range(self.fft_corr[self.side_band], self.rx_samp_rate)
+        self.qtgui_sink_x_0.set_frequency_range(self.fft_corr[self.side_band_rx], self.rx_samp_rate)
         self.rx_distancer.max_distance = self.rx_samp_rate/2.0
         self.soapy_hackrf_source_0.set_sample_rate(0, self.rx_samp_rate)
 
@@ -1409,14 +1590,30 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.set_wf_fq(self.freq+self.rx_hw_fq)
         self.epy_block_2.offset = self.rx_hw_fq + self.filter_fq
         self.rx_distancer.hw_var = self.rx_hw_fq
-        self.soapy_hackrf_source_0.set_frequency(0, self.rx_hw_fq)
+        self.soapy_hackrf_source_0.set_frequency(0, self.rx_hw_fq + self.fq_calibration)
 
-    def get_rx_fq(self):
-        return self.rx_fq
+    def get_mode_to_sb_tx(self):
+        return self.mode_to_sb_tx
 
-    def set_rx_fq(self, rx_fq):
-        self.rx_fq = rx_fq
-        self.set_rx_ctr_fq_0(int(self.filter_fq + self.rx_fq - self.current_default_fq))
+    def set_mode_to_sb_tx(self, mode_to_sb_tx):
+        self.mode_to_sb_tx = mode_to_sb_tx
+        self.set_side_band_tx(self.mode_to_sb_tx[self.mode])
+
+    def get_mic_gain(self):
+        return self.mic_gain
+
+    def set_mic_gain(self, mic_gain):
+        self.mic_gain = mic_gain
+        self.set_mic_inpt_gain_0(self.mic_gain)
+        self.blocks_multiply_const_vxx_1_0_0_0_0.set_k(self.mic_gain)
+
+    def get_mgm_input_gain(self):
+        return self.mgm_input_gain
+
+    def set_mgm_input_gain(self, mgm_input_gain):
+        self.mgm_input_gain = mgm_input_gain
+        self.set_mgm_inpt_gain(self.mgm_input_gain)
+        self.blocks_multiply_const_vxx_1_0_0_0.set_k(self.mgm_input_gain)
 
     def get_freq(self):
         return self.freq
@@ -1430,10 +1627,10 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
 
     def set_filter_fq(self, filter_fq):
         self.filter_fq = filter_fq
-        self.set_rx_ctr_fq_0(int(self.filter_fq + self.rx_fq - self.current_default_fq))
+        self.set_rx_ctr_fq_0(int(self.filter_fq))
         self.epy_block_2.offset = self.rx_hw_fq + self.filter_fq
-        self.freq_xlating_fft_filter_ccc_1.set_center_freq(self.filter_fq+self.cw_midear_beat[self.side_band])
-        self.freq_xlating_fft_filter_ccc_1_0.set_center_freq(self.filter_fq-self.cw_midear_beat[self.side_band])
+        self.freq_xlating_fft_filter_ccc_1.set_center_freq(self.filter_fq+self.cw_midear_beat[self.side_band_rx])
+        self.freq_xlating_fft_filter_ccc_1_0.set_center_freq(self.filter_fq-self.cw_midear_beat[self.side_band_rx])
         self.rx_distancer.filter_var = self.filter_fq
 
     def get_f0(self):
@@ -1448,7 +1645,6 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
 
     def set_cw_txing(self, cw_txing):
         self.cw_txing = cw_txing
-        self.set_af_mix_matrices_0([((1,0,0), (1,0,0)),  ((1,0,0), (1,0,0)),  ((0,1,0),(0,1,0)),  ((1,0,self.cw_txing),  (1,0,self.cw_txing)),((1,0,self.cw_txing),(0,1,self.cw_txing))])
         self.set_txing(self.cw_txing or self.ssb_txing)
         self.qtgui_ledindicator_0_0.setState((self.ssb_txing or self.ssb_txing_btn or self.cw_txing))
 
@@ -1465,12 +1661,33 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_wf_fq(self, wf_fq):
         self.wf_fq = wf_fq
 
-    def get_vox_gain(self):
-        return self.vox_gain
+    def get_vox_threshold(self):
+        return self.vox_threshold
 
-    def set_vox_gain(self, vox_gain):
-        self.vox_gain = vox_gain
-        self.blocks_multiply_const_vxx_1_0_0_1.set_k(self.vox_gain)
+    def set_vox_threshold(self, vox_threshold):
+        self.vox_threshold = vox_threshold
+        self.epy_block_1_0.threshold = self.vox_threshold[self.mode]
+
+    def get_vox_sensitivity(self):
+        return self.vox_sensitivity
+
+    def set_vox_sensitivity(self, vox_sensitivity):
+        self.vox_sensitivity = vox_sensitivity
+        self.blocks_multiply_const_vxx_1_0_0_1.set_k(self.vox_sensitivity)
+
+    def get_vox_delay(self):
+        return self.vox_delay
+
+    def set_vox_delay(self, vox_delay):
+        self.vox_delay = vox_delay
+        self.epy_block_1_0.delay = self.vox_delay[self.mode]
+
+    def get_vox_attack(self):
+        return self.vox_attack
+
+    def set_vox_attack(self, vox_attack):
+        self.vox_attack = vox_attack
+        self.epy_block_1_0.attack = self.vox_attack[self.mode]
 
     def get_vga_gain(self):
         return self.vga_gain
@@ -1498,7 +1715,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
 
     def set_usb_chain_gain(self, usb_chain_gain):
         self.usb_chain_gain = usb_chain_gain
-        self.blocks_multiply_const_vxx_4_0_0.set_k(self.usb_chain_gain[self.side_band])
+        self.blocks_multiply_const_vxx_4_0_0.set_k(self.usb_chain_gain[self.side_band_rx])
 
     def get_txing(self):
         return self.txing
@@ -1512,6 +1729,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_tx_samp_rate(self, tx_samp_rate):
         self.tx_samp_rate = tx_samp_rate
         self.blocks_repeat_0_0.set_interpolation(int(self.tx_samp_rate/self.cw_samp_rate))
+        self.filter_fft_low_pass_filter_0.set_taps(firdes.low_pass(1, self.tx_samp_rate, 2500, 50, window.WIN_KAISER, 6.76))
         self.soapy_hackrf_sink_0.set_sample_rate(0, self.tx_samp_rate)
 
     def get_tx_rprt(self):
@@ -1529,14 +1747,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
 
     def set_tx_mode_offset(self, tx_mode_offset):
         self.tx_mode_offset = tx_mode_offset
-        self.soapy_hackrf_sink_0.set_frequency(0, self.tx_fq+self.tx_mode_offset[self.side_band])
-
-    def get_tx_gain(self):
-        return self.tx_gain
-
-    def set_tx_gain(self, tx_gain):
-        self.tx_gain = tx_gain
-        self.soapy_hackrf_sink_0.set_gain(0, 'VGA', min(max(self.tx_gain, 0.0), 47.0))
+        self.soapy_hackrf_sink_0.set_frequency(0, self.tx_fq+self.tx_mode_offset[self.side_band_tx] + self.fq_calibration)
 
     def get_tx_fq_win(self):
         return self.tx_fq_win
@@ -1551,6 +1762,13 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.tx_fq_q = tx_fq_q
         Qt.QMetaObject.invokeMethod(self._tx_fq_q_line_edit, "setText", Qt.Q_ARG("QString", str(self.tx_fq_q)))
 
+    def get_tc_vga(self):
+        return self.tc_vga
+
+    def set_tc_vga(self, tc_vga):
+        self.tc_vga = tc_vga
+        Qt.QMetaObject.invokeMethod(self._tc_vga_line_edit, "setText", Qt.Q_ARG("QString", eng_notation.num_to_str(self.tc_vga)))
+
     def get_symbol_rate(self):
         return self.symbol_rate
 
@@ -1564,24 +1782,23 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
 
     def set_ssb_txing_btn(self, ssb_txing_btn):
         self.ssb_txing_btn = ssb_txing_btn
-        self.blocks_selector_0.set_output_index((self.ssb_txing or self.ssb_txing_btn))
+        self.blocks_selector_0.set_output_index((self.ssb_txing or self.ssb_txing_btn) and self.mode > 0)
         self.qtgui_ledindicator_0_0.setState((self.ssb_txing or self.ssb_txing_btn or self.cw_txing))
-
-    def get_ssb_tx_mode(self):
-        return self.ssb_tx_mode
-
-    def set_ssb_tx_mode(self, ssb_tx_mode):
-        self.ssb_tx_mode = ssb_tx_mode
 
     def get_ssb_tx_bandwidth(self):
         return self.ssb_tx_bandwidth
 
     def set_ssb_tx_bandwidth(self, ssb_tx_bandwidth):
         self.ssb_tx_bandwidth = ssb_tx_bandwidth
-        self.analog_sig_source_x_0_0.set_frequency(self.ssb_tx_bandwidth)
-        self.analog_sig_source_x_1_0.set_frequency(self.ssb_tx_bandwidth)
-        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth, 50, window.WIN_HAMMING, 6.76))
-        self.low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth, 50, window.WIN_HAMMING, 6.76))
+        self.analog_sig_source_x_0_0.set_frequency(self.ssb_tx_bandwidth/2)
+        self.analog_sig_source_x_1_0.set_frequency(self.ssb_tx_bandwidth/2)
+        self.filter_fft_low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76))
+        self.filter_fft_low_pass_filter_0_0_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76))
+        self.qtgui_sink_x_0_0.set_frequency_range(0, self.ssb_tx_bandwidth*4)
+        self.qtgui_sink_x_0_0_0.set_frequency_range(0, self.ssb_tx_bandwidth*4)
+        self.qtgui_sink_x_0_0_1.set_frequency_range(0, self.ssb_tx_bandwidth*4)
+        self.qtgui_sink_x_0_0_1_0.set_frequency_range(0, self.ssb_tx_bandwidth*4)
+        self.qtgui_sink_x_0_0_1_0_0.set_frequency_range(0, self.ssb_tx_bandwidth*4)
 
     def get_sq(self):
         return self.sq
@@ -1598,6 +1815,23 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.split_fq = split_fq
         self._split_fq_callback(self.split_fq)
         self.tx_fq_sync.gate_control = self.split_fq
+
+    def get_spkr_gain(self):
+        return self.spkr_gain
+
+    def set_spkr_gain(self, spkr_gain):
+        self.spkr_gain = spkr_gain
+        self.blocks_multiply_const_vxx_1_0.set_k(self.spkr_gain *self.af_right)
+        self.blocks_multiply_const_vxx_1_0_1_0.set_k(self.spkr_gain*(1-self.af_right))
+
+    def get_side_band_tx(self):
+        return self.side_band_tx
+
+    def set_side_band_tx(self, side_band_tx):
+        self.side_band_tx = side_band_tx
+        self.analog_sig_source_x_0.set_frequency(self.cw_midear_beat[self.side_band_tx])
+        self.blocks_selector_1.set_input_index(self.side_band_tx)
+        self.soapy_hackrf_sink_0.set_frequency(0, self.tx_fq+self.tx_mode_offset[self.side_band_tx] + self.fq_calibration)
 
     def get_side_band_dislay(self):
         return self.side_band_dislay
@@ -1632,6 +1866,12 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_rx_fq_win(self, rx_fq_win):
         self.rx_fq_win = rx_fq_win
 
+    def get_rx_fq(self):
+        return self.rx_fq
+
+    def set_rx_fq(self, rx_fq):
+        self.rx_fq = rx_fq
+
     def get_rx_ctr_fq_0(self):
         return self.rx_ctr_fq_0
 
@@ -1645,12 +1885,6 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_rx_ctr_fq(self, rx_ctr_fq):
         self.rx_ctr_fq = rx_ctr_fq
         Qt.QMetaObject.invokeMethod(self._rx_ctr_fq_line_edit, "setText", Qt.Q_ARG("QString", str(self.rx_ctr_fq)))
-
-    def get_rx_corr(self):
-        return self.rx_corr
-
-    def set_rx_corr(self, rx_corr):
-        self.rx_corr = rx_corr
 
     def get_rx_center_fq(self):
         return self.rx_center_fq
@@ -1689,6 +1923,13 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.monitor = monitor
         self.blocks_multiply_const_vxx_0.set_k(self.monitor*0.0001*1000)
 
+    def get_mode_to_audio_input(self):
+        return self.mode_to_audio_input
+
+    def set_mode_to_audio_input(self, mode_to_audio_input):
+        self.mode_to_audio_input = mode_to_audio_input
+        self.blocks_selector_2.set_input_index(self.mode_to_audio_input[self.mode])
+
     def get_mode_options(self):
         return self.mode_options
 
@@ -1714,19 +1955,34 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.mode_display = mode_display
         Qt.QMetaObject.invokeMethod(self._mode_display_line_edit, "setText", Qt.Q_ARG("QString", str(self.mode_display)))
 
-    def get_mic_gain(self):
-        return self.mic_gain
+    def get_mic_inpt_gain_0(self):
+        return self.mic_inpt_gain_0
 
-    def set_mic_gain(self, mic_gain):
-        self.mic_gain = mic_gain
-        self.blocks_multiply_const_vxx_1_0_0_0.set_k(self.mic_gain)
+    def set_mic_inpt_gain_0(self, mic_inpt_gain_0):
+        self.mic_inpt_gain_0 = mic_inpt_gain_0
+        Qt.QMetaObject.invokeMethod(self._mic_inpt_gain_0_line_edit, "setText", Qt.Q_ARG("QString", eng_notation.num_to_str(self.mic_inpt_gain_0)))
+
+    def get_mgm_output_gain(self):
+        return self.mgm_output_gain
+
+    def set_mgm_output_gain(self, mgm_output_gain):
+        self.mgm_output_gain = mgm_output_gain
+        self.blocks_multiply_const_vxx_1_0_0.set_k(self.mgm_output_gain *self.af_right)
+        self.blocks_multiply_const_vxx_1_0_1_0_0.set_k(self.mgm_output_gain*(1-self.af_right))
+
+    def get_mgm_inpt_gain(self):
+        return self.mgm_inpt_gain
+
+    def set_mgm_inpt_gain(self, mgm_inpt_gain):
+        self.mgm_inpt_gain = mgm_inpt_gain
+        Qt.QMetaObject.invokeMethod(self._mgm_inpt_gain_line_edit, "setText", Qt.Q_ARG("QString", eng_notation.num_to_str(self.mgm_inpt_gain)))
 
     def get_lsb_chain_gain(self):
         return self.lsb_chain_gain
 
     def set_lsb_chain_gain(self, lsb_chain_gain):
         self.lsb_chain_gain = lsb_chain_gain
-        self.blocks_multiply_const_vxx_4_0.set_k(self.lsb_chain_gain[self.side_band])
+        self.blocks_multiply_const_vxx_4_0.set_k(self.lsb_chain_gain[self.side_band_rx])
 
     def get_lna_gain(self):
         return self.lna_gain
@@ -1761,12 +2017,20 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_ham_bands_keys(self, ham_bands_keys):
         self.ham_bands_keys = ham_bands_keys
 
+    def get_fq_calibration(self):
+        return self.fq_calibration
+
+    def set_fq_calibration(self, fq_calibration):
+        self.fq_calibration = fq_calibration
+        self.soapy_hackrf_sink_0.set_frequency(0, self.tx_fq+self.tx_mode_offset[self.side_band_tx] + self.fq_calibration)
+        self.soapy_hackrf_source_0.set_frequency(0, self.rx_hw_fq + self.fq_calibration)
+
     def get_fft_corr(self):
         return self.fft_corr
 
     def set_fft_corr(self, fft_corr):
         self.fft_corr = fft_corr
-        self.qtgui_sink_x_0.set_frequency_range(self.fft_corr[self.side_band], self.rx_samp_rate)
+        self.qtgui_sink_x_0.set_frequency_range(self.fft_corr[self.side_band_rx], self.rx_samp_rate)
 
     def get_f0_min(self):
         return self.f0_min
@@ -1800,9 +2064,9 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
 
     def set_cw_midear_beat(self, cw_midear_beat):
         self.cw_midear_beat = cw_midear_beat
-        self.analog_sig_source_x_0.set_frequency(self.cw_midear_beat[self.side_band])
-        self.freq_xlating_fft_filter_ccc_1.set_center_freq(self.filter_fq+self.cw_midear_beat[self.side_band])
-        self.freq_xlating_fft_filter_ccc_1_0.set_center_freq(self.filter_fq-self.cw_midear_beat[self.side_band])
+        self.analog_sig_source_x_0.set_frequency(self.cw_midear_beat[self.side_band_tx])
+        self.freq_xlating_fft_filter_ccc_1.set_center_freq(self.filter_fq+self.cw_midear_beat[self.side_band_rx])
+        self.freq_xlating_fft_filter_ccc_1_0.set_center_freq(self.filter_fq-self.cw_midear_beat[self.side_band_rx])
 
     def get_cw_level(self):
         return self.cw_level
@@ -1855,39 +2119,28 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_audio_samp_rate(self, audio_samp_rate):
         self.audio_samp_rate = audio_samp_rate
         self.analog_sig_source_x_0_0.set_sampling_freq(self.audio_samp_rate)
+        self.analog_sig_source_x_0_1.set_sampling_freq(self.audio_samp_rate)
         self.analog_sig_source_x_1_0.set_sampling_freq(self.audio_samp_rate)
-        self.band_pass_filter_0.set_taps(firdes.band_pass(1, self.audio_samp_rate, 200, 2700, 100, window.WIN_HAMMING, 6.76))
-        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth, 50, window.WIN_HAMMING, 6.76))
-        self.low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth, 50, window.WIN_HAMMING, 6.76))
+        self.band_pass_filter_0.set_taps(firdes.band_pass(1, self.audio_samp_rate, 50, 2700, 100, window.WIN_HAMMING, 6.76))
+        self.filter_fft_low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76))
+        self.filter_fft_low_pass_filter_0_0_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76))
 
     def get_af_right(self):
         return self.af_right
 
     def set_af_right(self, af_right):
         self.af_right = af_right
-        self.blocks_multiply_const_vxx_1.set_k(self.af_gain *self.af_right)
-        self.blocks_multiply_const_vxx_1_0_1.set_k(self.af_gain*(1-self.af_right))
-
-    def get_af_mix_matrices_0(self):
-        return self.af_mix_matrices_0
-
-    def set_af_mix_matrices_0(self, af_mix_matrices_0):
-        self.af_mix_matrices_0 = af_mix_matrices_0
+        self.blocks_multiply_const_vxx_1_0.set_k(self.spkr_gain *self.af_right)
+        self.blocks_multiply_const_vxx_1_0_0.set_k(self.mgm_output_gain *self.af_right)
+        self.blocks_multiply_const_vxx_1_0_1_0.set_k(self.spkr_gain*(1-self.af_right))
+        self.blocks_multiply_const_vxx_1_0_1_0_0.set_k(self.mgm_output_gain*(1-self.af_right))
 
     def get_af_mix_matrices(self):
         return self.af_mix_matrices
 
     def set_af_mix_matrices(self, af_mix_matrices):
         self.af_mix_matrices = af_mix_matrices
-        self.blocks_multiply_matrix_xx_0.set_A(self.af_mix_matrices[self.side_band])
-
-    def get_af_gain(self):
-        return self.af_gain
-
-    def set_af_gain(self, af_gain):
-        self.af_gain = af_gain
-        self.blocks_multiply_const_vxx_1.set_k(self.af_gain *self.af_right)
-        self.blocks_multiply_const_vxx_1_0_1.set_k(self.af_gain*(1-self.af_right))
+        self.blocks_multiply_matrix_xx_0.set_A(self.af_mix_matrices[self.side_band_rx])
 
     def get_RX_power_offset_dB(self):
         return self.RX_power_offset_dB
