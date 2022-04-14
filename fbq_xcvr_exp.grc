@@ -557,7 +557,7 @@ blocks:
     scaleFactor: '0.001'
     showvalue: 'True'
     type: real
-    value: '1.0'
+    value: '0.2'
   states:
     bus_sink: false
     bus_source: false
@@ -1413,7 +1413,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '[10000,100,100,1,1,1,1]'
+    value: '[10000,10,10,1,1,1,1]'
   states:
     bus_sink: false
     bus_source: false
@@ -1425,7 +1425,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '[0,1.2,1.2,0.7,0.7,0.4,0.4]'
+    value: '[0,1.5,1.5,0.7,0.7,0.5,0.5]'
   states:
     bus_sink: false
     bus_source: false
@@ -1447,7 +1447,7 @@ blocks:
     scaleFactor: '1'
     showvalue: 'True'
     type: int
-    value: '2'
+    value: '20'
   states:
     bus_sink: false
     bus_source: false
@@ -1509,7 +1509,7 @@ blocks:
       \ = lambda i: Qt.QMetaObject.invokeMethod(self._band_selector_combo_box, \"\
       setCurrentIndex\", Qt.Q_ARG(\"int\", self._band_selector_options.index(i)))\n\
       self._band_selector_combo_box.currentIndexChanged.connect(\n    lambda i: self.set_band_selector(self._band_selector_options[i])\n\
-      )\n\n\nself._band_selector_combo_box.setCurrentIndex(13)\nself.rx_distancer.desired_fq=self.ham_bands['144-FT8'][2]"
+      )\n\n\nself._band_selector_combo_box.setCurrentIndex(20)\nself.rx_distancer.desired_fq=self.ham_bands['432-FT8'][2]"
     comment: ''
     priority: '1'
     section: main_after_start
@@ -1519,6 +1519,27 @@ blocks:
     bus_structure: null
     coordinate: [848, 468.0]
     rotation: 0
+    state: true
+- name: analog_agc2_xx_0
+  id: analog_agc2_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    attack_rate: 1e-1
+    comment: ''
+    decay_rate: 1e-2
+    gain: '1.0'
+    max_gain: '5'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    reference: '0.98'
+    type: float
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [328, 2432.0]
+    rotation: 180
     state: true
 - name: analog_agc3_xx_0
   id: analog_agc3_xx
@@ -1564,26 +1585,6 @@ blocks:
     coordinate: [1784, 1420.0]
     rotation: 0
     state: enabled
-- name: analog_agc_xx_0
-  id: analog_agc_xx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    gain: '1.0'
-    max_gain: '2'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    rate: 1e-4
-    reference: '0.98'
-    type: float
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [320, 2440.0]
-    rotation: 180
-    state: true
 - name: analog_sig_source_x_0
   id: analog_sig_source_x
   parameters:
@@ -1792,7 +1793,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [504, 2448.0]
+    coordinate: [472, 2448.0]
     rotation: 180
     state: true
 - name: band_pass_filter_0
@@ -1895,13 +1896,14 @@ blocks:
       \    '144-PB':   (144491000, 144493000,  144492000,    500, ['CW', 'FT8']),\
       \  # Personal beacons\n    '432-EME':  (432000000, 432025000,  432010000,  \
       \  500, ['CW']),\n    '432-CW':   (432025000, 432100000,  432050000,    500,\
-      \ ['CW','PSK']),\n    '432-SSB':  (432100000, 432400000,  432200000,   2700,\
-      \ ['CW', 'USB','LSB']),\n    '432-FSK':  (432100000, 432400000,  432370000,\
-      \   2700, ['CW', 'USB', 'FSK441','LSB']),\n    '432-B':    (432400000, 432490000,\
-      \  432412170,    500, ['None']), # Beacons 70cm / SK6UHF\n    '1296-B':  (1296800000,\
-      \ 1296994000,1296811000,    500, ['None']), # Beacons 23cm\n\n\n\n}\nself.ham_bands_keys\
-      \ = list(self.ham_bands)\nself._band_selector_options = self.ham_bands_keys\n\
-      self._band_selector_labels = self.ham_bands_keys\n\nself._band_selector_combo_box.setMinimumContentsLength(10)\n\
+      \ ['CW','PSK']),\n    '432-FT8':  (432150000, 432400000,  432174000,   2700,\
+      \ ['FT8','USB']),\n    '432-SSB':  (432100000, 432400000,  432200000,   2700,\
+      \ ['CW', 'USB']),\n    '432-FSK':  (432100000, 432400000,  432370000,   2700,\
+      \ ['CW', 'USB', 'FSK441','LSB']),\n    '432-B':    (432400000, 432490000,  432412170,\
+      \    500, ['None']), # Beacons 70cm / SK6UHF\n    '1296-B':  (1296800000, 1296994000,1296811000,\
+      \    500, ['None']), # Beacons 23cm\n\n\n\n}\nself.ham_bands_keys = list(self.ham_bands)\n\
+      self._band_selector_options = self.ham_bands_keys\nself._band_selector_labels\
+      \ = self.ham_bands_keys\n\nself._band_selector_combo_box.setMinimumContentsLength(10)\n\
       \ndef find_valid_mode(self, valid_modes):\n\tavailable_modes = self.mode.labels\n\
       \tprint(available_modes)\n\tprint(valid_modes)\n\n\tfor mode in valid_modes:\n\
       \t\tif mode in available_modes:\n\t\t\treturn available_modes.index(mode) \n\
@@ -2421,7 +2423,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [568, 2356.0]
+    coordinate: [568, 2372.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_1_0_1_0
@@ -3194,7 +3196,7 @@ blocks:
     alias: ''
     beta: '6.76'
     comment: ''
-    cutoff_freq: '2500'
+    cutoff_freq: ssb_tx_bandwidth
     decim: '1'
     gain: '1'
     maxoutbuf: '0'
@@ -3203,7 +3205,7 @@ blocks:
     samp_rate: tx_samp_rate
     type: ccc
     width: '50'
-    win: window.WIN_KAISER
+    win: window.WIN_RECTANGULAR
   states:
     bus_sink: false
     bus_source: false
@@ -4004,7 +4006,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1216.0, 2360]
+    coordinate: [1224.0, 2320]
     rotation: 270
     state: true
 - name: root_raised_cosine_filter_0
@@ -4511,9 +4513,9 @@ blocks:
     state: disabled
 
 connections:
+- [analog_agc2_xx_0, '0', blocks_multiply_const_vxx_1_0_0_0_0, '0']
 - [analog_agc3_xx_0, '0', rational_resampler_xxx_0, '0']
 - [analog_agc3_xx_0_0, '0', rational_resampler_xxx_0_0_0, '0']
-- [analog_agc_xx_0, '0', blocks_multiply_const_vxx_1_0_0_0_0, '0']
 - [analog_sig_source_x_0, '0', blocks_multiply_xx_0, '1']
 - [analog_sig_source_x_0_0, '0', blocks_multiply_xx_0_0_0, '0']
 - [analog_sig_source_x_0_3_0, '0', blocks_throttle_1_0, '0']
@@ -4521,7 +4523,7 @@ connections:
 - [analog_simple_squelch_cc_0, '0', analog_agc3_xx_0, '0']
 - [analog_simple_squelch_cc_0_0, '0', analog_agc3_xx_0_0, '0']
 - [audio_source_0, '0', blocks_multiply_const_vxx_1_0_0_0, '0']
-- [audio_source_0_0, '0', analog_agc_xx_0, '0']
+- [audio_source_0_0, '0', analog_agc2_xx_0, '0']
 - [band_pass_filter_0, '0', blocks_multiply_const_vxx_1_0_0_1, '0']
 - [band_pass_filter_0, '0', blocks_multiply_xx_0_0, '0']
 - [band_pass_filter_0, '0', blocks_multiply_xx_0_0_0, '1']

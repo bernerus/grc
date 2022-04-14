@@ -70,8 +70,8 @@ def snipfcn_after_start(self):
     )
 
 
-    self._band_selector_combo_box.setCurrentIndex(13)
-    self.rx_distancer.desired_fq=self.ham_bands['144-FT8'][2]
+    self._band_selector_combo_box.setCurrentIndex(20)
+    self.rx_distancer.desired_fq=self.ham_bands['432-FT8'][2]
 
 def snipfcn_band_plan(self):
     self.ham_bands = {
@@ -95,7 +95,8 @@ def snipfcn_band_plan(self):
         '144-PB':   (144491000, 144493000,  144492000,    500, ['CW', 'FT8']),  # Personal beacons
         '432-EME':  (432000000, 432025000,  432010000,    500, ['CW']),
         '432-CW':   (432025000, 432100000,  432050000,    500, ['CW','PSK']),
-        '432-SSB':  (432100000, 432400000,  432200000,   2700, ['CW', 'USB','LSB']),
+        '432-FT8':  (432150000, 432400000,  432174000,   2700, ['FT8','USB']),
+        '432-SSB':  (432100000, 432400000,  432200000,   2700, ['CW', 'USB']),
         '432-FSK':  (432100000, 432400000,  432370000,   2700, ['CW', 'USB', 'FSK441','LSB']),
         '432-B':    (432400000, 432490000,  432412170,    500, ['None']), # Beacons 70cm / SK6UHF
         '1296-B':  (1296800000, 1296994000,1296811000,    500, ['None']), # Beacons 23cm
@@ -184,7 +185,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.rx_samp_rate = rx_samp_rate = 4000000
         self.rx_hw_fq = rx_hw_fq = 0
         self.mode_to_sb_tx = mode_to_sb_tx = [0,1,2,3,4,1,1]
-        self.mic_gain = mic_gain = 1.0
+        self.mic_gain = mic_gain = 0.2
         self.mgm_input_gain = mgm_input_gain = 1.4
         self.freq = freq = 0
         self.filter_fq = filter_fq = 0
@@ -193,9 +194,9 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.wf_gain = wf_gain = 1
         self.wf_fq = wf_fq = freq+rx_hw_fq
         self.vox_threshold = vox_threshold = [10000,0.6,0.6,0.4,0.4,0.4,0.4]
-        self.vox_sensitivity = vox_sensitivity = 2
-        self.vox_delay = vox_delay = [0,1.2,1.2,0.7,0.7,0.4,0.4]
-        self.vox_attack = vox_attack = [10000,100,100,1,1,1,1]
+        self.vox_sensitivity = vox_sensitivity = 20
+        self.vox_delay = vox_delay = [0,1.5,1.5,0.7,0.7,0.5,0.5]
+        self.vox_attack = vox_attack = [10000,10,10,1,1,1,1]
         self.vga_gain = vga_gain = 53
         self.variable_qtgui_entry_0 = variable_qtgui_entry_0 = side_band_rx
         self.variable_function_probe_0 = variable_function_probe_0 = 0
@@ -314,7 +315,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         	isFloat = True
         	scaleFactor = 1
 
-        _vox_sensitivity_dial_control = qtgui.GrDialControl('VOX SENS', self, 0,200,2,"teal",self.set_vox_sensitivity,isFloat, scaleFactor, 50, True, "'value'")
+        _vox_sensitivity_dial_control = qtgui.GrDialControl('VOX SENS', self, 0,200,20,"teal",self.set_vox_sensitivity,isFloat, scaleFactor, 50, True, "'value'")
         self.vox_sensitivity = _vox_sensitivity_dial_control
 
         self.op_tab_grid_layout_0.addWidget(_vox_sensitivity_dial_control, 4, 6, 1, 1)
@@ -591,7 +592,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         	isFloat = True
         	scaleFactor = 0.001
 
-        _mic_gain_dial_control = qtgui.GrDialControl('MIC GAIN', self, 0,995,1.0,"silver",self.set_mic_gain,isFloat, scaleFactor, 50, True, "'value'")
+        _mic_gain_dial_control = qtgui.GrDialControl('MIC GAIN', self, 0,995,0.2,"silver",self.set_mic_gain,isFloat, scaleFactor, 50, True, "'value'")
         self.mic_gain = _mic_gain_dial_control
 
         self.op_tab_grid_layout_0.addWidget(_mic_gain_dial_control, 3, 6, 1, 1)
@@ -1041,7 +1042,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.freq_xlating_fft_filter_ccc_1.declare_sample_delay(0)
         self.filter_fft_low_pass_filter_0_0_0 = filter.fft_filter_fff(2, firdes.low_pass(1, audio_samp_rate, ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76), 1)
         self.filter_fft_low_pass_filter_0_0 = filter.fft_filter_fff(2, firdes.low_pass(1, audio_samp_rate, ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76), 1)
-        self.filter_fft_low_pass_filter_0 = filter.fft_filter_ccc(1, firdes.low_pass(1, tx_samp_rate, 2500, 50, window.WIN_KAISER, 6.76), 1)
+        self.filter_fft_low_pass_filter_0 = filter.fft_filter_ccc(1, firdes.low_pass(1, tx_samp_rate, ssb_tx_bandwidth, 50, window.WIN_RECTANGULAR, 6.76), 1)
         self.epy_block_2 = epy_block_2.blk(offset=rx_hw_fq + filter_fq, factor=1)
         self.epy_block_1_0 = epy_block_1_0.blk(threshold=vox_threshold[mode], attack=vox_attack[mode], delay=vox_delay[mode])
         self.epy_block_1 = epy_block_1.blk(threshold=0.4, attack=1, delay=6/morse_speed * 25 + 2)
@@ -1170,12 +1171,12 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.analog_sig_source_x_1_0 = analog.sig_source_f(audio_samp_rate, analog.GR_SIN_WAVE, ssb_tx_bandwidth/2, 1, 0, 0)
         self.analog_sig_source_x_0_0 = analog.sig_source_f(audio_samp_rate, analog.GR_COS_WAVE, ssb_tx_bandwidth/2, 1, 0, 0)
         self.analog_sig_source_x_0 = analog.sig_source_f(50e3, analog.GR_COS_WAVE, cw_midear_beat[side_band_tx], 1, 0, 0)
-        self.analog_agc_xx_0 = analog.agc_ff(1e-4, 0.98, 1.0)
-        self.analog_agc_xx_0.set_max_gain(2)
         self.analog_agc3_xx_0_0 = analog.agc3_cc((1e-1), 3e-6, (.001)*0+.002, .1, 1)
         self.analog_agc3_xx_0_0.set_max_gain(.1)
         self.analog_agc3_xx_0 = analog.agc3_cc((1e-1), 3e-6, (.001)*0+.002, .1, 1)
         self.analog_agc3_xx_0.set_max_gain(.1)
+        self.analog_agc2_xx_0 = analog.agc2_ff(1e-1, 1e-2, 0.98, 1.0)
+        self.analog_agc2_xx_0.set_max_gain(5)
 
 
 
@@ -1212,16 +1213,16 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.msg_connect((self.variable_qtgui_msg_push_button_0_0_0_0_0, 'pressed'), (self.msg_formatter_0_0, 'msg_in'))
         self.msg_connect((self.variable_qtgui_msg_push_button_0_0_0_0_0_0, 'pressed'), (self.msg_formatter_0_0_0, 'msg_in'))
         self.msg_connect((self.zeromq_pull_msg_source_0, 'out'), (self.tx_fq_sync_0, 'msg_in'))
+        self.connect((self.analog_agc2_xx_0, 0), (self.blocks_multiply_const_vxx_1_0_0_0_0, 0))
         self.connect((self.analog_agc3_xx_0, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.analog_agc3_xx_0_0, 0), (self.rational_resampler_xxx_0_0_0, 0))
-        self.connect((self.analog_agc_xx_0, 0), (self.blocks_multiply_const_vxx_1_0_0_0_0, 0))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_multiply_xx_0, 1))
         self.connect((self.analog_sig_source_x_0_0, 0), (self.blocks_multiply_xx_0_0_0, 0))
         self.connect((self.analog_sig_source_x_1_0, 0), (self.blocks_multiply_xx_0_0, 1))
         self.connect((self.analog_simple_squelch_cc_0, 0), (self.analog_agc3_xx_0, 0))
         self.connect((self.analog_simple_squelch_cc_0_0, 0), (self.analog_agc3_xx_0_0, 0))
         self.connect((self.audio_source_0, 0), (self.blocks_multiply_const_vxx_1_0_0_0, 0))
-        self.connect((self.audio_source_0_0, 0), (self.analog_agc_xx_0, 0))
+        self.connect((self.audio_source_0_0, 0), (self.analog_agc2_xx_0, 0))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_multiply_const_vxx_1_0_0_1, 0))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_multiply_xx_0_0, 0))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_multiply_xx_0_0_0, 1))
@@ -1270,12 +1271,12 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_multiply_xx_0_0, 0), (self.filter_fft_low_pass_filter_0_0, 0))
         self.connect((self.blocks_multiply_xx_0_0_0, 0), (self.filter_fft_low_pass_filter_0_0_0, 0))
         self.connect((self.blocks_nlog10_ff_0, 0), (self.blocks_probe_signal_x_0, 0))
-        self.connect((self.blocks_null_source_0, 0), (self.blocks_selector_1, 5))
         self.connect((self.blocks_null_source_0, 0), (self.blocks_selector_1, 0))
+        self.connect((self.blocks_null_source_0, 0), (self.blocks_selector_1, 5))
         self.connect((self.blocks_null_source_1, 0), (self.blocks_selector_2, 0))
         self.connect((self.blocks_repeat_0, 0), (self.blocks_uchar_to_float_0, 0))
-        self.connect((self.blocks_repeat_0_0, 0), (self.blocks_selector_1, 4))
         self.connect((self.blocks_repeat_0_0, 0), (self.blocks_selector_1, 3))
+        self.connect((self.blocks_repeat_0_0, 0), (self.blocks_selector_1, 4))
         self.connect((self.blocks_selector_0, 0), (self.blocks_null_sink_2, 0))
         self.connect((self.blocks_selector_0, 1), (self.rational_resampler_xxx_4_0, 0))
         self.connect((self.blocks_selector_1, 0), (self.qtgui_sink_x_0_0_0, 0))
@@ -1283,8 +1284,8 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_selector_2, 0), (self.band_pass_filter_0, 0))
         self.connect((self.blocks_uchar_to_float_0, 0), (self.root_raised_cosine_filter_0, 0))
         self.connect((self.epy_block_0_0, 0), (self.blocks_repeat_0, 0))
-        self.connect((self.filter_fft_low_pass_filter_0, 0), (self.blocks_selector_1, 2))
         self.connect((self.filter_fft_low_pass_filter_0, 0), (self.blocks_selector_1, 1))
+        self.connect((self.filter_fft_low_pass_filter_0, 0), (self.blocks_selector_1, 2))
         self.connect((self.filter_fft_low_pass_filter_0_0, 0), (self.blocks_float_to_complex_0_0_1, 0))
         self.connect((self.filter_fft_low_pass_filter_0_0_0, 0), (self.blocks_float_to_complex_0_0_1, 1))
         self.connect((self.freq_xlating_fft_filter_ccc_1, 0), (self.pfb_decimator_ccf_0_0, 0))
@@ -1650,7 +1651,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
     def set_tx_samp_rate(self, tx_samp_rate):
         self.tx_samp_rate = tx_samp_rate
         self.blocks_repeat_0_0.set_interpolation(int(self.tx_samp_rate/self.cw_samp_rate))
-        self.filter_fft_low_pass_filter_0.set_taps(firdes.low_pass(1, self.tx_samp_rate, 2500, 50, window.WIN_KAISER, 6.76))
+        self.filter_fft_low_pass_filter_0.set_taps(firdes.low_pass(1, self.tx_samp_rate, self.ssb_tx_bandwidth, 50, window.WIN_RECTANGULAR, 6.76))
         self.soapy_hackrf_sink_0.set_sample_rate(0, self.tx_samp_rate)
 
     def get_tx_rprt(self):
@@ -1713,6 +1714,7 @@ class FBQ_xcvr(gr.top_block, Qt.QWidget):
         self.ssb_tx_bandwidth = ssb_tx_bandwidth
         self.analog_sig_source_x_0_0.set_frequency(self.ssb_tx_bandwidth/2)
         self.analog_sig_source_x_1_0.set_frequency(self.ssb_tx_bandwidth/2)
+        self.filter_fft_low_pass_filter_0.set_taps(firdes.low_pass(1, self.tx_samp_rate, self.ssb_tx_bandwidth, 50, window.WIN_RECTANGULAR, 6.76))
         self.filter_fft_low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76))
         self.filter_fft_low_pass_filter_0_0_0.set_taps(firdes.low_pass(1, self.audio_samp_rate, self.ssb_tx_bandwidth/2-200, 50, window.WIN_HAMMING, 6.76))
         self.qtgui_sink_x_0_0_0.set_frequency_range(0, self.ssb_tx_bandwidth*4)
