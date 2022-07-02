@@ -4,8 +4,8 @@
 
 This project aims to develop a functioning VHF/UHF transceiver that use the HackRF hardware over a SoapyRemote connection.
 
-As of the initial commit, the transceiver has been used to work exactly 1 QSO over FT8 on 144 MHz. A few months later, I have worked
-over 50 QSOs over FT8 and MSK144 on 2m. 70cm has also been tested on CW. 
+As of the initial commit, the transceiver has been used to work exactly 1 QSO over FT8 on 144 MHz. A year later, I have worked
+over 100:s QSOs over FT8 on both 2m and 70cm. Also many meteor scatter QSOs have been worked on 2m.
 
 Of course, there is more hardware involved than the HackRF. The QSO:s on 144 MHz were done using the following stuff:
 
@@ -25,7 +25,7 @@ For 144 MHz, the additional equipment is
 
 * A linear transistor amplifier using an old 2N6082 to reach about a Watt or two.
 
-* My very old kilowatt PA (Dual 4CX250B designed by W2GN and K2RIW in the 1980s) taking the power to some 250W.
+* My very old kilowatt PA (Dual 4CX250B designed by W2GN and K2RIW in the 1980s) taking the output RF power to about 400W.
 
 * A home build 15 element yagi as described by DJ9BV in the mid 1990s
 
@@ -45,18 +45,28 @@ Also some fixes had to be done to SoapyHackRF to make this work. See my forked R
 
 To be able to run this, there are a bunch of things to fix first.
 
-You need to have gnuradio installed.
+You need to have GnuRadio 3.10.2 or later installed.
 You also need the SoapySDR framework installed. You do not need all components,
 but install using the instructions at https://github.com/pothosware/SoapySDR
 
 ### Mac M1 specific info
 
-As of today, gnuradio is not available in M1 native mode. Thus you will have to install Rosetta
+As of today, GnuRadio is not available in M1 native mode. Thus you will have to install Rosetta
 if running on Apple Silicon. I installed using homebrew by making a copy of the 
 terminal.app and specified in the info field that it should start with Rosetta.
 Then specifically ran /usr/local/bin/brew install <whatever>
 
 If lucky you can then start gnuradio-companion. Make sure it is not in /opt/homebrew, that's where homebrew put M1 native stuff.
+
+#### Audio configuration
+
+The transceiver has separate audio source and sinks for WSJT-X. See below.
+The audio volume of these channels is controlled by the knobs in the MGM tab. Audio level to the speaker is controlled by
+the AF VOL knob which does noy affect the MGM level.
+
+The TX MODE selects the audio input, so that in MGM mode the transmitter audio is taken from the MGM channel, otherwise
+input is from the Mac microphone. When input is from the Mic, it is likely that the Speaker audio trigger the VOX. 
+You may want to use a separate microphone or earphones when in SSB mode.
 
 #### Audio config for WSJT-X
 
@@ -74,3 +84,5 @@ transceiver as is sends on WSJT-3 and listens on blackhole-15ch.
 
 Note that installing WSJT-X requires configuration of shared memory. See the README file accompanying the WSJT-app for Mac.
 
+### FM
+The transceiver can demodulate both Wide band Stereo FM and NBFM. There is however no FM modulator currently for transmit.
