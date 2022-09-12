@@ -1,6 +1,6 @@
 QWidget
 {
-    color: white;
+    color: yellow;
     background-color: black;
 }
 
@@ -30,6 +30,12 @@ QLineEdit
     color:yellow;
     background:green;
 }
+
+QProgressBar
+{
+	width:300px;
+}
+
 
 QwtPlot
 {
