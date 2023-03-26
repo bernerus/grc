@@ -51,12 +51,13 @@ but install using the instructions at https://github.com/pothosware/SoapySDR
 
 ### Mac M1 specific info
 
-As of today, GnuRadio is not available in M1 native mode. Thus you will have to install Rosetta
-if running on Apple Silicon. I installed using homebrew by making a copy of the 
-terminal.app and specified in the info field that it should start with Rosetta.
-Then specifically ran /usr/local/bin/brew install <whatever>
-
-If lucky you can then start gnuradio-companion. Make sure it is not in /opt/homebrew, which is where homebrew put M1 native stuff.
+Today, GnuRadio is available in M1 native mode. However, there seems to be issues regarding
+the CPU core allocation within MacOS. This causes the received Audio to stutter.
+Running in Rosetta mode seems to alleviate this problem.
+Thus you will have to install Rosetta mif running on Apple Silicon. 
+I used arch `x86_64 brew install gnuradio` in order to get an intel version.
+The arm version can be used for running GRC, though, but for runtime, the x86_64 version
+seems more stable.
 
 #### Audio configuration
 
@@ -91,11 +92,14 @@ The transceiver can demodulate both Wide band Stereo FM and NBFM.
 There is also a NBFM modulator for transmit which has not been tested live.
 In WBFM, transmission is blocked.
 
+### AM
+The transceiver now also demodulated AM. There is no AM transmit mode implemented (yet)
+
 ### SSB & CW Rx
-The transceiver can demodulate both LSB and USB. For CW the USR demodulator is used, but the frequency is silently downshifted 880 Hz, to make it possible
-to fine-tune the station with a tuning fork. There is also a CW stereo mode which utilizes both USB and LSB demodulators. In this mode the LSB frequency 
-is upshifted 880 Hz, which means that when you listen to both tones in stereo, you can fine tine the receiver so that when you hear the same tone in both ears,
-snd there is almost no fluttering, you are exactly at the frequency of the received signal. With this you can use a beacon with a well defined frequency to check 
+The transceiver can demodulate both LSB and USB. For CW the USB demodulator is used, but the frequency is silently downshifted 880 Hz, to make it possible
+to fine-tune the station with a tuning fork. There is also a CW stereo mode which utilizes both USB and LSB demodulators simultaneously. In this mode the LSB frequency 
+is instead upshifted 880 Hz, which means that when you listen to both tones in stereo, you can fine tune the receiver so that when you hear the same tone in both ears,
+and there is almost no fluttering, you are exactly at the frequency of the received signal. With this you can use a beacon with a well defined frequency to check 
 your SDR receiver calibration down to 1 Hz.
 
 ### SSB Tx
@@ -108,5 +112,11 @@ CW key, or a keyer paddle to the computer, so working CW is a bit awkward.
 ### MGM
 MGM uses the separate audio channel for WSJT-X as described above. In this mode the microphone is turned off. 
 
+## Warnings
+Although band limits are specified in the band list, there is nothing to stop you from tuning the transmitter outside the specified bands.
+This is due to a bug in the dial widget.
+
+When switching between modes, especially to and from the CW stereo mode, very loud sound bangs might be generated. 
+Take care of your ears and don't have earphones on when shifting.
 
 
