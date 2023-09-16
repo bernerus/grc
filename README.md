@@ -15,13 +15,11 @@ Of course, there is more hardware involved than the HackRF. The QSO:s on 144 MHz
 
 * A Raspberry PI 4 acting as a SoapySDR remote server and controlling the HackRF.
 
-* A homebrew MMIC amplifier utilizing a PGA103+ for boosting the transmit power up to about 100mW or so
+* A homebrew MMIC amplifier utilizing a PGA103+ and PHA202+ for filtering and boosting the transmit power up to about 1 W or so
 
 * The HackRF itself, modified to have a separate transmit port.
 
 For 144 MHz, the additional equipment is
-
-* A 3 stage helical filter to keep unwanted signals from being sent
 
 * A linear transistor amplifier using an old 2N6082 to reach about a Watt or two.
 
@@ -31,7 +29,7 @@ For 144 MHz, the additional equipment is
 
 For 432 MHz, the additional equipment is
 
-* A 3 stage helical filter to keep unwanted signals from being sent
+* A homebrew MMIC amplifier utilizing a PGA103+ and PHA202+ for filtering and boosting the transmit power up to about 1 W or so
 
 * A 3 stage linear transistor amplifier as described by DJ6SC also in the mid 1990s, giving about 15 Watts output.
 
@@ -45,8 +43,8 @@ Also some fixes had to be done to SoapyHackRF to make this work. See my forked R
 
 To be able to run this, there are a bunch of things to fix first.
 
-You need to have GnuRadio 3.10.2 or later installed.
-You also need the SoapySDR framework installed. You do not need all components,
+You need to have GnuRadio 3.10.7 or later installed.
+You may also need the SoapySDR framework installed. You do not need all components,
 but install using the instructions at https://github.com/pothosware/SoapySDR
 
 ### Mac M1 specific info
@@ -56,7 +54,7 @@ the CPU core allocation within MacOS. This causes the received Audio to stutter.
 Running in Rosetta mode seems to alleviate this problem.
 Thus you will have to install Rosetta mif running on Apple Silicon. 
 I used arch `x86_64 brew install gnuradio` in order to get an intel version.
-The arm version can be used for running GRC, though, but for runtime, the x86_64 version
+The ARM version can be used for running GRC, though, but for runtime, the x86_64 version
 seems more stable.
 
 #### Audio configuration
@@ -70,6 +68,7 @@ input is from the Mac microphone. When input is from the Mic, it is likely that 
 You may want to use a separate microphone or earphones when in SSB mode.
 
 Please note that the audio sample rate expected is 48 kHz, make sure that any audio devices used, including the microphone, is set at 48 kHz.
+Be aware that the Mac in certain situations reset the audio sampling rate to 44.1 kHz, when this happens everything seems to go haywire.
 
 #### Audio config for WSJT-X
 
@@ -80,17 +79,16 @@ blackhole-16ch for transmit audio from WSJT-X.
 
 Blackhole can be installed with homebrew and it is not necessary to involve Rosetta here.
 
-The transceiver uses a multiple output unit named WSJT-3 which sends audio to the internal speaker and to blackhole-2ch.
-WSJT-X similarly uses a multiple output unit named WSJT-out which sends output to the internal speaker and to blackhole-16ch
-Of course other possibilities exist. WSJT-X audio is configured to take input from Blackhole-2ch and to send on WSJT-out, and the 
-transceiver as is sends on WSJT-3 and listens on blackhole-15ch.
+The transceiver sends audio to the blackhole_16ch and to std_spkr, and listens on blackhole_2ch and on "MacBook Pro-mikrofon"
+WSJT-X sends output to the internal to blackhole-2ch and listens on blackhole_16ch
+You may want to change these channels in the GnuRadio flowchart.
 
 Note that installing WSJT-X requires configuration of shared memory. See the README file accompanying the WSJT-app for Mac.
 
 ### FM
 The transceiver can demodulate both Wide band Stereo FM and NBFM. 
-There is also a NBFM modulator for transmit which has not been tested live.
-In WBFM, transmission is blocked.
+There is also a NBFM modulator for transmit.
+For WBFM, there is no modulator and transmission is blocked.
 
 ### AM
 The transceiver now also demodulated AM. There is no AM transmit mode implemented (yet)
@@ -103,7 +101,7 @@ and there is almost no fluttering, you are exactly at the frequency of the recei
 your SDR receiver calibration down to 1 Hz.
 
 ### SSB Tx
-The Transceiver can modulate both USB and LSB. The modulator is of the Weaver Type.
+The Transceiver can modulate both USB and LSB. The modulator is of the Weaver type.
 
 ### CW Tx
 For CW, the transceiver uses pure DC, 0 or 1, to modulate the carrier. There are some input help in the CW tab. Unfortunately I do not know any standard way of connecting a
