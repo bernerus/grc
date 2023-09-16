@@ -23,6 +23,7 @@ options:
     sizing_mode: fixed
     thread_safe_setters: ''
     title: SM6FBQ VHF transceiver
+    window_size: (1000,1000)
   states:
     bus_sink: false
     bus_source: false
@@ -1236,6 +1237,7 @@ blocks:
     offset: '0'
     phase: '0'
     samp_rate: 48e3
+    showports: 'False'
     type: float
     waveform: analog.GR_COS_WAVE
   states:
@@ -1258,6 +1260,7 @@ blocks:
     offset: '0'
     phase: '0'
     samp_rate: audio_samp_rate
+    showports: 'False'
     type: float
     waveform: analog.GR_SIN_WAVE
   states:
@@ -1280,6 +1283,7 @@ blocks:
     offset: '0'
     phase: '0'
     samp_rate: audio_samp_rate
+    showports: 'False'
     type: float
     waveform: analog.GR_COS_WAVE
   states:
@@ -1302,6 +1306,7 @@ blocks:
     offset: '0'
     phase: '0'
     samp_rate: 48e3
+    showports: 'False'
     type: float
     waveform: analog.GR_COS_WAVE
   states:
@@ -1615,6 +1620,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     num_ports: '1'
+    showports: 'False'
     type: float
     vlen: '1'
   states:
@@ -1634,6 +1640,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     num_ports: '1'
+    showports: 'False'
     type: float
     vlen: '1'
   states:
@@ -1653,6 +1660,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     num_ports: '1'
+    showports: 'False'
     type: float
     vlen: '1'
   states:
@@ -4167,3 +4175,4 @@ connections:
 
 metadata:
   file_format: 1
+  grc_version: 3.10.6.0

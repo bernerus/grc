@@ -4,6 +4,9 @@
 
 This project aims to develop a functioning VHF/UHF transceiver that use the HackRF hardware over a SoapyRemote connection.
 
+There are many files in this repository. The interesting file is the Gnuradio flowchart _fbq_xcvr_exp.grc_
+It is a very large flowchart, you need to be able to scroll sideways to see everything.
+
 As of the initial commit, the transceiver has been used to work exactly 1 QSO over FT8 on 144 MHz. A year later, I have worked
 over 100:s QSOs over FT8 on both 2m and 70cm. Also many meteor scatter QSOs have been worked on 2m.
 
